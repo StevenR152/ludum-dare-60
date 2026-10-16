@@ -10,7 +10,7 @@ Crafty.defineScene("Start", function() {
         .textColor('#222')
         .unselectable();
 
-    Crafty.e("Button")
+    Crafty.e("UIButton")
         .label("Play")
         .attr({x: GAME_SCREEN_WIDTH / 2 - 80, y: GAME_SCREEN_HEIGHT / 2})
         .onClick(function () {

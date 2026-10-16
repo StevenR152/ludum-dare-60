@@ -19,7 +19,7 @@ Then open http://localhost:8000.
 - `game_state.js`: per-run state, reset with `resetGameState()`
 - `assets.js`: sprites and audio preloaded by the Loading scene
 - `scenes/`: Loading, Start, Game (placeholder: reach the green square), End
-- `components/`: `AudioController` (global `audioController`), `MuteButton`, `GameTimer`, `PlayerNotification` (`Crafty.trigger("InstructionText", msg)`), `Button`, `CreditsText`
+- `components/`: `AudioController` (global `audioController`), `MuteButton`, `GameTimer`, `PlayerNotification` (`Crafty.trigger("InstructionText", msg)`), `UIButton` (named so it doesn't replace Crafty's built-in `Button`), `CreditsText`
 - `camera.js`: `makeCameraTrackEntity(entity, yOffset)`
 - `analytics.js`: `track(event, params)`, a no-op until the GA4 snippet in `index.html` is enabled
 
