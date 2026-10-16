@@ -1,0 +1,21 @@
+version: 2.1
+jobs:
+  deploy:
+    docker:
+      - image: cimg/python:3.12
+    steps:
+      - checkout
+      - run:
+          name: Branch name
+          command: echo "${CIRCLE_BRANCH}"
+      - run:
+          name: Install awscli
+          command: pip install awscli
+      - run:
+          name: Deploy to S3 bucket
+          command: aws s3 sync . s3://ludum-dare-60/${CIRCLE_BRANCH} --exclude '.circleci/*' --exclude '.git/*' --exclude '.gitignore'
+
+workflows:
+  build-deploy:
+    jobs:
+      - deploy
