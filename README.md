@@ -14,6 +14,17 @@ py -m http.server 8000
 
 Then open http://localhost:8000.
 
+## Layout
+- `constants.js`: screen size, music track, credits list
+- `game_state.js`: per-run state, reset with `resetGameState()`
+- `assets.js`: sprites and audio preloaded by the Loading scene
+- `scenes/`: Loading, Start, Game (placeholder: reach the green square), End
+- `components/`: `AudioController` (global `audioController`), `MuteButton`, `GameTimer`, `PlayerNotification` (`Crafty.trigger("InstructionText", msg)`), `Button`, `CreditsText`
+- `camera.js`: `makeCameraTrackEntity(entity, yOffset)`
+- `analytics.js`: `track(event, params)`, a no-op until the GA4 snippet in `index.html` is enabled
+
+Give an entity the `HUD` component to keep it fixed on screen while the camera moves.
+
 ## Deploy
 Every push is synced by CircleCI to `s3://ludum-dare-60/<branch>/`, so `main` is served at `/main/index.html`.
 

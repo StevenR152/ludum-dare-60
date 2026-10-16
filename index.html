@@ -3,10 +3,30 @@
   <head>
     <meta charset="utf-8">
   	<title>Ludum Dare #60</title>
+    <!-- Google Analytics (GA4): replace G-XXXXXXXXXX and uncomment to enable track() events.
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    -->
   </head>
   <body>
     <h2> Ludum Dare #60 </h2>
-    <div id="game"></div>
+
+    <div id="wrapper">
+        <div id="game"></div>
+
+        <div id="instructions">
+            Game description goes here.
+            <h3>Controls</h3>
+            <ul>
+                <li>Arrow keys to move</li>
+            </ul>
+        </div>
+    </div>
 	<style>
       h2 {
         text-align: center;
@@ -14,17 +34,45 @@
       }
 	    body {
 	        background-color: #EEE;
-	        width: 800px; margin: 0px auto;
+	        width: 1152px; margin: 0px auto;
 	    }
-	    #game {
-	        box-shadow: 0px 0px 100px 100px rgba(0, 0, 0, .15);
+        #instructions {
+            width: 95%;
+            margin: 20px auto;
+            padding: 5px 5px 20px;
+        }
+	    #wrapper {
+	        box-shadow: 0px 4px 16px rgba(0, 0, 0, .12);
 	    }
     </style>
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crafty/0.9.0/crafty-min.js"></script>
+    <!-- Globals and helpers -->
+    <script type="text/javascript" src="constants.js"></script>
+    <script type="text/javascript" src="game_state.js"></script>
+    <script type="text/javascript" src="analytics.js"></script>
+    <script type="text/javascript" src="camera.js"></script>
     <script type="text/javascript" src="assets.js"></script>
+
+    <!-- Components -->
+    <script type="text/javascript" src="components/audio_controller.js"></script>
+    <script type="text/javascript" src="components/mute_button.js"></script>
+    <script type="text/javascript" src="components/game_timer.js"></script>
+    <script type="text/javascript" src="components/player_notification.js"></script>
+    <script type="text/javascript" src="components/button.js"></script>
+    <script type="text/javascript" src="components/credits_text.js"></script>
+
+    <!-- Scenes -->
     <script type="text/javascript" src="scenes/loading.js"></script>
+    <script type="text/javascript" src="scenes/start.js"></script>
     <script type="text/javascript" src="scenes/game.js"></script>
+    <script type="text/javascript" src="scenes/end.js"></script>
+
     <script type="text/javascript" src="main.js"></script>
+    <script>
+      // Keyboard input stops after the page (or an itch.io iframe) loses focus.
+      window.onload = function () { window.focus(); };
+      document.getElementById('game').addEventListener('click', function () { window.focus(); });
+    </script>
   </body>
 </html>
