@@ -1,0 +1,68 @@
+/*!
+ * TouchControls for Crafty 0.9
+ * MIT License, Copyright (c) 2026 Steven Rutherford
+ */
+
+/* While touch controls are on: no scrolling, zooming, text selection or long-press menu. */
+html.touch-controls,
+html.touch-controls body {
+    touch-action: none;
+    overflow: hidden;
+    overscroll-behavior: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Give page chrome (titles, keyboard instructions) this class to hide it on touch screens. */
+html.touch-controls .touch-hide {
+    display: none !important;
+}
+
+/* Press state under each finger, big enough to see around it. */
+.touch-controls-ring {
+    position: fixed;
+    width: var(--touch-controls-ring, 88px);
+    height: var(--touch-controls-ring, 88px);
+    transform: translate(-50%, -50%);
+    border: 3px solid rgba(0, 0, 0, 0.35);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.25);
+    pointer-events: none;
+    z-index: 10000;
+}
+
+/* Short arrow flashed where a swipe started. */
+.touch-controls-swipe {
+    position: fixed;
+    width: var(--touch-controls-ring, 88px);
+    height: var(--touch-controls-ring, 88px);
+    pointer-events: none;
+    z-index: 10000;
+    animation: touch-controls-swipe 400ms ease-out forwards;
+}
+
+.touch-controls-swipe::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    margin: -20% 0 0 -20%;
+    border-top: calc(var(--touch-controls-ring, 88px) * 0.2) solid transparent;
+    border-bottom: calc(var(--touch-controls-ring, 88px) * 0.2) solid transparent;
+    border-left: calc(var(--touch-controls-ring, 88px) * 0.4) solid rgba(0, 0, 0, 0.45);
+}
+
+@keyframes touch-controls-swipe {
+    from {
+        opacity: 1;
+        transform: translate(-50%, -50%) rotate(var(--touch-controls-angle)) translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translate(-50%, -50%) rotate(var(--touch-controls-angle)) translateX(50%);
+    }
+}

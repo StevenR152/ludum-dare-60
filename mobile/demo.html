@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>TouchControls demo</title>
+    <link rel="stylesheet" href="touch-controls.css">
+    <style>
+        body { margin: 0; background: #EEE; font-family: sans-serif; }
+        #game { margin: 0 auto; }
+        p { text-align: center; color: #444; }
+    </style>
+</head>
+<body>
+    <div id="game"></div>
+    <p class="touch-hide">Open on a phone, or add <code>?touch=1</code> to try it with a mouse.</p>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crafty/0.9.0/crafty-min.js"></script>
+    <script src="touch-controls.js"></script>
+    <script>
+        // A platformer: hold either half of the screen to run, tap to jump.
+        // The game only reads keys; TouchControls presses them.
+        Crafty.init(800, 480, document.getElementById("game"));
+        Crafty.background("#DDD");
+
+        TouchControls.init({
+            holdSides: { left: "LEFT_ARROW", right: "RIGHT_ARROW" },
+            tap: "UP_ARROW",
+            scenes: null
+        });
+
+        Crafty.e("2D, DOM, Color, Floor").attr({x: 0, y: 440, w: 800, h: 40}).color("#666");
+        Crafty.e("2D, DOM, Color, Floor").attr({x: 300, y: 340, w: 200, h: 20}).color("#666");
+
+        Crafty.e("2D, DOM, Color, Twoway, Gravity")
+            .attr({x: 100, y: 300, w: 40, h: 40})
+            .color("#C33")
+            .twoway(250, 450)
+            .gravity("Floor");
+
+        var hint = Crafty.e("2D, DOM, Text")
+            .attr({x: 0, y: 20, w: 800, h: 30})
+            .textAlign("center")
+            .textFont({size: "20px"})
+            .text(TouchControls.isActive() ? "Hold a side to run, tap to jump" : "Arrow keys to run and jump");
+
+        Crafty.bind("TouchTap", function () { hint.text("Tap"); });
+        Crafty.bind("TouchSwipe", function (e) { hint.text("Swipe " + e.direction); });
+    </script>
+</body>
+</html>

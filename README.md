@@ -21,6 +21,8 @@ Then open http://localhost:8000.
 - `scenes/`: Loading, Start, Game (placeholder: reach the green square), End
 - `components/`: `AudioController` (global `audioController`), `MuteButton`, `GameTimer`, `PlayerNotification` (`Crafty.trigger("InstructionText", msg)`), `UIButton` (named so it doesn't replace Crafty's built-in `Button`), `CreditsText`
 - `camera.js`: `makeCameraTrackEntity(entity, yOffset)`
+- `mobile/`: `TouchControls`, gesture controls for phones (touch and hold to walk toward the finger, tap for SPACE); see `mobile/README.md`
+- `PRD/`: product requirement docs
 - `analytics.js`: `track(event, params)`, a no-op until the GA4 snippet in `index.html` is enabled
 
 Give an entity the `HUD` component to keep it fixed on screen while the camera moves.
