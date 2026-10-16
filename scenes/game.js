@@ -13,6 +13,11 @@ Crafty.defineScene("Game", function() {
         .color('#F00')
         .fourway(250);
 
+    // Static landmark so movement is visible while the camera follows the player.
+    Crafty.e("2D, DOM, Color")
+        .attr({x: 350, y: 200, w: 80, h: 80})
+        .color('#888');
+
     Crafty.e("2D, DOM, Color, Goal")
         .attr({x: 1500, y: 900, w: 60, h: 60})
         .color('#0A0');
