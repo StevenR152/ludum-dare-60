@@ -20,10 +20,57 @@
         <div id="game"></div>
 
         <div id="instructions" class="touch-hide">
-            Game description goes here.
+            <p>
+                You're a young fox helping an old owl master potter who can't see anymore.
+                He still throws the pots on his kick wheel. You do everything else: dig the clay,
+                glaze it, fire it in the kiln. Take your time, it's a chill game with a few tense moments.
+            </p>
+
             <h3>Controls</h3>
             <ul>
-                <li>Arrow keys to move</li>
+                <li><b>Arrow keys</b>: walk the fox around, inside and outside</li>
+                <li><b>Mouse click</b>: work the thing you're standing at (door, owl, kiln)</li>
+                <li><b>Hold the mouse button</b> on a clay patch: dig</li>
+                <li><b>E</b>: pick which clay in your backpack is selected</li>
+                <li><b>Space</b>: drop the selected clay, or the pot in your hands (just a testing aid for now)</li>
+                <li><b>Touch screens</b>: touch and hold to walk toward your finger, tap to drop</li>
+            </ul>
+            <p>
+                Things only work while the fox is touching them, so walk up first.
+                You carry up to 2 clays in your backpack (each one slows you down) and one thing in your hands.
+            </p>
+
+            <h3>How to play</h3>
+            <p>Make a pot from start to finish:</p>
+            <ol class="steps">
+                <li><b>Dig clay.</b> Stand on a clay patch outside and hold the mouse button for 2 seconds.
+                    The patch greys out and comes back after a while.</li>
+                <li><b>Wedge the clay.</b> <span class="soon">Coming soon</span>
+                    Knead the clay on the bench to push out air bubbles before it goes to the wheel.</li>
+                <li><b>Deliver the clay.</b> Go through the door, pick a clay with <b>E</b>, and click the owl while touching him.
+                    He takes one kilo when he's idle and throws a pot on his kick wheel (about 8 seconds).</li>
+                <li><b>Collect the pot.</b> When his pot is ready, click him with empty hands to carry it.</li>
+                <li><b>Dry the pot.</b> <span class="soon">Coming soon</span>
+                    Pots need to dry before they can be fired, or they crack.</li>
+                <li><b>Gather wood.</b> <span class="soon">Coming soon</span>
+                    The wood kiln needs fuel before it will fire.</li>
+                <li><b>Fire the pot (bisque).</b> Outside, click the kiln with the pot in your hands.
+                    It fires for 10 seconds, cools for 10 more, then click it with empty hands to collect the fired pot.</li>
+                <li><b>Dip in glaze.</b> <span class="soon">Coming soon</span>
+                    Pick the glaze bucket that matches the master's order and dip the pot for the right length of time.</li>
+                <li><b>Fire again.</b> <span class="soon">Coming soon</span>
+                    A second firing melts the glaze into its final colour.</li>
+                <li><b>Deliver the order.</b> <span class="soon">Coming soon</span>
+                    Check the master's book for what clay, how much and what colour, and hand over the finished pot.</li>
+            </ol>
+
+            <h3>Also coming soon</h3>
+            <ul>
+                <li><span class="soon">Coming soon</span> The master's order book, with the clay, amount and colour for each pot</li>
+                <li><span class="soon">Coming soon</span> Timer bars on actions: finish in time, or hold for just the right length</li>
+                <li><span class="soon">Coming soon</span> Cracked, ugly or shattered pots when you mess up</li>
+                <li><span class="soon">Coming soon</span> The master sneezes and scares you, and rough ground makes you drop things</li>
+                <li><span class="soon">Coming soon</span> More clays, glazes, drying hacks and firing several pots at once</li>
             </ul>
         </div>
     </div>
@@ -40,6 +87,18 @@
             width: 95%;
             margin: 20px auto;
             padding: 5px 5px 20px;
+        }
+        #instructions .steps li {
+            margin-bottom: 6px;
+        }
+        .soon {
+            background: #C9A227;
+            color: #fff;
+            border-radius: 3px;
+            padding: 1px 6px;
+            font-size: 0.8em;
+            font-weight: bold;
+            white-space: nowrap;
         }
 	    #wrapper {
 	        box-shadow: 0px 4px 16px rgba(0, 0, 0, .12);
