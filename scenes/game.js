@@ -53,6 +53,15 @@ Crafty.defineScene("Game", function() {
         }
     });
 
+    // Testing aid: SPACE (a tap on touch screens) drops whatever the fox holds; it just disappears.
+    player.addComponent("Keyboard");
+    player.bind("KeyDown", function (e) {
+        if (e.key === Crafty.keys.SPACE && gameState.heldItem) {
+            gameState.heldItem = null;
+            Crafty.trigger("InventoryChanged");
+        }
+    });
+
     var clayOne = Crafty.e("2D, DOM, Color, TimeClickable")
         .attr({x: 195, y: 775, w: 80, h: 80})
         .color('#311909');

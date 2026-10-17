@@ -8,7 +8,7 @@
 - Another engineer owns clay delivery. The kiln isn't built yet.
 
 **Scope** — A `Potter` component for the owl (clay, `ClayDelivered` event, pot timer, pot indicator). The fox's one-slot inventory in `gameState`. Click the owl to pick up a pot. A HUD inventory slot.
-**Out of scope** — Clay delivery itself (another engineer's area), the kiln and firing, dropping or placing pots, pot types and quality, sounds, a progress bar for the 8 seconds.
+**Out of scope** — Clay delivery itself (another engineer's area), the kiln and firing, placing pots (SPACE just deletes the held item, a testing aid), pot types and quality, sounds, a progress bar for the 8 seconds.
 
 **Flow**
 1. The Game scene loads. The owl has 1 clay and no pot, so he starts a pot straight away. Clay drops to 0, and the placeholder refill puts it back to 1.
