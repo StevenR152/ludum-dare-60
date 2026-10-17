@@ -54,14 +54,23 @@ Crafty.c("Fox", {
     },
 
     dropSelected: function() {
-        if (this.backpack.length === 0) {
+        var dropped = this.takeSelected();
+        if (!dropped) {
             showStatus("Backpack is empty, nothing to drop");
             return;
         }
-        var dropped = this.backpack.splice(this.selected, 1)[0];
-        this.selected = Math.min(this.selected, Math.max(this.backpack.length - 1, 0));
         showStatus("Dropped one kilo of " + dropped.name + " clay");
+    },
+
+    // Removes and returns the selected clay, or null when the backpack is empty.
+    takeSelected: function() {
+        if (this.backpack.length === 0) {
+            return null;
+        }
+        var taken = this.backpack.splice(this.selected, 1)[0];
+        this.selected = Math.min(this.selected, Math.max(this.backpack.length - 1, 0));
         this.trigger("BackpackChanged", this.backpack);
+        return taken;
     },
 
     // Returns false (and changes nothing) when the backpack is full.

@@ -27,25 +27,25 @@
 7. Touching and clicking with an empty backpack and an idle owl shows "The master needs clay to make pots".
 
 **Acceptance criteria**
-- [ ] With no delivery, no pots appear. Each delivered clay gives one pot, 8 seconds later.
-- [ ] Carrying 2 clays and clicking the owl from far away changes nothing.
-- [ ] Clicking an idle owl while touching removes only the selected clay from the HUD, speeds the fox up by one kilo, shows the status, and he starts a pot.
-- [ ] Clicking again while he's making it shows the busy status, and the backpack keeps its clay.
-- [ ] Empty-handed, clicking when his pot is ready takes the pot and hands over the next clay in one click.
-- [ ] Holding a pot in hands while his pot is ready: the click is refused as busy and both pots stay put.
-- [ ] Holding a pot in hands with an idle owl: clay is still delivered.
-- [ ] Empty backpack and idle owl: clicking him shows "The master needs clay to make pots".
-- [ ] Digging, E/SPACE backpack keys, doors and kiln still behave as before.
+- [x] With no delivery, no pots appear. Each delivered clay gives one pot, 8 seconds later.
+- [x] Carrying 2 clays and clicking the owl from far away changes nothing.
+- [x] Clicking an idle owl while touching removes only the selected clay from the HUD, speeds the fox up by one kilo, shows the status, and he starts a pot.
+- [x] Clicking again while he's making it shows the busy status, and the backpack keeps its clay.
+- [x] Empty-handed, clicking when his pot is ready takes the pot and hands over the next clay in one click.
+- [x] Holding a pot in hands while his pot is ready: the click is refused as busy and both pots stay put.
+- [x] Holding a pot in hands with an idle owl: clay is still delivered.
+- [x] Empty backpack and idle owl: clicking him shows "The master needs clay to make pots".
+- [ ] Digging, E/SPACE backpack keys, doors and kiln still behave as before. (E and SPACE verified; digging, doors and kiln code untouched but not re-clicked.)
 
 **Constraints** — Crafty 0.9.0, no new deps. Changes in `components/potter.js` (`isIdle()`), `components/fox.js` (a `takeSelected()` method shared by dropping and delivering), `scenes/game.js` owl click.
 
 **Open questions** — None.
 
 **Tasks**
-- [ ] Remove the placeholder refill, start the owl at 0 clay, add `isIdle()` in `potter.js`; update the header comment
-- [ ] Add `Fox.takeSelected()` (removes and returns the selected clay or null, triggers `BackpackChanged`); `dropSelected` uses it
-- [ ] Owl click in `game.js`: pot pickup, then deliver the selected clay (with statuses)
-- [ ] Verify the acceptance criteria in the browser
+- [x] Remove the placeholder refill, start the owl at 0 clay, add `isIdle()` in `potter.js`; update the header comment
+- [x] Add `Fox.takeSelected()` (removes and returns the selected clay or null, triggers `BackpackChanged`); `dropSelected` uses it
+- [x] Owl click in `game.js`: pot pickup, then deliver the selected clay (with statuses)
+- [x] Verify the acceptance criteria in the browser
 
 ## Decisions
 1. Delivery → the selected slot only, one kilo per click (chosen over the whole backpack).

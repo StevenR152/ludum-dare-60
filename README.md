@@ -8,11 +8,10 @@ Built with [CraftyJS](http://craftyjs.com/api/) 0.9.0 (loaded from cdnjs).
 ## How to play
 - Arrow keys or WASD walk the fox. On phones, touch and hold to walk toward your finger.
 - Click a door you're standing at to move between Inside and Outside.
-- Click the owl (Inside) to take his finished pot. He throws one every 8s. You carry one thing at a time, shown in the HUD slot top left.
+- Hold-click a clay square (Outside) while standing on it to dig a kilo into your backpack. E picks a backpack slot.
+- Click the owl (Inside) to hand him the selected clay. He only takes it when he's idle, and throws a pot from it in 8s. Click him again to take the finished pot. Your hands carry one thing at a time, shown in the HUD slot top left.
 - Click the kiln (Outside) to load an unfired pot. It fires for 10s and cools for 10s; then click it with empty hands to collect the fired pot.
 - SPACE (a tap on phones) drops what you're holding. This is a testing aid.
-
-The clay squares Outside are hold-to-click placeholders and don't feed the owl yet.
 
 ## Run locally
 Serve the folder over HTTP (asset loading fails from `file://`):
