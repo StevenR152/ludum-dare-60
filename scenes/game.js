@@ -13,6 +13,14 @@ Crafty.defineScene("Game", function() {
     Crafty.e("2D, DOM, backgroundOutside")
         .attr({x: 0, y: 0, w: 2000, h: 1080, z: -1});
 
+    // Inside sits left of Outside. The gap is wider than the screen, so the camera never shows both.
+    var INSIDE_X = -2000 - 1200;
+
+    // Placeholder house interior until the inside art lands.
+    Crafty.e("2D, DOM, Color")
+        .attr({x: INSIDE_X, y: 0, w: 2000, h: 1080, z: -1})
+        .color('#F5EDE3');
+
     // The fox starts on the ground, bottom-middle of the map.
     var player = Crafty.e("2D, DOM, fox, Fourway, Collision")
         .attr({x: 920, y: 820, w: 160, h: 102})
@@ -28,9 +36,9 @@ Crafty.defineScene("Game", function() {
         Crafty.s("Mouse").unbind("MouseDown", player.logClickPosition);
     });
 
-    // Static for now; will become the master of the pottery wheel (beside it on the map).
+    // Static for now; will become the master of the pottery wheel, which is inside the house.
     Crafty.e("2D, DOM, owl")
-        .attr({x: 1250, y: 820, w: 160, h: 152});
+        .attr({x: INSIDE_X + 1250, y: 820, w: 160, h: 152});
 
     var clayOne = Crafty.e("2D, DOM, Color, TimeClickable")
         .attr({x: 195, y: 775, w: 80, h: 80})
@@ -44,14 +52,30 @@ Crafty.defineScene("Game", function() {
         .attr({x: 865, y: 765, w: 80, h: 80})
         .color('#15a0a0');
 
-    // House door: taller and thinner than the 80x80 clay squares.
-    Crafty.e("2D, DOM, Color")
+    // House doors, one per area, each leading to its partner. Taller and thinner than the clay squares.
+    var outsideDoor = Crafty.e("2D, DOM, Color, Mouse")
         .attr({x: 1120, y: 527, w: 60, h: 110})
         .color('#8B5A2B');
+    var insideDoor = Crafty.e("2D, DOM, Color, Mouse")
+        .attr({x: INSIDE_X + 1120, y: 527, w: 60, h: 110})
+        .color('#8B5A2B');
+    outsideDoor.partner = insideDoor;
+    insideDoor.partner = outsideDoor;
+
+    // Clicking a door the fox is standing at puts the fox just below its partner, centred and clear of it.
+    function useDoor() {
+        if (!this.intersect(player.x, player.y, player.w, player.h)) {
+            return;
+        }
+        var door = this.partner;
+        player.x = door.x + (door.w - player.w) / 2;
+        player.y = door.y + door.h + 20;
+    }
+    outsideDoor.bind("Click", useDoor);
+    insideDoor.bind("Click", useDoor);
 
     makeCameraTrackEntity(player, 0);
     TouchControls.follow(player);
-    Crafty.trigger("InstructionText", TouchControls.isActive() ? "Touch and hold to move" : "Arrow keys to move");
 
     // Bound on an entity so the handler is removed with the scene.
     player.bind("GameOver", function () {
