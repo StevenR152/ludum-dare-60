@@ -13,7 +13,7 @@ Crafty.defineScene("Game", function() {
     Crafty.e("2D, DOM, backgroundOutside")
         .attr({x: 0, y: 0, w: 2000, h: 1080, z: -1});
 
-    // Placeholder game: move the fox to the green goal. Starts on the ground, bottom-middle of the map.
+    // The fox starts on the ground, bottom-middle of the map.
     var player = Crafty.e("2D, DOM, fox, Fourway, Collision")
         .attr({x: 920, y: 820, w: 160, h: 102})
         .fourway(250);
@@ -48,14 +48,6 @@ Crafty.defineScene("Game", function() {
     Crafty.e("2D, DOM, Color")
         .attr({x: 1120, y: 527, w: 60, h: 110})
         .color('#8B5A2B');
-
-    Crafty.e("2D, DOM, Color, Goal")
-        .attr({x: 1500, y: 900, w: 60, h: 60})
-        .color('#0A0');
-
-    player.onHit("Goal", function () {
-        Crafty.trigger("GameOver");
-    });
 
     makeCameraTrackEntity(player, 0);
     TouchControls.follow(player);
