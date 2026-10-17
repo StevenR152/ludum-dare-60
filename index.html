@@ -14,12 +14,12 @@
     -->
   </head>
   <body>
-    <h2> Ludum Dare #60 </h2>
+    <h2 class="touch-hide"> Ludum Dare #60 </h2>
 
     <div id="wrapper">
         <div id="game"></div>
 
-        <div id="instructions">
+        <div id="instructions" class="touch-hide">
             Game description goes here.
             <h3>Controls</h3>
             <ul>
@@ -47,6 +47,9 @@
     </style>
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crafty/0.9.0/crafty-min.js"></script>
+    <!-- Gesture controls on touch screens; see mobile/README.md -->
+    <link rel="stylesheet" href="mobile/touch-controls.css">
+    <script type="text/javascript" src="mobile/touch-controls.js"></script>
     <!-- Globals and helpers -->
     <script type="text/javascript" src="constants.js"></script>
     <script type="text/javascript" src="game_state.js"></script>
@@ -59,7 +62,7 @@
     <script type="text/javascript" src="components/mute_button.js"></script>
     <script type="text/javascript" src="components/game_timer.js"></script>
     <script type="text/javascript" src="components/player_notification.js"></script>
-    <script type="text/javascript" src="components/button.js"></script>
+    <script type="text/javascript" src="components/ui_button.js"></script>
     <script type="text/javascript" src="components/credits_text.js"></script>
     <script type="text/javascript" src="components/time_clickable.js"></script>
 

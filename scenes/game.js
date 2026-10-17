@@ -58,7 +58,8 @@ Crafty.defineScene("Game", function() {
     });
 
     makeCameraTrackEntity(player, 0);
-    Crafty.trigger("InstructionText", "Arrow keys to move");
+    TouchControls.follow(player);
+    Crafty.trigger("InstructionText", TouchControls.isActive() ? "Touch and hold to move" : "Arrow keys to move");
 
     // Bound on an entity so the handler is removed with the scene.
     player.bind("GameOver", function () {
