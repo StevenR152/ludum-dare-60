@@ -1,8 +1,9 @@
+// Named UIButton because Crafty 0.9 has its own built-in "Button" component.
 // Text button until art exists:
-//   Crafty.e("Button").label("Play").attr({x: 100, y: 100}).onClick(fn);
+//   Crafty.e("UIButton").label("Play").attr({x: 100, y: 100}).onClick(fn);
 // Then swap in sprites from assets.js (hover sprite optional):
 //   .sprites("play_button", "play_button_hover")
-Crafty.c("Button", {
+Crafty.c("UIButton", {
     init: function() {
         this.requires("2D, DOM, Mouse, Text");
         this.attr({w: 160, h: 48, z: 1000});
