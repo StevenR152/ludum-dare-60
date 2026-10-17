@@ -11,3 +11,7 @@ var MUSIC_VOLUME = 0.25;
 var CREDITS = [
     { role: "Game Dev", name: "Steven Rutherford" },
 ];
+
+// Pottery: how long the owl takes to throw a pot, and the placeholder pot colour.
+var POT_MAKE_MS = 8000;
+var POT_COLOR = "#C8A27A";

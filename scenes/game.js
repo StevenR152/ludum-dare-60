@@ -8,6 +8,7 @@ Crafty.defineScene("Game", function() {
     Crafty.e("MuteButton").attr({x: 20, y: 20});
     Crafty.e("GameTimer").attr({x: GAME_SCREEN_WIDTH - 100, y: 20});
     Crafty.e("PlayerNotification");
+    Crafty.e("InventorySlot").attr({x: 20, y: 60});
 
     // Outside map, drawn at half its 4000x2160 source size; z keeps it behind everything.
     Crafty.e("2D, DOM, backgroundOutside")
@@ -36,9 +37,21 @@ Crafty.defineScene("Game", function() {
         Crafty.s("Mouse").unbind("MouseDown", player.logClickPosition);
     });
 
-    // Static for now; will become the master of the pottery wheel, which is inside the house.
-    Crafty.e("2D, DOM, owl")
+    // The master potter, inside the house. He keeps throwing pots while his hands are free.
+    var owl = Crafty.e("2D, DOM, owl, Mouse, Potter")
         .attr({x: INSIDE_X + 1250, y: 820, w: 160, h: 152});
+
+    // Clicking the owl the fox is touching takes his finished pot, if the fox's hands are free.
+    owl.bind("Click", function () {
+        if (gameState.heldItem || !this.intersect(player.x, player.y, player.w, player.h)) {
+            return;
+        }
+        var pot = this.takePot();
+        if (pot) {
+            gameState.heldItem = pot;
+            Crafty.trigger("InventoryChanged");
+        }
+    });
 
     var clayOne = Crafty.e("2D, DOM, Color, TimeClickable")
         .attr({x: 195, y: 775, w: 80, h: 80})

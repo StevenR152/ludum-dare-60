@@ -28,24 +28,24 @@
 8. Inventory resets on a new run through `resetGameState()`.
 
 **Acceptance criteria**
-- [ ] About 8 s after the scene starts, the box appears on the owl and stays there while I wait.
-- [ ] Clicking the owl from far away does nothing. Clicking him while touching moves the pot to the HUD slot and clears his box.
-- [ ] About 8 s after pickup, a new box appears on the owl, with no clay delivered.
-- [ ] Clicking him again while holding a pot leaves both pots where they are.
-- [ ] Running `owl.trigger("ClayDelivered", 2)` in the console raises `owl.clay` by 2.
-- [ ] Works with the mouse and with a tap. The doors, clay patches and timer still behave as before.
-- [ ] Play Again starts with empty hands.
+- [x] About 8 s after the scene starts, the box appears on the owl and stays there while I wait.
+- [x] Clicking the owl from far away does nothing. Clicking him while touching moves the pot to the HUD slot and clears his box.
+- [x] About 8 s after pickup, a new box appears on the owl, with no clay delivered.
+- [x] Clicking him again while holding a pot leaves both pots where they are.
+- [x] Running `Crafty("Potter").trigger("ClayDelivered", 2)` in the console raises `owl.clay` by 2.
+- [ ] Works with the mouse and with a tap (mouse verified; tap not yet tested on a device). The doors, clay patches and timer still behave as before.
+- [x] Play Again starts with empty hands.
 
-**Constraints** — Crafty 0.9.0, no new dependencies. New component in `components/potter.js` (added to `index.html`), wiring in `scenes/game.js`, state in `game_state.js`. Placeholder art uses coloured boxes.
+**Constraints** — Crafty 0.9.0, no new dependencies. New components `components/potter.js` and `components/inventory_slot.js` (added to `index.html`), timings in `constants.js`, wiring in `scenes/game.js`, state in `game_state.js`. Placeholder art uses coloured boxes.
 
 **Open questions** — None.
 
 **Tasks**
-- [ ] Add `heldItem: null` to `gameState`
-- [ ] `Potter` component: clay, `ClayDelivered` handler with the placeholder refill, pot timer, light brown box indicator, `takePot()`
-- [ ] Give the owl `Potter` and `Mouse`, and click-to-pickup with the touch check in `game.js`
-- [ ] HUD inventory slot that follows `gameState.heldItem`
-- [ ] Verify the acceptance criteria in the browser
+- [x] Add `heldItem: null` to `gameState`
+- [x] `Potter` component: clay, `ClayDelivered` handler with the placeholder refill, pot timer, light brown box indicator, `takePot()`
+- [x] Give the owl `Potter` and `Mouse`, and click-to-pickup with the touch check in `game.js`
+- [x] HUD inventory slot that follows `gameState.heldItem`
+- [x] Verify the acceptance criteria in the browser
 
 ## Decisions
 1. Inventory indicator → only the HUD slot, no pot drawn on the fox (default).
