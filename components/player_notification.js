@@ -1,5 +1,5 @@
 // Create one per Game scene, then from anywhere:
-//   Crafty.trigger("InstructionText", "Arrow keys to move");
+//   Crafty.trigger("InstructionText", "Arrow keys to move. Click and Hold to dig clay");
 // Each message is shown once per run, then fades out.
 Crafty.c("PlayerNotification", {
     init: function() {
