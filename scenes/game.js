@@ -1,3 +1,5 @@
+//inside, door, gap, door, outside
+
 Crafty.defineScene("Game", function() {
     Crafty.background("#EEE");
     audioController.playMusic(MUSIC_TRACK);
@@ -14,9 +16,17 @@ Crafty.defineScene("Game", function() {
         .fourway(250);
 
     // Static landmark so movement is visible while the camera follows the player.
-    Crafty.e("2D, DOM, Color")
+    var clayOne = Crafty.e("2D, DOM, Color, TimeClickable")
         .attr({x: 350, y: 200, w: 80, h: 80})
-        .color('#888');
+        .color('#311909');
+    
+    var clayTwo = Crafty.e("2D, DOM, Color, TimeClickable")
+        .attr({x: 450, y: 150, w: 80, h: 80})
+        .color('#650b0b');
+        
+    var clayThree = Crafty.e("2D, DOM, Color, TimeClickable")
+        .attr({x: 200, y: 200, w: 80, h: 80})
+        .color('#15a0a0');
 
     Crafty.e("2D, DOM, Color, Goal")
         .attr({x: 1500, y: 900, w: 60, h: 60})
