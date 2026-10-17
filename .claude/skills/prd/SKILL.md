@@ -37,4 +37,4 @@ Produce a one-screen PRD that you will then implement against. Crisp, not exhaus
 - Keep it under ~40 lines. No filler, no speculative features.
 - Every requirement maps to an acceptance check.
 - After presenting, suggest `/prd-confidence` to tighten the uncertain parts, then wait for go-ahead.
-- Once approved, work through Tasks in order, ticking them off.
+- Once approved, build it with the `build` skill (`/build`): it works through Tasks in order and hands back a preview link.
