@@ -43,16 +43,32 @@ Crafty.defineScene("Game", function() {
     var owl = Crafty.e("2D, DOM, owl, Mouse, Potter")
         .attr({x: INSIDE_X + 1250, y: 820, w: 160, h: 152});
 
-    // Clicking the owl the fox is touching takes his finished pot, if the fox's hands are free.
+    // Clicking the owl the fox is touching takes his finished pot, if the fox's hands are free,
+    // then hands him the selected backpack clay if he's idle. One click can do both.
     owl.bind("Click", function () {
-        if (gameState.heldItem || !this.intersect(player.x, player.y, player.w, player.h)) {
+        if (!this.intersect(player.x, player.y, player.w, player.h)) {
             return;
         }
-        var pot = this.takePot();
-        if (pot) {
-            gameState.heldItem = pot;
-            Crafty.trigger("InventoryChanged");
+        if (!gameState.heldItem) {
+            var pot = this.takePot();
+            if (pot) {
+                gameState.heldItem = pot;
+                Crafty.trigger("InventoryChanged");
+            }
         }
+        if (!this.isIdle()) {
+            if (player.backpack.length > 0) {
+                showStatus("The master is busy, come back when he's done");
+            }
+            return;
+        }
+        var clay = player.takeSelected();
+        if (!clay) {
+            showStatus("The master needs clay to make pots");
+            return;
+        }
+        showStatus("Gave the master one kilo of " + clay.name + " clay");
+        this.trigger("ClayDelivered", 1);
     });
 
     // The kiln, Outside. Its square covers where the fox stands at the kiln: fox positions (1605, 527) to (1800, 657).
