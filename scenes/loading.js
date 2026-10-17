@@ -10,7 +10,8 @@ Crafty.defineScene("Loading", function() {
     // gameAssets is defined in assets.js
   	Crafty.load(gameAssets, function(){
        setTimeout(function () {
-         Crafty.scene('Start');
+         // Skipping Start while building; switch back to 'Start' for release.
+         Crafty.scene('Game');
        }, 1000);
     },  function () {
       console.log("Crafty Load Issue");
