@@ -39,9 +39,7 @@
 
 **Constraints** — Crafty 0.9.0, no new dependencies. New `components/kiln.js` (added to `index.html`), timings and colours in `constants.js`, wiring in `scenes/game.js`, HUD colour in `components/inventory_slot.js`. Placeholder art uses coloured boxes.
 
-**Open questions**
-- You wrote "deposits a clay he's holding". I've read that as the owl's unfired pot, since the fox only ever carries pots today. Right?
-- Should the square stay visible in the finished game, or only while we lay out the scene?
+**Open questions** — None.
 
 **Tasks**
 - [ ] Add `KILN_FIRE_MS`, `KILN_COOL_MS`, `FIRED_POT_COLOR` and the state colours to `constants.js`
@@ -49,3 +47,7 @@
 - [ ] Place the kiln Outside and wire the click with the fully-inside check in `game.js`
 - [ ] HUD slot shows fired pots in terracotta
 - [ ] Verify the acceptance criteria in the browser
+
+## Decisions
+1. What goes in the kiln → the owl's unfired pot, not raw clay.
+2. Zone square → stays visible for now, as placeholder kiln art that shows firing and cooling.
