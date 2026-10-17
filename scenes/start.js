@@ -11,7 +11,7 @@ Crafty.defineScene("Start", function() {
         .unselectable();
 
     Crafty.e("Button")
-        .label("Play")
+        .label("PLAY")
         .attr({x: GAME_SCREEN_WIDTH / 2 - 80, y: GAME_SCREEN_HEIGHT / 2})
         .onClick(function () {
             resetGameState();
