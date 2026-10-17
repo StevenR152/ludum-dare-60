@@ -8,15 +8,14 @@ Crafty.defineScene("Game", function() {
     Crafty.e("MuteButton").attr({x: 20, y: 20});
     Crafty.e("GameTimer").attr({x: GAME_SCREEN_WIDTH - 100, y: 20});
     Crafty.e("PlayerNotification");
+    Crafty.e("StatusMessage");
 
     // Outside map, drawn at half its 4000x2160 source size; z keeps it behind everything.
     Crafty.e("2D, DOM, backgroundOutside")
         .attr({x: 0, y: 0, w: 2000, h: 1080, z: -1});
 
     // The fox starts on the ground, bottom-middle of the map.
-    var player = Crafty.e("2D, DOM, fox, Fourway, Collision")
-        .attr({x: 920, y: 820, w: 160, h: 102})
-        .fourway(250);
+    var player = Crafty.e("Fox").attr({x: 920, y: 820});
 
     // Debug aid for laying out the scene: log world coordinates of any click.
     player.logClickPosition = function (e) {
@@ -32,17 +31,17 @@ Crafty.defineScene("Game", function() {
     Crafty.e("2D, DOM, owl")
         .attr({x: 1250, y: 820, w: 160, h: 152});
 
-    var clayOne = Crafty.e("2D, DOM, Color, TimeClickable")
+    var clayOne = Crafty.e("Clay")
         .attr({x: 195, y: 775, w: 80, h: 80})
-        .color('#311909');
-    
-    var clayTwo = Crafty.e("2D, DOM, Color, TimeClickable")
+        .clay(CLAY_TYPES.brown);
+
+    var clayTwo = Crafty.e("Clay")
         .attr({x: 440, y: 640, w: 80, h: 80})
-        .color('#650b0b');
-        
-    var clayThree = Crafty.e("2D, DOM, Color, TimeClickable")
+        .clay(CLAY_TYPES.red);
+
+    var clayThree = Crafty.e("Clay")
         .attr({x: 865, y: 765, w: 80, h: 80})
-        .color('#15a0a0');
+        .clay(CLAY_TYPES.blue);
 
     // House door: taller and thinner than the 80x80 clay squares.
     Crafty.e("2D, DOM, Color")
