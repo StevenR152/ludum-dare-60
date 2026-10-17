@@ -29,24 +29,24 @@
 8. A new run starts with an empty kiln. It is created with the Game scene, so this comes for free.
 
 **Acceptance criteria**
-- [ ] The square sits over the kiln front, behind the fox. A click works while the fox overlaps the square, including at each of the four logged positions, and does nothing once the fox is clear of it.
-- [ ] Clicking with an unfired pot while overlapping the square empties the HUD slot and turns the square orange-red. From outside, nothing happens.
-- [ ] About 10 s later the square turns grey-blue, and about 10 s after that a fired pot appears on the kiln and stays there.
-- [ ] Clicking during firing or cooling, with or without a pot, changes nothing.
-- [ ] Clicking with empty hands when ready puts a terracotta pot in the HUD slot and clears the kiln. Clicking with a pot in hand when ready leaves both where they are.
-- [ ] SPACE drops the fired pot. The owl, doors, clay patches and timer behave as before.
-- [ ] Works with the mouse and with a tap.
+- [x] The square sits over the kiln front, behind the fox. A click works while the fox overlaps the square, including at each of the four logged positions, and does nothing once the fox is clear of it.
+- [x] Clicking with an unfired pot while overlapping the square empties the HUD slot and turns the square orange-red. From outside, nothing happens.
+- [x] About 10 s later the square turns grey-blue, and about 10 s after that a fired pot appears on the kiln and stays there.
+- [x] Clicking during firing or cooling, with or without a pot, changes nothing.
+- [x] Clicking with empty hands when ready puts a terracotta pot in the HUD slot and clears the kiln. Clicking with a pot in hand when ready leaves both where they are.
+- [x] SPACE drops the fired pot. The owl, doors, clay patches and timer behave as before.
+- [ ] Works with the mouse and with a tap (mouse verified; tap not yet tested on a device).
 
 **Constraints** — Crafty 0.9.0, no new dependencies. New `components/kiln.js` (added to `index.html`), timings and colours in `constants.js`, wiring in `scenes/game.js`, HUD colour in `components/inventory_slot.js`. Placeholder art uses coloured boxes.
 
 **Open questions** — None.
 
 **Tasks**
-- [ ] Add `KILN_FIRE_MS`, `KILN_COOL_MS`, `FIRED_POT_COLOR` and the state colours to `constants.js`
-- [ ] `Kiln` component: zone square, empty/firing/cooling/ready states, fired pot box, `loadPot()` and `takePot()`
-- [ ] Place the kiln Outside, wire the click with the overlap check, and keep the fox in front of game items in `game.js`
-- [ ] HUD slot shows fired pots in terracotta
-- [ ] Verify the acceptance criteria in the browser
+- [x] Add `KILN_FIRE_MS`, `KILN_COOL_MS`, `FIRED_POT_COLOR` and the state colours to `constants.js`
+- [x] `Kiln` component: zone square, empty/firing/cooling/ready states, fired pot box, `loadPot()` and `takePot()`
+- [x] Place the kiln Outside, wire the click with the overlap check, and keep the fox in front of game items in `game.js`
+- [x] HUD slot shows fired pots in terracotta
+- [x] Verify the acceptance criteria in the browser
 
 ## Decisions
 1. What goes in the kiln → the owl's unfired pot, not raw clay.

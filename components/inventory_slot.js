@@ -10,7 +10,8 @@ Crafty.c("InventorySlot", {
     },
 
     refresh: function() {
-        this.color(gameState.heldItem ? POT_COLOR : '#DDD');
+        var item = gameState.heldItem;
+        this.color(!item ? '#DDD' : item.fired ? FIRED_POT_COLOR : POT_COLOR);
         return this;
     }
 });

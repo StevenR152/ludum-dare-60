@@ -22,9 +22,9 @@ Crafty.defineScene("Game", function() {
         .attr({x: INSIDE_X, y: 0, w: 2000, h: 1080, z: -1})
         .color('#F5EDE3');
 
-    // The fox starts on the ground, bottom-middle of the map.
+    // The fox starts on the ground, bottom-middle of the map. Its z keeps it in front of every game item.
     var player = Crafty.e("2D, DOM, fox, Fourway, Collision")
-        .attr({x: 920, y: 820, w: 160, h: 102})
+        .attr({x: 920, y: 820, w: 160, h: 102, z: 100})
         .fourway(250);
 
     // Debug aid for laying out the scene: log world coordinates of any click.
@@ -44,6 +44,29 @@ Crafty.defineScene("Game", function() {
     // Clicking the owl the fox is touching takes his finished pot, if the fox's hands are free.
     owl.bind("Click", function () {
         if (gameState.heldItem || !this.intersect(player.x, player.y, player.w, player.h)) {
+            return;
+        }
+        var pot = this.takePot();
+        if (pot) {
+            gameState.heldItem = pot;
+            Crafty.trigger("InventoryChanged");
+        }
+    });
+
+    // The kiln, Outside. Its square covers where the fox stands at the kiln: fox positions (1605, 527) to (1800, 657).
+    var kiln = Crafty.e("Kiln, Mouse")
+        .attr({x: 1605, y: 527, w: 355, h: 232});
+
+    // Clicking the kiln the fox is touching loads an unfired pot, or collects a fired one with empty hands.
+    kiln.bind("Click", function () {
+        if (!this.intersect(player.x, player.y, player.w, player.h)) {
+            return;
+        }
+        if (gameState.heldItem) {
+            if (this.loadPot(gameState.heldItem)) {
+                gameState.heldItem = null;
+                Crafty.trigger("InventoryChanged");
+            }
             return;
         }
         var pot = this.takePot();
