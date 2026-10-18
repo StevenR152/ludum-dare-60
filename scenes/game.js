@@ -40,7 +40,7 @@ Crafty.defineScene("Game", function() {
         .attr({x: -1660, y: 362, w: 160, h: 152});
 
     // Clicking the owl the fox is touching takes his oldest finished pot, if the fox can carry it;
-    // otherwise it hands him a pot to trim, or weighed clay and a model (see Potter.receiveFrom).
+    // otherwise it hands him a pot to trim, or wedged clay and a model (see Potter.receiveFrom).
     owl.bind("MouseDown", function () {
         if (!this.intersect(player.x, player.y, player.w, player.h)) {
             return;
@@ -112,19 +112,17 @@ Crafty.defineScene("Game", function() {
     });
 
     // Glazing station, Inside left of the door: click a bucket to dip the selected pot.
-    Crafty.e("GlazeStation").station([{x: -1445 + 35, y: 247}, {x: -1340 + 35, y: 277}], player);
+    Crafty.e("GlazeStation").station([{x: -1445 + 35 + 50, y: 247 + 50}, {x: -1340 + 35 + 25, y: 277 + 40}], player);
 
-    // Inside stations. The workbench is wedged on by holding, its scales and models clicked (see
+    // Inside stations. The workbench is wedged on by holding and its models clicked (see
     // Workbench); the shelves are clicked while the fox touches them. The third completed pot ends the
     // game, after a pause to see it.
-    Crafty.e("Workbench").place(-1850, 167, 520, 200);
+    Crafty.e("Workbench").place(-1850, 242, 260, 50);
 
-    // Weighing station: placeholder purple rectangle until it exists.
-    Crafty.e("2D, DOM, Color")
-        .attr({x: -2695 - 70 / 2, y: 432 + 70 / 4 + 70 / 2, w: 280, h: 70})
-        .color('#800080');
-    var dryingShelf = Crafty.e("DryingShelf").place(-2361, 403, 364, 101);
-    var completedShelf = Crafty.e("CompletedShelf").place(-2865, 782, 300, 160);
+    // Weighing station (the purple rectangle): dug clay goes on its piles and is weighed off (see WeighingStation).
+    Crafty.e("WeighingStation").place(-2695 - 70 / 2 - 30, 432 + 70 / 4 + 70 / 2, 280, 70);
+    var dryingShelf = Crafty.e("DryingShelf").place(-2401, 405, 182, 43);
+    var completedShelf = Crafty.e("CompletedShelf").place(-2180, 405, 183, 43);
     // Unfired pots dry fastest on the drying shelf, slower in the fox's pack and the owl's hands, not in the kiln.
     Crafty.e("PotDrier").dry(dryingShelf.inventory, [player.inventory, owl.inventory]);
     // Clicking a pot on the drying shelf takes that pot; clicking the shelf elsewhere puts one on.

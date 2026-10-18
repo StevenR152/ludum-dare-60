@@ -1,7 +1,7 @@
-// The master potter. Everything he holds is in one inventory of OWL_CAPACITY things: weighed clay and
+// The master potter. Everything he holds is in one inventory of OWL_CAPACITY things: wedged clay and
 // models given to him, pots given to him to trim, and finished pots waiting for the fox. He does one
 // job at a time, oldest first:
-// - throw: weighed clay + a model, given together (receiveFrom) and only when the clay weighs what the
+// - throw: wedged clay + a model, given together (receiveFrom) and only when the clay weighs what the
 //   model needs (ORDER_CLAY_GRAMS). After POT_MAKE_MS the clay becomes a wet, untrimmed pot and the
 //   model goes back to the bench ("ModelReturned").
 // - trim: an untrimmed pot (receiveFrom). He judges it as he starts: leather hard comes out trimmed
@@ -44,18 +44,18 @@ Crafty.c("Potter", {
         if (held && held.type === "pot") {
             return this.receivePot(pack, held);
         }
-        var clayIndex = pack.find(function (item) { return item.state === "weighed"; });
+        var clayIndex = pack.find(function (item) { return item.state === "wedged"; });
         var modelIndex = pack.find(function (item) { return item.type === "model"; });
         if (clayIndex < 0 && modelIndex < 0) {
             return pack.items.some(function (item) { return item.type === "clay"; })
-                ? "Wedge and weigh the clay on the workbench first"
-                : "The master needs weighed clay and a model to make pots, or a pot to trim";
+                ? "Weigh the clay at the weighing station, then wedge it at the workbench"
+                : "The master needs wedged clay and a model to make pots, or a pot to trim";
         }
         if (modelIndex < 0) {
             return "Bring a model from the workbench too";
         }
         if (clayIndex < 0) {
-            return "Bring weighed clay from the scales too";
+            return "Bring wedged clay too";
         }
         var clay = pack.items[clayIndex];
         var model = pack.items[modelIndex];
