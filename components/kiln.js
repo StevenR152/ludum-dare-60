@@ -26,8 +26,7 @@ Crafty.c("Kiln", {
         this.potBoxes = [];
         for (var i = 0; i < KILN_CAPACITY; i++) {
             this.potBoxes.push(Crafty.e("2D, DOM, Color")
-                .attr({w: 40, h: 40, visible: false})
-                .color(FIRED_POT_COLOR));
+                .attr({w: 40, h: 40, visible: false}));
         }
         this.setState("empty");
         this.bind("InventoryChanged", function (changed) {
@@ -115,10 +114,7 @@ Crafty.c("Kiln", {
                 visible: i < count
             });
             var pot = this.inventory.items[i];
-            if (pot) {
-                box.color(itemColor(pot));
-            }
-            markCracked(box, pot);
+            paintItem(box, pot);
             markBorder(box, pot);
         }, this);
     }

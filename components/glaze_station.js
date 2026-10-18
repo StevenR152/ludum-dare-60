@@ -1,4 +1,4 @@
-// Glazing station: one bucket square per GLAZE_BUCKET_COLORS entry (Glaze A yellow, Glaze B red).
+// Glazing station: one bucket square per GLAZE_BUCKET_COLORS entry (Glaze A orange, Glaze B pink).
 // Clicking a bucket while the fox touches it dips the fox's selected bisque-fired pot: the bucket's
 // name is added to pot.glaze, at most MAX_GLAZE_DIPS dips and one per bucket, in dipping order.
 // A pot that is never dipped is unglazed; either way it goes back to the kiln for its glaze firing.

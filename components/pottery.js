@@ -2,14 +2,14 @@
 // clay type, weight in grams), a pot (null until the owl throws it) and a state that only moves along
 // `states` (POTTERY_STATES by default): advance(to) works for the next state, or when every state
 // skipped is optional.
-//   var pottery = new Pottery(CLAY_TYPES.brown);   // state "dug", 1000 g
+//   var pottery = new Pottery(CLAY_TYPES.black);   // state "dug", 1000 g
 //   var piece = pottery.weighOut(200);              // a new "weighed" 200 g Pottery off a "dug" pile; the pile keeps the rest
 //   piece.advance("wedged");                        // true; piece.advance("firing") would be false
 // A thrown pot also has a dryness (0 wet .. 1 bone dry, see dryStage and dry) and a trimmed flag.
 // `type` is "clay" until there is a pot, then "pot", so Inventory's one-type rule works as before.
 function Pottery(clayType, states) {
     this.states = states || POTTERY_STATES;
-    this.clay = {name: clayType.name, color: clayType.color, fireLevel: clayType.fireLevel, wedged: false, weight: DUG_CLAY_GRAMS};
+    this.clay = {name: clayType.name, letter: clayType.letter, color: clayType.color, fireLevel: clayType.fireLevel, wedged: false, weight: DUG_CLAY_GRAMS};
     this.pot = null;
     this.state = this.states[0].name;
 }

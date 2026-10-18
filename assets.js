@@ -1,6 +1,36 @@
 // Preloaded by the Loading scene via Crafty.load.
 // Sprite map keys become component names, e.g. Crafty.e("2D, DOM, fox").
 // Each image is a single full-size tile; entities scale it via w/h.
+// Path of a pot picture: `kind` is "unfired", "fired", "half" (one dip), "full" (two dips) or "glazeFired";
+// `glaze` (1 or 2, the last dip) only matters for the last three, and `letter` (A, B, C) for the first three
+// and "half". The one place that knows the file names.
+function potImage(file, letter, kind, glaze) {
+    var name = {
+        unfired: file + "_clay" + letter,
+        fired: file + "_clay" + letter + "-fired",
+        half: file + "_clay" + letter + "-fired-halfglazed" + glaze,
+        full: file + "_fullyglazed" + glaze,
+        glazeFired: file + "_2nd-fire_glaze" + glaze
+    }[kind];
+    return "assets/images/pots/" + name + ".png";
+}
+
+// Every pot picture, for preloading.
+function potImagePaths() {
+    var paths = [];
+    Object.keys(POT_SPRITES).forEach(function (shape) {
+        var file = POT_SPRITES[shape].file;
+        ["A", "B", "C"].forEach(function (letter) {
+            paths.push(potImage(file, letter, "unfired"), potImage(file, letter, "fired"));
+            [1, 2].forEach(function (glaze) { paths.push(potImage(file, letter, "half", glaze)); });
+        });
+        [1, 2].forEach(function (glaze) {
+            paths.push(potImage(file, "A", "full", glaze), potImage(file, "A", "glazeFired", glaze));
+        });
+    });
+    return paths;
+}
+
 var gameAssets = {
     // Sound effects and ambient loops, played by name through audioController (see GameSounds).
     "audio": {
@@ -29,7 +59,7 @@ var gameAssets = {
         // Placeholder until a stumble sound is recorded.
         "stumble": ["assets/sounds/Sounds/putdown pot 1.wav"]
     },
-    "images": [],
+    "images": potImagePaths(),
     "sprites": {
         "assets/images/background_outside_map.png": {
             "tile": 4000,

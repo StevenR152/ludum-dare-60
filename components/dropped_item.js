@@ -54,8 +54,7 @@ Crafty.c("DroppedItem", {
         if (!this.item) {
             return;
         }
-        this.color(itemColor(this.item));
-        markCracked(this, this.item);
+        paintItem(this, this.item);
         markBorder(this, this.item);
     },
 

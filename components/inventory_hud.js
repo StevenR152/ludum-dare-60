@@ -1,5 +1,5 @@
 // One HUD row: a label, then a grey square per slot of each inventory given. An item in a slot is
-// drawn centred in it in its own colour and shape (ITEM_SHAPES: clay square, pot thin).
+// drawn centred in it in its own colour or picture and shape (ITEM_SHAPES: clay square, pot a little wider than tall).
 // The selected slot of an inventory with more than one item is outlined in white. A drying pot has a
 // DryBar under its slot; a pot a border: solid green if trimmed, dashed orange if not (markBorder).
 // Redraws whenever one of its inventories changes, and as pots dry ("PotsDried").
@@ -65,9 +65,8 @@ Crafty.c("InventoryHud", {
                 var shape = ITEM_SHAPES[item.type];
                 slot.itemBox.attr({w: shape.w, h: shape.h,
                     x: slot.box.x + (slot.box.w - shape.w) / 2, y: slot.box.y + (slot.box.h - shape.h) / 2});
-                slot.itemBox.color(itemColor(item));
             }
-            markCracked(slot.itemBox, item);
+            paintItem(slot.itemBox, item);
             slot.bar.show(item, this.shown);
             markBorder(slot.itemBox, item);
             slot.box.css({boxSizing: 'border-box', border: outlined ? '3px solid #FFF' : '3px solid #222'});

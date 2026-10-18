@@ -144,7 +144,7 @@ Crafty.defineScene("Game", function() {
 
     var clayOne = Crafty.e("Clay")
         .attr({x: 195, y: 775, w: 80, h: 80})
-        .clay(CLAY_TYPES.brown);
+        .clay(CLAY_TYPES.black);
 
     var clayTwo = Crafty.e("Clay")
         .attr({x: 440, y: 640, w: 80, h: 80})
@@ -152,7 +152,7 @@ Crafty.defineScene("Game", function() {
 
     var clayThree = Crafty.e("Clay")
         .attr({x: 865, y: 765, w: 80, h: 80})
-        .clay(CLAY_TYPES.blue);
+        .clay(CLAY_TYPES.white);
 
     // House doors, one per area, each leading to its partner. Taller and thinner than the clay squares.
     var outsideDoor = Crafty.e("2D, DOM, Color, Mouse")

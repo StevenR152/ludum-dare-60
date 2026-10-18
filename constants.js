@@ -20,9 +20,10 @@ var CLAY_REFILL_PERCENT = 0.5;
 
 //clay
 var CLAY_TYPES = {
-    brown: { type: "clay", name: "brown", color: '#311909', fireLevel: "low" },
-    red:   { type: "clay", name: "red",   color: '#650b0b', fireLevel: "mid" },
-    blue:  { type: "clay", name: "blue",  color: '#15a0a0', fireLevel: "high" },
+    // letter picks the pot pictures (clayA, clayB, clayC in assets/images/pots).
+    red:   { type: "clay", name: "red",   letter: "A", color: '#E06450', fireLevel: "mid" },
+    black: { type: "clay", name: "black", letter: "B", color: '#2B2522', fireLevel: "low" },
+    white: { type: "clay", name: "white", letter: "C", color: '#F5F0DC', fireLevel: "high" },
 };
 // Firing levels, lowest first (the kiln burns 1, 2 or 3 logs for them). A pot fired at any other
 // level than its clay's cracks when it cools.
@@ -47,15 +48,13 @@ var DESTROY_DAMAGE = 3;
 // STUMBLE_PER_SLOW times its slowdown (0 = full speed, 0.4 = 40% slower, from clay weight and dropped items).
 var STUMBLE_BASE_CHANCE = 0.005;
 var STUMBLE_PER_SLOW = 0.05;
-// Pottery: how long the owl takes to throw a pot and to trim one, and the placeholder pot colour.
+// Pottery: how long the owl takes to throw a pot and to trim one.
 var POT_MAKE_MS = 8000;
 var POT_TRIM_MS = 5000;
-var POT_COLOR = "#C8A27A";
 
-// Kiln: how long it fires and cools a pot, the fired pot colour, and the zone square's colour per state.
+// Kiln: how long it fires and cools a pot, and the zone square's colour per state.
 var KILN_FIRE_MS = 10000;
 var KILN_COOL_MS = 10000;
-var FIRED_POT_COLOR = "#A0522D";
 var KILN_STATE_COLORS = {
     empty: "rgba(255, 255, 255, 0.25)",
     firing: "rgba(230, 80, 30, 0.5)",
@@ -80,7 +79,7 @@ var TORCH_COLOR = "#F28C28";
 // How an item looks inside an inventory HUD slot (a 40x40 grey square): clay a square, pots thinner.
 var ITEM_SHAPES = {
     clay: {w: 28, h: 28},
-    pot: {w: 16, h: 30},
+    pot: {w: 34, h: 30},
     model: {w: 26, h: 16},
     log: {w: 32, h: 12}
 };
@@ -100,8 +99,18 @@ var ORDER_SPEEDS = {
     Fast:   { deadlineMs: 3 * 60 * 1000 }
 };
 
-// Glazing station: two buckets, placeholder colours.
-var GLAZE_BUCKET_COLORS = { "Glaze A": "#F2C230", "Glaze B": "#D62828" };
+// Glazing station: two buckets, orange (glaze 1) and pink (glaze 2), also on order cards.
+var GLAZE_BUCKET_COLORS = { "Glaze A": "#F47B30", "Glaze B": "#EBA6DC" };
+var GLAZE_NUMBERS = { "Glaze A": 1, "Glaze B": 2 };
+// Pot pictures (assets/images/pots/<file>_...): each shape's file prefix and the box [x, y, w, h] around the pot
+// in its 2268x2082 image, which the pictures are cropped to (the images themselves are never edited).
+var POT_IMAGE_W = 2268;
+var POT_IMAGE_H = 2082;
+var POT_SPRITES = {
+    Cup:  {file: "smallpot", crop: [830, 820, 600, 470]},
+    Bowl: {file: "bowl", crop: [550, 910, 1140, 500]},
+    Vase: {file: "vase", crop: [645, 400, 810, 1150]}
+};
 
 // The path a Pottery follows, in order. An optional state (none yet; glaze will be one) may be skipped.
 // Every pot is fired twice: a bisque firing, then a glaze firing (glazed or not, to vitrify it).
@@ -148,5 +157,5 @@ var SHELF_COLOR = "rgba(90, 120, 160, 0.35)";
 
 // Sound names (see gameAssets.audio). GameSounds picks pot sounds by stage and, for wet pots, by clay.
 var AMBIENT_VOLUME = MUSIC_VOLUME;
-var WEDGE_SOUNDS = {blue: "wedgeBlue", red: "wedgeRed", brown: "wedgeBrown"};
-var WET_POT_SOUND_SUFFIX = {blue: "Blue", red: "Red", brown: "Brown"};
+var WEDGE_SOUNDS = {white: "wedgeBlue", red: "wedgeRed", black: "wedgeBrown"};
+var WET_POT_SOUND_SUFFIX = {white: "Blue", red: "Red", black: "Brown"};

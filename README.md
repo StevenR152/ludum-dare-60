@@ -10,7 +10,7 @@ Built with [CraftyJS](http://craftyjs.com/api/) 0.9.0 (loaded from cdnjs).
 - Click a door you're standing at to move between Inside and Outside.
 - Things you click in the world (doors, owl, kiln, shelves...) act the moment you press the button or touch, not when you let go. Menu buttons still act on release.
 - Hold-click a clay square (Outside) while standing on it to dig a kilo (1000 g) into your inventory (2 slots, HUD top left). You carry any 2 items in any mix (2 dug clays, a weighed piece and a model, 2 pots...). E picks a slot.
-- Click the purple weighing station (Inside) with a dug kilo selected to put it on the scales. Kilos of the same clay add up in one pile; different clays sit side by side (e.g. 1000 g blue and 800 g red).
+- Click the purple weighing station (Inside) with a dug kilo selected to put it on the scales. Kilos of the same clay add up in one pile; different clays sit side by side (e.g. 1000 g white and 800 g red).
 - Click the weighing station with anything else selected to open a panel, choose a clay and the grams (up to what's in that pile) and press Weigh. A piece is always one clay. The weighed piece goes in your pack; the rest stays on the scales.
 - Hold-click the workbench (Inside) for 3s while standing on it with the weighed piece selected to wedge it. Wedged clay has a white outline.
 - Click a model on the workbench (Small/Medium/Large Bowl, Cup or Vase) to carry it.
@@ -19,10 +19,10 @@ Built with [CraftyJS](http://craftyjs.com/api/) 0.9.0 (loaded from cdnjs).
 - Click the drying shelf (Inside) to put the selected unfired pot on it (3 places), or to take the driest pot off, at any stage.
 - Give the owl a leather-hard pot to trim it (5s). A wet pot collapses and a bone-dry one cracks. A trimmed pot has a solid green border and an untrimmed one a dashed orange border (in your pack, on the shelf, on the owl and in the kiln); untrimmed pots can still be fired.
 - Click the kiln (Outside) to load an unfired pot. Only a bone-dry pot survives the firing; any other cracks, which you see when it has cooled.
-- Optionally click the glaze buckets (Inside) to dip a fired pot: yellow, red, or both in either order, once each.
+- Optionally click the glaze buckets (Inside) to dip a fired pot: orange, pink, or both in either order, once each.
 - Every pot, glazed or not, goes back in the kiln for a second (glaze) firing.
 - Click the completed shelf (Inside) to put a twice-fired pot on it. Three completed pots end the game.
-- Each clay needs its own firing level: brown low, red mid, blue high. A pot fired at any other level cracks when it cools. Every spoilt pot (too wet or too dry to trim, not bone dry in the kiln, wrong level) is cracked and drawn with a black cross.
+- Each clay needs its own firing level: black low, red mid, white high. A pot fired at any other level cracks when it cools. Every spoilt pot (too wet or too dry to trim, not bone dry in the kiln, wrong level) is cracked and drawn with a black cross.
 - Click the completed shelf (Inside) to put a fired pot on it. Cracked pots are refused. Three completed pots end the game.
 - Hold on the forest (Outside, left) for 1s to chop a log (carry 2). Click the kiln to load logs (it holds 3) and pots (it fires up to 4 at once), in either order, then click the torch beside the kiln: 1, 2 or 3 logs make a low, mid or high fire. It fires for 10s and cools for 10s; then click the kiln again to collect the fired pots, one per click. The pots fire together at one level, so a mixed batch cracks the pots whose clay needs another level. Clicking with a pot when the kiln is full or lit says so.
 - Click the completed shelf (Inside) to put a fired pot on it. Three completed pots end the game.

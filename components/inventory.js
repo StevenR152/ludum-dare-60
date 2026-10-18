@@ -93,18 +93,52 @@ Inventory.prototype.find = function (test) {
     return this.items.findIndex(test);
 };
 
-// Draws a black cross over an item's box if it is a cracked pot, and clears it otherwise.
-// Call with every box that shows an item, e.g. the HUD slot and shelf slots (and the kiln's pot box).
-function markCracked(box, item) {
+// The picture of a pot (a path from potImage): its shape, clay and how far along it is. A glazed pot shows its
+// last dip: one dip before the glaze firing is half glazed, two are fully glazed, and after it the glaze has fired.
+function potSprite(item) {
+    var file = POT_SPRITES[item.pot.shape].file;
+    var dips = item.pot.glaze.length;
+    var glaze = dips > 0 ? GLAZE_NUMBERS[item.pot.glaze[dips - 1]] : 0;
+    var kind = item.before("cooled") ? "unfired" : "fired";
+    if (dips > 0) {
+        kind = !item.before("glazeCooled") ? "glazeFired" : dips >= MAX_GLAZE_DIPS ? "full" : "half";
+    }
+    return potImage(file, item.clay.letter, kind, glaze);
+}
+
+// Paints an item into its box: pots as their picture (cropped to the pot and fitted in the box, with a black
+// cross over it if cracked), everything else as a colour. Call with every box that shows an item (or no item,
+// to clear it): HUD slots, shelf slots, the kiln's, the owl's and dropped items.
+function paintItem(box, item) {
     var line = function (corner) {
         return "linear-gradient(to " + corner + ", transparent calc(50% - 1.5px), #000 calc(50% - 1.5px), " +
             "#000 calc(50% + 1.5px), transparent calc(50% + 1.5px))";
     };
-    var cracked = item && item.type === "pot" && item.pot.cracked;
-    box.css({backgroundImage: cracked ? line("top right") + ", " + line("bottom right") : "none"});
+    var layers = [];
+    var sizes = [];
+    var positions = [];
+    var isPot = !!item && item.type === "pot";
+    if (isPot && item.pot.cracked) {
+        layers.push(line("top right"), line("bottom right"));
+        sizes.push("100% 100%", "100% 100%");
+        positions.push("0 0", "0 0");
+    }
+    if (isPot) {
+        var crop = POT_SPRITES[item.pot.shape].crop;
+        var scale = Math.min(box.w / crop[2], box.h / crop[3]);
+        layers.push("url(" + potSprite(item) + ")");
+        sizes.push(POT_IMAGE_W * scale + "px " + POT_IMAGE_H * scale + "px");
+        positions.push((box.w - crop[2] * scale) / 2 - crop[0] * scale + "px " +
+            ((box.h - crop[3] * scale) / 2 - crop[1] * scale) + "px");
+        box.color("#FFF", 0);
+    } else if (item) {
+        box.color(itemColor(item));
+    }
+    box.css({backgroundImage: layers.length > 0 ? layers.join(", ") : "none", backgroundSize: sizes.join(", "),
+        backgroundPosition: positions.join(", "), backgroundRepeat: "no-repeat"});
 }
 
-// Display colour of an item, for the HUD. A glazed pot shows its last dip.
+// Display colour of an item that is not a pot, for the HUD.
 function itemColor(item) {
     if (item.type === "model") {
         return MODEL_COLOR;
@@ -112,16 +146,7 @@ function itemColor(item) {
     if (item.type === "log") {
         return LOG_COLOR;
     }
-    if (item.type === "clay") {
-        return item.clay.color;
-    }
-    if (item.pot.glaze.length > 0) {
-        return GLAZE_BUCKET_COLORS[item.pot.glaze[item.pot.glaze.length - 1]];
-    }
-    if (!item.before("cooled")) {
-        return FIRED_POT_COLOR;
-    }
-    return item.before("firing") ? DRY_STAGE_COLORS[item.dryStage()] : POT_COLOR;
+    return item.clay.color;
 }
 
 // True for a pot that dries: thrown, not yet fired, not cracked.
