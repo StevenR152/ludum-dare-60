@@ -5,7 +5,7 @@ Crafty.init(GAME_SCREEN_WIDTH,GAME_SCREEN_HEIGHT, document.getElementById('game'
 TouchControls.init({
     holdToward: {},
     tap: "SPACE",
-    scenes: ["Game"]
+    scenes: ["Game", "Level1", "Level2"]
 });
 
 // Entities with the "HUD" component stay fixed on screen while the camera moves.

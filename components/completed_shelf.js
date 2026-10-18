@@ -19,21 +19,28 @@ Crafty.c("CompletedShelf", {
                     pot.advance("shelved");
                 }
             });
-            if (this.inventory.items.length >= COMPLETED_CAPACITY) {
+            if (this.inventory.items.length >= this.inventory.capacity) {
                 this.trigger("OrdersComplete");
             }
         });
     },
 
+    // Levels set how many pots end them (default COMPLETED_CAPACITY). Call before place().
+    //   Crafty.e("CompletedShelf").goal(1).place(...)
+    goal: function(pots) {
+        this.inventory.capacity = pots;
+        return this;
+    },
+
     useWith: function(fox) {
         if (transferItem(fox.inventory, this.inventory)) {
-            showStatus(this.inventory.items.length + " of " + COMPLETED_CAPACITY + " pots completed");
+            showStatus(this.inventory.items.length + " of " + this.inventory.capacity + " pots completed");
             return;
         }
         var held = fox.inventory.selectedItem();
         showStatus(held && held.type === "pot" && held.before("glazeCooled")
             ? "Fire the pot a second time (glazed or not) first"
-            : this.inventory.items.length >= COMPLETED_CAPACITY
+            : this.inventory.items.length >= this.inventory.capacity
                 ? "The completed shelf is full"
                 : "Bring a finished pot to put here");
     }

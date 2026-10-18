@@ -19,8 +19,13 @@ Crafty.c("GameHud", {
         this.parts.push(Crafty.e("MuteButton").attr({x: 20, y: 20}));
         this.parts.push(Crafty.e("GameTimer").attr({x: 125, y: 20}));
         this.addRow("Fox", [fox.inventory], 60);
-        this.addRow("Master", [owl.inventory], 110);
-        this.addRow("Kiln", [kiln.inventory, kiln.woodInventory], 160);
+        // Outside-only levels have no master: the kiln row moves up into his place.
+        var kilnY = 110;
+        if (owl) {
+            this.addRow("Master", [owl.inventory], 110);
+            kilnY = 160;
+        }
+        this.addRow("Kiln", [kiln.inventory, kiln.woodInventory], kilnY);
         this.bind("Remove", function () {
             this.parts.concat(this.rows).forEach(function (part) { part.destroy(); });
         });
