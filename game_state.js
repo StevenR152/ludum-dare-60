@@ -5,6 +5,7 @@ var gameState;
 function resetGameState() {
     gameState = {
         seconds: 0,
+        orders: [], // customer orders, see components/orders.js
     };
 }
 
