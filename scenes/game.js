@@ -20,17 +20,15 @@ Crafty.defineScene("Game", function() {
     // Inside sits left of Outside. The gap is wider than the screen, so the camera never shows both.
     var INSIDE_X = -2000 - 1200;
 
-    // Placeholder house interior until the inside art lands.
-    Crafty.e("2D, DOM, Color")
-        .attr({x: INSIDE_X, y: 0, w: 2000, h: 1080, z: -1})
-        .color('#F5EDE3');
+    // House interior art at a quarter of its 8364x2246 source size, keeping its aspect ratio.
+    Crafty.e("2D, DOM, backgroundInside")
+        .attr({x: INSIDE_X, y: 0, w: 8364 / 4, h: 2246 / 4, z: -1});
 
    
 
     // Debug aid for laying out the scene: log world coordinates of any click.
     player.logClickPosition = function (e) {
-        console.log("Player at x: " + Math.round(this.x) + ", y: " + Math.round(this.y));
-    }.bind(player);
+        console.log("location: x: " + Math.round(e.realX) + ", y: " + Math.round(e.realY));    }.bind(player);
     Crafty.s("Mouse").bind("MouseDown", player.logClickPosition);
     // The mouse system outlives the scene, so drop the handler with the player.
     player.bind("Remove", function () {
@@ -39,7 +37,7 @@ Crafty.defineScene("Game", function() {
 
     // The master potter, inside the house. He keeps throwing pots while his hands are free.
     var owl = Crafty.e("2D, DOM, owl, Mouse, Potter")
-        .attr({x: INSIDE_X + 1250, y: 820, w: 160, h: 152});
+        .attr({x: -1660, y: 362, w: 160, h: 152});
 
     // Clicking the owl the fox is touching takes his oldest finished pot, if the fox can carry it;
     // otherwise it hands him a pot to trim, or weighed clay and a model (see Potter.receiveFrom).
@@ -114,14 +112,19 @@ Crafty.defineScene("Game", function() {
     });
 
     // Glazing station, Inside left of the door: click a bucket to dip the selected pot.
-    Crafty.e("GlazeStation").station(INSIDE_X + 800, 780, player);
+    Crafty.e("GlazeStation").station([{x: -1445 + 35, y: 247}, {x: -1340 + 35, y: 277}], player);
 
     // Inside stations. The workbench is wedged on by holding, its scales and models clicked (see
     // Workbench); the shelves are clicked while the fox touches them. The third completed pot ends the
     // game, after a pause to see it.
-    Crafty.e("Workbench").place(INSIDE_X + 600, 560, 520, 200);
-    var dryingShelf = Crafty.e("DryingShelf").place(INSIDE_X + 1500, 330, 280, 160);
-    var completedShelf = Crafty.e("CompletedShelf").place(INSIDE_X + 1500, 700, 300, 160);
+    Crafty.e("Workbench").place(-1850, 167, 520, 200);
+
+    // Weighing station: placeholder purple rectangle until it exists.
+    Crafty.e("2D, DOM, Color")
+        .attr({x: -2695 - 70 / 2, y: 432 + 70 / 4 + 70 / 2, w: 280, h: 70})
+        .color('#800080');
+    var dryingShelf = Crafty.e("DryingShelf").place(-2361, 403, 364, 101);
+    var completedShelf = Crafty.e("CompletedShelf").place(-2865, 782, 300, 160);
     // Unfired pots dry fastest on the drying shelf, slower in the fox's pack and the owl's hands, not in the kiln.
     Crafty.e("PotDrier").dry(dryingShelf.inventory, [player.inventory, owl.inventory]);
     // Clicking a pot on the drying shelf takes that pot; clicking the shelf elsewhere puts one on.
@@ -158,7 +161,7 @@ Crafty.defineScene("Game", function() {
         .attr({x: 1120, y: 527, w: 60, h: 110})
         .color('#8B5A2B');
     var insideDoor = Crafty.e("2D, DOM, Color, Mouse")
-        .attr({x: INSIDE_X + 1120, y: 527, w: 60, h: 110})
+        .attr({x: -2619, y: 225, w: 62, h: 185})
         .color('#8B5A2B');
     outsideDoor.partner = insideDoor;
     insideDoor.partner = outsideDoor;

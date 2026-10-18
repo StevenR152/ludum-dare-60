@@ -36,6 +36,11 @@ var gameAssets = {
             "tileh": 2160,
             "map": {"backgroundOutside": [0, 0]}
         },
+        "assets/images/background_inside.png": {
+            "tile": 8364,
+            "tileh": 2246,
+            "map": {"backgroundInside": [0, 0]}
+        },
         "assets/images/fox.png": {
             "tile": 845,
             "tileh": 540,
