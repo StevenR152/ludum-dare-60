@@ -1,6 +1,7 @@
 // A fixed-size list of items ({type, ...}) that one holder owns: the fox, the owl, the kiln.
-// Holds one item type at a time. Optional rules let a holder refuse items or refuse to give
-// them up: {accepts: function (item), releases: function (item)}.
+// Holds one item type at a time, unless a fits rule says what may go together. Optional rules let a
+// holder refuse items or refuse to give them up:
+// {accepts: function (item), releases: function (item), fits: function (items, item)}.
 // Every change triggers Crafty.trigger("InventoryChanged", inventory); holders compare identity.
 //   var pack = new Inventory(2);
 //   pack.add({type: "pot"});
@@ -16,7 +17,8 @@ Inventory.prototype.canAdd = function (item) {
     if (this.items.length >= this.capacity) {
         return false;
     }
-    if (this.items.length > 0 && this.items[0].type !== item.type) {
+    if (this.rules.fits ? !this.rules.fits(this.items, item)
+            : this.items.length > 0 && this.items[0].type !== item.type) {
         return false;
     }
     return !this.rules.accepts || this.rules.accepts(item);
@@ -85,10 +87,21 @@ function transferItem(from, to, index) {
     return true;
 }
 
-// Display colour of an item, for the HUD.
+// Index of the first item matching test, or -1.
+Inventory.prototype.find = function (test) {
+    return this.items.findIndex(test);
+};
+
+// Display colour of an item, for the HUD. A glazed pot shows its last dip.
 function itemColor(item) {
+    if (item.type === "model") {
+        return MODEL_COLOR;
+    }
     if (item.type === "clay") {
         return item.clay.color;
+    }
+    if (item.pot.glaze.length > 0) {
+        return GLAZE_BUCKET_COLORS[item.pot.glaze[item.pot.glaze.length - 1]];
     }
     if (!item.before("cooled")) {
         return FIRED_POT_COLOR;

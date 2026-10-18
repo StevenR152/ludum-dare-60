@@ -8,12 +8,16 @@ Built with [CraftyJS](http://craftyjs.com/api/) 0.9.0 (loaded from cdnjs).
 ## How to play
 - Arrow keys or WASD walk the fox. On phones, touch and hold to walk toward your finger.
 - Click a door you're standing at to move between Inside and Outside.
-- Hold-click a clay square (Outside) while standing on it to dig a kilo into your inventory (2 slots, HUD top left). You carry clay or pots, never both. E picks a slot.
-- Hold-click the workbench (Inside) for 3s while standing on it to wedge the selected clay (a white outline). The owl only takes wedged clay.
-- Click the owl (Inside) to hand him the selected clay. He only takes it when he's idle, and throws a pot from it in 8s. Click him again to take the finished pot.
+- Hold-click a clay square (Outside) while standing on it to dig a kilo (1000 g) into your inventory (2 slots, HUD top left). You carry any 2 items in any mix (2 dug clays, a weighed piece and a model, 2 pots...). E picks a slot.
+- Hold-click the workbench (Inside) for 3s while standing on it to wedge the selected kilo onto the bench. Kilos of the same clay add up in one pile; different clays sit side by side (e.g. 1000 g blue and 800 g red).
+- Click the scales on the workbench to open a panel, choose a clay and the grams (up to what's in that pile) and press Weigh. A piece is always one clay. The weighed piece (white outline) goes in your pack; the rest stays on the bench.
+- Click a model on the workbench (Small/Medium/Large Bowl, Cup or Vase) to carry it.
+- Click the owl (Inside) with weighed clay and a model. He takes them only when the clay weighs what the order list says that shape and size needs, and only when he's idle, and throws that pot in 8s. The model goes back to the bench. Click him again to take the finished pot.
 - Click the drying shelf (Inside) to put the selected unfired pot on it (3 places). It dries for 15s; click again to take a dried pot.
 - Click the kiln (Outside) to load a dried pot. It fires for 10s and cools for 10s; then click it again to collect the fired pot.
-- Click the completed shelf (Inside) to put a fired pot on it. Three completed pots end the game.
+- Optionally click the glaze buckets (Inside) to dip a fired pot: yellow, red, or both in either order, once each.
+- Every pot, glazed or not, goes back in the kiln for a second (glaze) firing.
+- Click the completed shelf (Inside) to put a twice-fired pot on it. Three completed pots end the game.
 - SPACE (a tap on phones) drops the selected item. This is a testing aid.
 
 ## Run locally
@@ -33,8 +37,8 @@ Then open http://localhost:8000.
 - `assets.js`: sprites and audio preloaded by the Loading scene
 - `scenes/`: Loading, Start, Game (Inside and Outside areas with the owl, kiln, doors and clay), End
 - `components/`:
-  - Gameplay: `Potter` (the owl throwing pots), `Kiln` (empty, firing, cooling, ready), `Pottery` (plain class: one kilo from dig to shelf, with `clay`, `pot` and a `state` that only advances along `POTTERY_STATES`; `advance(to)` refuses skips unless the states skipped are `optional`), `Inventory` (plain class: fixed capacity, one item type at a time, `transferItem(from, to)` moves items; fox, owl and kiln each own one and every change triggers `InventoryChanged`), `GameHud` (owns the whole Game HUD: panel, music button, timer and inventory rows; `enable(false)` hides it all), `InventoryHud` (HUD row: a label and the slots of the inventories it shows; the game has Fox, Master and Kiln rows), `Workbench` (hold to wedge clay), `Shelf` (base: a zone square with an inventory and a box per slot), `DryingShelf` and `CompletedShelf` (built on it), `TimeClickable` (measures how long it's held, then fires `TimeClicked`)
-  - Gameplay: `OrderPanel` (customer orders in the top right, one every 2 min), `GlazeStation` (placeholder glaze buckets), `Potter` (the owl throwing pots), `Kiln` (empty, firing, cooling, ready), `InventorySlot` (HUD view of `gameState.heldItem`, refreshed by `Crafty.trigger("InventoryChanged")`), `TimeClickable` (measures how long it's held, then fires `TimeClicked`)
+  - Gameplay: `Potter` (the owl throwing pots), `Kiln` (empty, firing, cooling, ready; a bisque and a glaze firing per pot), `Pottery` (plain class: clay from dig to shelf, with `clay`, `pot` and a `state` that only advances along `POTTERY_STATES`; `advance(to)` refuses skips unless the states skipped are `optional`; `weighOut(grams)` splits weighed clay off a wedged pile), `Inventory` (plain class: fixed capacity, one item type at a time unless a `fits` rule says otherwise, `transferItem(from, to)` moves items; fox, owl and kiln each own one and every change triggers `InventoryChanged`), `GameHud` (owns the whole Game HUD: panel, music button, timer and inventory rows; `enable(false)` hides it all), `InventoryHud` (HUD row: a label and the slots of the inventories it shows; the game has Fox, Master and Kiln rows), `Workbench` (hold to wedge clay onto its pile; holds the `Scales` with their weighing slider and the models), `Shelf` (base: a zone square with an inventory and a box per slot), `DryingShelf` and `CompletedShelf` (built on it), `TimeClickable` (measures how long it's held, then fires `TimeClicked`)
+  - Gameplay: `OrderPanel` (customer orders in the top right, one every 2 min), `GlazeStation` (glaze buckets: click to dip a fired pot), `Potter` (the owl throwing pots), `Kiln` (empty, firing, cooling, ready), `InventorySlot` (HUD view of `gameState.heldItem`, refreshed by `Crafty.trigger("InventoryChanged")`), `TimeClickable` (measures how long it's held, then fires `TimeClicked`)
   - Shared: `AudioController` (global `audioController`), `MuteButton`, `GameTimer`, `PlayerNotification` (`Crafty.trigger("InstructionText", msg)`), `UIButton` (named so it doesn't replace Crafty's built-in `Button`), `CreditsText`
 - `camera.js`: `makeCameraTrackEntity(entity, yOffset)`
 - `mobile/`: `TouchControls`, gesture controls for phones (touch and hold to walk toward the finger, tap for SPACE); see `mobile/README.md`

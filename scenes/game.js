@@ -42,35 +42,16 @@ Crafty.defineScene("Game", function() {
     var owl = Crafty.e("2D, DOM, owl, Mouse, Potter")
         .attr({x: INSIDE_X + 1250, y: 820, w: 160, h: 152});
 
-    // Clicking the owl the fox is touching takes his finished pot, if the fox can carry it,
-    // then hands him the selected clay if he's idle. One click can do both.
+    // Clicking the owl the fox is touching takes his finished pot, if the fox can carry it;
+    // otherwise it hands him weighed clay and a model (see Potter.receiveFrom).
     owl.bind("Click", function () {
         if (!this.intersect(player.x, player.y, player.w, player.h)) {
             return;
         }
-        var tookPot = false;
-        if (this.output.items.length > 0) {
-            tookPot = transferItem(this.output, player.inventory);
-            if (!tookPot) {
-                showStatus("You can't carry the pot: your pack is full or holds clay");
-            }
-        }
-        var clay = player.inventory.selectedItem();
-        if (tookPot && clay.type !== "clay") {
-            return;
-        }
-        if (!clay) {
-            if (this.isIdle()) {
-                showStatus("The master needs clay to make pots");
-            }
-            return;
-        }
-        if (transferItem(player.inventory, this.input)) {
-            showStatus("Gave the master one kilo of " + clay.clay.name + " clay");
-        } else if (clay.state === "dug") {
-            showStatus("Wedge the clay on the workbench first");
-        } else {
-            showStatus(this.isIdle() ? "The master only wants clay" : "The master is busy, come back when he's done");
+        if (this.output.items.length === 0) {
+            showStatus(this.receiveFrom(player));
+        } else if (!transferItem(this.output, player.inventory)) {
+            showStatus("You can't carry the pot: your pack is full or holds clay or a model");
         }
     });
 
@@ -81,7 +62,8 @@ Crafty.defineScene("Game", function() {
     // One HUD entity owns the music button, timer and inventory bar: hud.enable(false) hides it all.
     Crafty.e("GameHud").build(player, owl, kiln);
 
-    // Clicking the kiln the fox is touching loads the selected unfired pot, or collects a fired one.
+    // Clicking the kiln the fox is touching loads the selected pot (dried, or bisque-fired for its glaze
+    // firing), or collects a fired one.
     kiln.bind("Click", function () {
         if (!this.intersect(player.x, player.y, player.w, player.h)) {
             return;
@@ -92,17 +74,20 @@ Crafty.defineScene("Game", function() {
         var held = player.inventory.selectedItem();
         if (this.state === "empty" && held && held.type === "pot" && held.before("dried")) {
             showStatus("The pot needs to dry first");
+        } else if (this.state === "empty" && held && held.state === "glazeCooled") {
+            showStatus("This pot is finished, take it to the completed shelf");
         } else if (this.state === "ready" && !transferItem(this.inventory, player.inventory)) {
             showStatus("You can't carry the pot: your pack is full or holds clay");
         }
     });
 
-    // Glazing station, Inside left of the door. Placeholder buckets, not clickable yet.
-    Crafty.e("GlazeStation").station(INSIDE_X + 800, 780);
+    // Glazing station, Inside left of the door: click a bucket to dip the selected pot.
+    Crafty.e("GlazeStation").station(INSIDE_X + 800, 780, player);
 
-    // Inside stations. The workbench is worked by holding (see Workbench); the shelves by clicking
-    // while the fox touches them. The third completed pot ends the game, after a pause to see it.
-    Crafty.e("Workbench").attr({x: INSIDE_X + 300, y: 560, w: 300, h: 160});
+    // Inside stations. The workbench is wedged on by holding, its scales and models clicked (see
+    // Workbench); the shelves are clicked while the fox touches them. The third completed pot ends the
+    // game, after a pause to see it.
+    Crafty.e("Workbench").place(INSIDE_X + 600, 560, 520, 200);
     var dryingShelf = Crafty.e("DryingShelf").place(INSIDE_X + 1500, 330, 280, 160);
     var completedShelf = Crafty.e("CompletedShelf").place(INSIDE_X + 1500, 700, 300, 160);
     [dryingShelf, completedShelf].forEach(function (shelf) {
