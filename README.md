@@ -24,7 +24,7 @@ Built with [CraftyJS](http://craftyjs.com/api/) 0.9.0 (loaded from cdnjs).
 - Click the completed shelf (Inside) to put a fired pot on it. Cracked pots are refused. Three completed pots end the game.
 - Hold on the forest (Outside, left) for 1s to chop a log (carry 2). Click the kiln to load logs (it holds 3) and pots (it fires up to 4 at once), in either order, then click the torch beside the kiln: 1, 2 or 3 logs make a low, mid or high fire. It fires for 10s and cools for 10s; then click the kiln again to collect the fired pots, one per click. The pots fire together at one level, so a mixed batch cracks the pots whose clay needs another level. Clicking with a pot when the kiln is full or lit says so.
 - Click the completed shelf (Inside) to put a fired pot on it. Three completed pots end the game.
-- SPACE (a tap on phones) drops the selected item. This is a testing aid.
+- SPACE (a tap on phones) drops the selected item on the ground where the fox stands, and a heavy or slowed fox may stumble and drop one. Click a dropped item while touching it to pick it up. Each dropped item the fox overlaps halves its speed (they multiply). The first time the fox walks onto a dropped pot, it may take damage: 99% chance if unfired, 75% once fired, 50% once glaze-fired. One hit cracks it, three destroy it. Clay, logs and models never break. Dropped pots keep drying, as slowly as in your pack.
 
 ## Run locally
 Serve the folder over HTTP (asset loading fails from `file://`):

@@ -86,7 +86,7 @@ Crafty.c("DryingShelf", {
 });
 
 // Dries every unfired pot each frame: those in `shelf` at full speed, those in `others` (the fox's pack,
-// the owl's hands) OFF_SHELF_SLOWDOWN times slower. Pots in the kiln aren't listed, so they don't dry.
+// the owl's hands) and those on the ground OFF_SHELF_SLOWDOWN times slower. Pots in the kiln aren't listed, so they don't dry.
 // Triggers "PotsDried" when any dryness changed, so the bars and HUD redraw.
 //   Crafty.e("PotDrier").dry(dryingShelf.inventory, [player.inventory, owl.inventory]);
 Crafty.c("PotDrier", {
@@ -102,6 +102,12 @@ Crafty.c("PotDrier", {
             };
             dryAll(shelf, 1);
             others.forEach(function (inventory) { dryAll(inventory, OFF_SHELF_SLOWDOWN); });
+            // Pots on the ground dry like pots in the fox's pack.
+            Crafty("DroppedItem").each(function () {
+                if (this.item.type === "pot" && this.item.dry(frame.dt, OFF_SHELF_SLOWDOWN)) {
+                    changed = true;
+                }
+            });
             if (changed) {
                 Crafty.trigger("PotsDried");
             }
