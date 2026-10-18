@@ -60,6 +60,6 @@
 4. The fox carries 1 model + 1 weighed clay. Dug clay is still up to 2 kg.
 5. The owl refuses a wrong weight with a message.
 6. The scales open the slider when the fox touches them and clicks.
-7. Bench 520×200 with the scales, the pile and a 3×3 model grid (default).
+7. Bench 520×200 with the scales, the pile and a 3×3 model grid (enlarge, user).
 8. One dip per bucket, at most 2, in order, instant (default).
 9. Wedged clay goes onto the bench pile, not the pack, so the fox never carries unweighed wedged clay (my reading of "puts it on the bench").
