@@ -4,7 +4,7 @@
 //   different clays sit side by side.
 // - Scales (left): click to choose a clay and grams on a slider and weigh them off that pile (see
 //   Scales). Each weighed piece is one clay, so clays are never weighed together.
-// - Models (right): one per ORDER_SHAPES x ORDER_SIZES; click one to carry it to the owl. It comes
+// - Models (right): one per ORDER_SHAPES; click one to carry it to the owl. It comes
 //   back to its spot on "ModelReturned".
 //   Crafty.e("Workbench").place(INSIDE_X + 600, 560, 520, 200);
 Crafty.c("Workbench", {
@@ -42,11 +42,8 @@ Crafty.c("Workbench", {
             this.pileBoxes[name] = box;
             this.parts.push(box);
         }, this);
-        ORDER_SHAPES.forEach(function (shape, row) {
-            ORDER_SIZES.forEach(function (size, col) {
-                this.addModelSpot({type: "model", shape: shape, size: size},
-                    x + 320 + col * 66, y + 10 + row * 62);
-            }, this);
+        ORDER_SHAPES.forEach(function (shape, col) {
+            this.addModelSpot({type: "model", shape: shape}, x + 320 + col * 66, y + 10);
         }, this);
         this.drawPile();
         return this;
@@ -56,7 +53,7 @@ Crafty.c("Workbench", {
         var bench = this;
         var spot = Crafty.e("2D, DOM, Color, Text, Mouse")
             .attr({x: x, y: y, w: 62, h: 56, z: this.z + 1})
-            .text(model.size.charAt(0) + " " + model.shape)
+            .text(model.shape)
             .textFont({size: "12px", weight: "bold"}).textColor("#FFF").unselectable()
             .css({lineHeight: "56px", textAlign: "center"});
         spot.model = model;
@@ -80,7 +77,7 @@ Crafty.c("Workbench", {
         } else if (fox.pickUp(spot.model)) {
             spot.home = false;
             this.drawModelSpot(spot);
-            showStatus("Picked up the " + spot.model.size + " " + spot.model.shape + " model");
+            showStatus("Picked up the " + spot.model.shape + " model");
         }
     },
 

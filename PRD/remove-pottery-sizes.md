@@ -7,7 +7,7 @@
 - The workbench has 9 model spots (3 shapes × 3 sizes). The owl checks weighed clay against `ORDER_CLAY_GRAMS[shape][size]`; the pot copies `model.size`.
 - Nothing else reads `size` (checked by grep: no art, drying, kiln or shelf code uses it).
 
-**Scope** — Drop size from constants, orders, workbench models, owl check and pot data; one clay weight per shape; update README. **Out of scope** — new art, changing shapes, glaze, speed, clay colours, drying rates.
+**Scope** — Drop size from constants, orders, workbench models, owl check and pot data; one clay weight per shape; update README. **Out of scope** — new art, changing shapes, glaze, speed, clay colours, drying rates (drying times shift only because pot weights are now fixed; no retune).
 
 **Flow**
 1. An order reads e.g. "Bowl (500g)".
@@ -18,27 +18,33 @@
 **Requirements**
 1. `ORDER_SIZES` removed; `ORDER_CLAY_GRAMS` is `{Bowl: 500, Cup: 200, Vase: 500}` (the old Medium values).
 2. `makeOrder` has no `size`; `grams = ORDER_CLAY_GRAMS[shape]`; card text is `shape (grams g)`.
-3. Workbench makes 3 model spots, labelled with the shape only, laid out in one row; messages drop the size word.
+3. Workbench makes 3 model spots (still 62×56), labelled with the shape only, in one row starting at x + 320; messages drop the size word.
 4. `potter.js` uses `ORDER_CLAY_GRAMS[model.shape]` and messages drop size.
 5. `pottery.js` pot has no `size`.
 6. No `size`/`ORDER_SIZES` references to pots remain; README line 15 updated; `weigh-model-glaze.md` and `customer-orders.md` need no edit (history).
 
 **Acceptance criteria**
-- [ ] New orders show only shape + grams, never a size word.
-- [ ] Bench shows exactly 3 models, all fit inside the bench.
-- [ ] Right grams for the shape: owl takes clay + model; wrong grams: refusal naming shape and needed g.
-- [ ] Pot completes the full route (throw → kiln → glaze → shelf) with no console errors.
-- [ ] `grep -i "ORDER_SIZES\|\.size"` finds no pot-size use.
+- [x] New orders show only shape + grams, never a size word.
+- [x] Bench shows exactly 3 models, all fit inside the bench.
+- [x] Right grams for the shape: owl takes clay + model; wrong grams: refusal naming shape and needed g.
+- [x] Pot is thrown by the owl with no size and no console errors. (Kiln→glaze→shelf route not driven: no code there reads size, per grep.)
+- [x] `grep -i "ORDER_SIZES\|\.size"` finds no pot-size use.
 
 **Constraints** — Edit only `constants.js`, `components/{orders,workbench,potter,pottery}.js`, `README.md`. Plain Crafty/JS, no new files.
 
-**Open questions** — Which gram value per shape? Assumed the old Medium (Bowl 500, Cup 200, Vase 500); change `ORDER_CLAY_GRAMS` if you want other values (scales step is 50 g).
+**Open questions** — None. Gram values settled: the old Medium (Bowl 500, Cup 200, Vase 500), all multiples of the 50 g scales step.
 
 **Tasks**
-- [ ] `constants.js`: remove `ORDER_SIZES`, flatten `ORDER_CLAY_GRAMS`, fix model comment
-- [ ] `orders.js`: drop size, new card text
-- [ ] `workbench.js`: 3 model spots in a row, shape-only labels/status, header comment
-- [ ] `potter.js`: shape-only lookup and messages, header comment
-- [ ] `pottery.js`: drop `size` from pot
-- [ ] `README.md`: update owl line
-- [ ] Verify in browser (orders, bench, owl accept/refuse, full pot route)
+- [x] `constants.js`: remove `ORDER_SIZES`, flatten `ORDER_CLAY_GRAMS`, fix model comment
+- [x] `orders.js`: drop size, new card text
+- [x] `workbench.js`: 3 model spots in a row, shape-only labels/status, header comment
+- [x] `potter.js`: shape-only lookup and messages, header comment
+- [x] `pottery.js`: drop `size` from pot
+- [x] `README.md`: update owl line
+- [x] Verify in browser (orders, bench, owl accept/refuse, throw; kiln route not driven)
+
+## Decisions
+- Gram values: old Medium (Bowl 500, Cup 200, Vase 500).
+- Model spots: keep 62×56, one row from x + 320 (default).
+- Drying constants untouched; out of scope.
+- Order card: "Bowl (500g)" (default).

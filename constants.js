@@ -88,13 +88,8 @@ var ITEM_SHAPES = {
 var ORDER_INTERVAL_MS = 120000;
 var ORDER_MAX = 5;
 var ORDER_SHAPES = ["Bowl", "Cup", "Vase"];
-var ORDER_SIZES = ["Small", "Medium", "Large"];
-// Grams of clay per shape and size.
-var ORDER_CLAY_GRAMS = {
-    Bowl: { Small: 200, Medium: 500, Large: 1000 },
-    Cup:  { Small: 150, Medium: 200, Large: 500 },
-    Vase: { Small: 300, Medium: 500, Large: 1500 }
-};
+// Grams of clay per shape.
+var ORDER_CLAY_GRAMS = { Bowl: 500, Cup: 200, Vase: 500 };
 // Each glaze is the buckets dipped in order, shown as coloured squares (GLAZE_BUCKET_COLORS).
 // An empty list is an unglazed order.
 var ORDER_GLAZES = [[], ["Glaze A"], ["Glaze B"], ["Glaze A", "Glaze B"], ["Glaze B", "Glaze A"]];
@@ -121,7 +116,7 @@ var POTTERY_STATES = [
 var DUG_CLAY_GRAMS = 1000;
 // Scales: the slider's step and smallest weight, in grams.
 var WEIGH_STEP_GRAMS = 50;
-// Models on the bench, one per shape and size, and their HUD colour.
+// Models on the bench, one per shape, and their HUD colour.
 var MODEL_COLOR = "#8A8F98";
 // Glaze: dips per pot, at most one per bucket.
 var MAX_GLAZE_DIPS = 2;

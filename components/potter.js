@@ -59,9 +59,9 @@ Crafty.c("Potter", {
         }
         var clay = pack.items[clayIndex];
         var model = pack.items[modelIndex];
-        var needed = ORDER_CLAY_GRAMS[model.shape][model.size];
+        var needed = ORDER_CLAY_GRAMS[model.shape];
         if (clay.clay.weight !== needed) {
-            return "That's " + clay.clay.weight + " g, a " + model.size + " " + model.shape + " needs " + needed + " g";
+            return "That's " + clay.clay.weight + " g, a " + model.shape + " needs " + needed + " g";
         }
         if (!this.roomFor(2)) {
             return "The master's hands are full, come back when he's done";
@@ -70,7 +70,7 @@ Crafty.c("Potter", {
         this.jobs.push({kind: "throw", items: [clay, model]});
         transferItem(pack, this.inventory, modelIndex);
         transferItem(pack, this.inventory, pack.items.indexOf(clay));
-        return "Gave the master " + needed + " g of " + clay.clay.name + " clay for a " + model.size + " " + model.shape;
+        return "Gave the master " + needed + " g of " + clay.clay.name + " clay for a " + model.shape;
     },
 
     receivePot: function(pack, pot) {
