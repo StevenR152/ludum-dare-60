@@ -12,10 +12,9 @@ Built with [CraftyJS](http://craftyjs.com/api/) 0.9.0 (loaded from cdnjs).
 - Hold-click the workbench (Inside) for 3s while standing on it to wedge the selected clay (a white outline). The owl only takes wedged clay.
 - Click the owl (Inside) to hand him the selected clay. He only takes it when he's idle, and throws a pot from it in 8s. Click him again to take the finished pot.
 - Click the drying shelf (Inside) to put the selected unfired pot on it (3 places). It dries for 15s; click again to take a dried pot.
-- Click the kiln (Outside) to load a dried pot. It fires for 10s and cools for 10s; then click it again to collect the fired pot.
 - Each clay needs its own firing level: brown low, red mid, blue high. A pot fired at any other level cracks when it cools and is drawn with a black cross.
 - Click the completed shelf (Inside) to put a fired pot on it. Cracked pots are refused. Three completed pots end the game.
-- Hold on the forest (Outside, left) for 1s to chop a log (carry 2). Click the kiln to load logs (it holds 3) and dried pots (it fires up to 4 at once), in either order, then click the torch beside the kiln: 1, 2 or 3 logs make a low, mid or high fire. It fires for 10s and cools for 10s; then click the kiln again to collect the fired pots, one per click.
+- Hold on the forest (Outside, left) for 1s to chop a log (carry 2). Click the kiln to load logs (it holds 3) and dried pots (it fires up to 4 at once), in either order, then click the torch beside the kiln: 1, 2 or 3 logs make a low, mid or high fire. It fires for 10s and cools for 10s; then click the kiln again to collect the fired pots, one per click. The pots fire together at one level, so a mixed batch cracks the pots whose clay needs another level. Clicking with a pot when the kiln is full or lit says so.
 - Click the completed shelf (Inside) to put a fired pot on it. Three completed pots end the game.
 - SPACE (a tap on phones) drops the selected item. This is a testing aid.
 
