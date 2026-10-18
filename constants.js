@@ -40,18 +40,28 @@ var KILN_STATE_COLORS = {
     empty: "rgba(255, 255, 255, 0.25)",
     firing: "rgba(230, 80, 30, 0.5)",
     cooling: "rgba(110, 140, 180, 0.5)",
+    loaded: "rgba(255, 255, 255, 0.25)",
     ready: "rgba(255, 255, 255, 0.25)"
 };
 
 // Inventory sizes of the owl (clay in, pots out) and the kiln. The fox's is FOX_INVENTORY_CAPACITY.
 var OWL_INPUT_CAPACITY = 1;
 var OWL_OUTPUT_CAPACITY = 1;
-var KILN_CAPACITY = 1;
+var KILN_CAPACITY = 4;
+
+// Wood: logs the kiln holds, logs per fire level (1 log low, 2 mid, 3 high), how long the fox chops one, colours.
+var KILN_WOOD_CAPACITY = 3;
+var KILN_FIRE_LEVELS = ["low", "mid", "high"];
+var LOG_CHOP_MS = 1000;
+var LOG_COLOR = "#6B4423";
+var FOREST_COLOR = "rgba(40, 120, 50, 0.4)";
+var TORCH_COLOR = "#F28C28";
 
 // How an item looks inside an inventory HUD slot (a 40x40 grey square): clay a square, pots thinner.
 var ITEM_SHAPES = {
     clay: {w: 28, h: 28},
-    pot: {w: 16, h: 30}
+    pot: {w: 16, h: 30},
+    log: {w: 32, h: 12}
 };
 // Orders: a new customer order every ORDER_INTERVAL_MS (the first at 0:00), at most ORDER_MAX listed.
 var ORDER_INTERVAL_MS = 120000;
