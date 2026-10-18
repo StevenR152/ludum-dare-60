@@ -51,6 +51,21 @@ Crafty.c("AudioController", {
         return this;
     },
 
+    // A sound effect that repeats until stopSfx (e.g. wedging while the button is held).
+    loopSfx: function(trackName, volume) {
+        if (this.unlocked && this.isLoaded(trackName) && !Crafty.audio.isPlaying(trackName)) {
+            Crafty.audio.play(trackName, -1, volume === undefined ? 1 : volume);
+        }
+        return this;
+    },
+
+    stopSfx: function(trackName) {
+        if (this.isLoaded(trackName)) {
+            Crafty.audio.stop(trackName);
+        }
+        return this;
+    },
+
     // Crafty's mute silences music and sfx together and keeps the music
     // position, so unmuting resumes where it left off.
     isMuted: function() {

@@ -106,6 +106,7 @@ Crafty.c("Potter", {
             return;
         }
         var job = this.working = this.jobs[0];
+        Crafty.trigger("PotterWorking", job.items[0]);
         if (job.kind === "throw") {
             this.delay(function () { this.finishThrow(job); }, POT_MAKE_MS, 0);
         } else {
@@ -123,7 +124,7 @@ Crafty.c("Potter", {
         pottery.advance("thrown", model);
         Crafty.trigger("ModelReturned", model);
         this.inventory.items.push(pottery);
-        this.endJob();
+        this.endJob(pottery);
     },
 
     finishTrim: function(job, stage) {
@@ -133,16 +134,19 @@ Crafty.c("Potter", {
             showStatus("The master trimmed the pot");
         } else {
             pot.pot.cracked = true;
+            Crafty.trigger("PotCracked", pot);
             showStatus(stage === "wet"
                 ? "The pot was too wet: it collapsed as the master trimmed it"
                 : "The pot was bone dry: it cracked as the master trimmed it");
         }
-        this.endJob();
+        this.endJob(pot);
     },
 
-    endJob: function() {
+    // Triggers "PotterDone" with the pot he has just put down (for sounds).
+    endJob: function(pot) {
         this.jobs.shift();
         this.working = null;
+        Crafty.trigger("PotterDone", pot);
         this.inventory.changed();
     },
 

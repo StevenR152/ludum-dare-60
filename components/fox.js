@@ -57,6 +57,7 @@ Crafty.c("Fox", {
             showStatus("Nothing to drop");
             return;
         }
+        Crafty.trigger("ItemMoved", {item: dropped, from: this.inventory, to: null});
         if (dropped.type === "model") {
             Crafty.trigger("ModelReturned", dropped);
             showStatus("Put the model back on the bench");

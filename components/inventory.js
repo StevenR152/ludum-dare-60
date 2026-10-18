@@ -72,7 +72,7 @@ Inventory.prototype.changed = function () {
     Crafty.trigger("InventoryChanged", this);
 };
 
-// Moves an item between two inventories, the selected one unless index is given.
+// Moves an item between two inventories (and triggers "ItemMoved" with {item, from, to}, for sounds), the selected one unless index is given.
 // Returns false and changes nothing if it can't leave `from` or can't enter `to`.
 function transferItem(from, to, index) {
     index = index === undefined ? from.selected : index;
@@ -84,6 +84,7 @@ function transferItem(from, to, index) {
     to.items.push(item);
     from.changed();
     to.changed();
+    Crafty.trigger("ItemMoved", {item: item, from: from, to: to});
     return true;
 }
 
