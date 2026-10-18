@@ -59,12 +59,12 @@ Pottery.prototype = {
     },
 
     // Returns false, warns and changes nothing unless `to` may follow the current state.
-    // "thrown" takes the model the owl copies: advance("thrown", {shape: "Bowl", size: "Small"}).
-    advance: function (to, model) {
-        if (!this.canAdvance(to, model)) {
-            console.warn("Pottery can't go from " + this.state + " to " + to, this);
+    advance: function (to) {
+        if (!this.canAdvance(to)) {
+            console.warn("potterystate: rejected " + this.state + " -> " + to, this);
             return false;
         }
+        console.log("potterystate: advanced " + this.state + " -> " + to);
         this.state = to;
         if (to === "wedged") {
             this.clay.wedged = true;

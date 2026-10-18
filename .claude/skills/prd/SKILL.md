@@ -28,10 +28,10 @@ Produce a one-screen PRD that you will then implement against. Crisp, not exhaus
 **Open questions** — only real ones; otherwise "None".
 **Tasks** — ordered checklist I'll work through.
 
-## Save and commit
+## Save
 - Save the PRD to `PRD/<feature-slug>.md` at the repo root (kebab-case, e.g. `PRD/door-teleport.md`). Never leave a PRD only in chat.
-- Commit just that file: `git add PRD/<feature-slug>.md && git commit -m "PRD: <feature>"`. Stage nothing else.
-- When ticking off Tasks later, update the same file and commit it alongside the work.
+- Don't commit, stage, or push; leave it for the user.
+- When ticking off Tasks later, update the same file.
 
 ## Rules
 - Keep it under ~40 lines. No filler, no speculative features.
