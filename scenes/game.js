@@ -77,6 +77,10 @@ Crafty.defineScene("Game", function() {
         .attr({x: 1605, y: 527, w: 355, h: 232});
 
     // HUD inventory bar under the mute button: what the fox, the master and the kiln hold.
+    Crafty.e("2D, HUD, Color")
+        .attr({x: 10, y: 55, w: 190, h: 155, z: 999})
+        .color("rgba(255, 255, 255, 0.8)")
+        .css({borderRadius: "8px"});
     Crafty.e("InventoryHud").attr({x: 20, y: 60}).show("Fox", [player.inventory]);
     Crafty.e("InventoryHud").attr({x: 20, y: 110}).show("Master", [owl.input, owl.output]);
     Crafty.e("InventoryHud").attr({x: 20, y: 160}).show("Kiln", [kiln.inventory]);
