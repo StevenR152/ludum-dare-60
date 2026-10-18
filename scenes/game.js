@@ -114,10 +114,18 @@ Crafty.defineScene("Game", function() {
             return;
         }
         var held = player.inventory.selectedItem();
-        if (this.state === "empty" && held && held.type === "pot" && held.before("dried")) {
-            showStatus("The pot needs to dry first");
-        } else if (this.state === "ready" && !transferItem(this.inventory, player.inventory)) {
-            showStatus("You can't carry the pot: your pack is full or holds clay");
+        if (this.state === "ready") {
+            if (!transferItem(this.inventory, player.inventory)) {
+                showStatus("You can't carry the pot: your pack is full or holds clay");
+            }
+        } else if (held && held.type === "pot") {
+            if (held.before("dried")) {
+                showStatus("The pot needs to dry first");
+            } else if (this.state === "firing" || this.state === "cooling") {
+                showStatus("The kiln is busy");
+            } else {
+                showStatus("The kiln is full");
+            }
         }
     });
 
