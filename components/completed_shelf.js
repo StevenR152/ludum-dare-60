@@ -1,13 +1,13 @@
-// The completed shelf: COMPLETED_CAPACITY places for finished pots, which stay for good.
-// For now a fired pot counts as finished; glaze will tighten this. When it is full the shelf
+// The completed shelf, where customers pick up: COMPLETED_CAPACITY places for finished pots (glazed or
+// not, through their glaze firing: "glazeCooled"), which stay for good. When it is full the shelf
 // triggers "OrdersComplete" once, which the Game scene turns into the end of the game.
 //   var shelf = Crafty.e("CompletedShelf").place(INSIDE_X + 1500, 700, 300, 160);
-//   shelf.useWith(fox);   // puts the fox's selected fired pot on
+//   shelf.useWith(fox);   // puts the fox's selected glaze-fired pot on
 Crafty.c("CompletedShelf", {
     init: function() {
         this.requires("Shelf, Delay");
         this.holdItems(COMPLETED_CAPACITY, {
-            accepts: function (item) { return item.state === "cooled" && !item.pot.cracked; },
+            accepts: function (item) { return item.state === "glazeCooled"; },
             releases: function () { return false; }
         });
         this.bind("InventoryChanged", function (changed) {
@@ -15,7 +15,7 @@ Crafty.c("CompletedShelf", {
                 return;
             }
             this.inventory.items.forEach(function (pot) {
-                if (pot.state === "cooled") {
+                if (pot.state === "glazeCooled") {
                     pot.advance("shelved");
                 }
             });
@@ -31,12 +31,10 @@ Crafty.c("CompletedShelf", {
             return;
         }
         var held = fox.inventory.selectedItem();
-        showStatus(held && held.type === "pot" && held.pot.cracked
-            ? "Cracked pots can't go on the shelf"
-            : held && held.type === "pot" && held.before("cooled")
-            ? "Only fired pots go on the completed shelf"
+        showStatus(held && held.type === "pot" && held.before("glazeCooled")
+            ? "Fire the pot a second time (glazed or not) first"
             : this.inventory.items.length >= COMPLETED_CAPACITY
                 ? "The completed shelf is full"
-                : "Bring a fired pot to put here");
+                : "Bring a finished pot to put here");
     }
 });

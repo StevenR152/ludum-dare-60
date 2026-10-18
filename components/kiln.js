@@ -1,19 +1,21 @@
-// The kiln: a translucent zone square holding up to KILN_CAPACITY pots, plus a wood inventory of up to
-// KILN_WOOD_CAPACITY logs. Dried pots and wood go in, in either order; the torch (see game.js) calls
-// light() to start. Firing uses up the wood: its count is the fire level (1 low, 2 mid, 3 high), set on
-// every pot with setFireLevel (a pot whose clay needs another level cracks when it cools, see
-// PRD/clay-firing-levels.md). The pots fire together for KILN_FIRE_MS, cool for KILN_COOL_MS, then wait
-// as boxes (crossed out if cracked) to be taken out one per click.
-// States: empty -> loaded (pots in) -> firing -> cooling -> ready -> empty (once all are taken). Pots can only
-// go in while empty or loaded, and only be taken once ready (transferItem(kiln.inventory, fox.inventory)).
-// The square's colour shows the state.
+// The kiln: a translucent zone square holding one pot in its inventory. Every pot is fired twice, each
+// time for KILN_FIRE_MS then cooling for KILN_COOL_MS, then it waits, shown as a box, to be taken out:
+// - bisque: a dried pot goes firing -> cooling -> cooled;
+// - glaze firing: a cooled (unglazed) or glazed pot goes glazeFiring -> glazeCooling -> glazeCooled.
+// Kiln states: empty -> firing -> cooling -> ready -> empty. The square's colour shows the state.
+// The pot can only be taken once ready (transferItem(kiln.inventory, fox.inventory)).
+var KILN_PASSES = {
+    bisque: {firing: "firing", cooling: "cooling", done: "cooled"},
+    glaze: {firing: "glazeFiring", cooling: "glazeCooling", done: "glazeCooled"}
+};
+
 Crafty.c("Kiln", {
     init: function() {
         this.requires("2D, DOM, Color, Delay");
         var kiln = this;
         this.inventory = new Inventory(KILN_CAPACITY, {
-            accepts: function (item) { return item.state === "dried" && (kiln.state === "empty" || kiln.state === "loaded"); },
-            releases: function (item) { return kiln.state === "ready" && item.state === "cooled"; }
+            accepts: function (item) { return !!kiln.passFor(item); },
+            releases: function () { return kiln.state === "ready"; }
         });
         this.woodInventory = new Inventory(KILN_WOOD_CAPACITY, {
             accepts: function (item) { return item.type === "log"; }
@@ -41,6 +43,14 @@ Crafty.c("Kiln", {
         });
     },
 
+    // Which firing a pot is ready for, or null.
+    passFor: function(item) {
+        if (item.state === "dried") {
+            return KILN_PASSES.bisque;
+        }
+        return item.state === "cooled" || item.state === "glazed" ? KILN_PASSES.glaze : null;
+    },
+
     setState: function(state) {
         this.state = state;
         this.color(KILN_STATE_COLORS[state]);
@@ -62,26 +72,30 @@ Crafty.c("Kiln", {
     },
 
     startFiring: function() {
+        // Each pot keeps the pass it started with: its state changes as it fires.
+        this.passes = this.inventory.items.map(this.passFor, this);
+        this.setState("firing");
         var logs = this.woodInventory.items.length;
         this.fireLevel = KILN_FIRE_LEVELS[logs - 1];
         this.woodInventory.items.length = 0;
         this.woodInventory.selected = 0;
         this.woodInventory.changed();
-        this.setState("firing");
-        this.inventory.items.forEach(function (pot) {
-            pot.setFireLevel(this.fireLevel);
-            pot.advance("firing");
-        }, this);
         showStatus("The kiln is lit: " + this.fireLevel + " fire");
+        this.inventory.items.forEach(function (pot, i) {
+            if (this.passes[i] === KILN_PASSES.bisque) {
+                pot.setFireLevel(this.fireLevel);
+            }
+            pot.advance(this.passes[i].firing);
+        }, this);
         this.delay(function () {
             this.setState("cooling");
-            this.inventory.items.forEach(function (pot) { pot.advance("cooling"); });
+            this.inventory.items.forEach(function (pot, i) { pot.advance(this.passes[i].cooling); }, this);
             this.delay(this.finishPot, KILN_COOL_MS, 0);
         }, KILN_FIRE_MS, 0);
     },
 
     finishPot: function() {
-        this.inventory.items.forEach(function (pot) { pot.advance("cooled"); });
+        this.inventory.items.forEach(function (pot, i) { pot.advance(this.passes[i].done); }, this);
         this.setState("ready");
         this.showPots();
     },

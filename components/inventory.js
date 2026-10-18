@@ -1,6 +1,7 @@
 // A fixed-size list of items ({type, ...}) that one holder owns: the fox, the owl, the kiln.
-// Holds one item type at a time. Optional rules let a holder refuse items or refuse to give
-// them up: {accepts: function (item), releases: function (item)}.
+// Holds one item type at a time, unless a fits rule says what may go together. Optional rules let a
+// holder refuse items or refuse to give them up:
+// {accepts: function (item), releases: function (item), fits: function (items, item)}.
 // Every change triggers Crafty.trigger("InventoryChanged", inventory); holders compare identity.
 //   var pack = new Inventory(2);
 //   pack.add({type: "pot"});
@@ -16,7 +17,8 @@ Inventory.prototype.canAdd = function (item) {
     if (this.items.length >= this.capacity) {
         return false;
     }
-    if (this.items.length > 0 && this.items[0].type !== item.type) {
+    if (this.rules.fits ? !this.rules.fits(this.items, item)
+            : this.items.length > 0 && this.items[0].type !== item.type) {
         return false;
     }
     return !this.rules.accepts || this.rules.accepts(item);
@@ -85,6 +87,11 @@ function transferItem(from, to, index) {
     return true;
 }
 
+// Index of the first item matching test, or -1.
+Inventory.prototype.find = function (test) {
+    return this.items.findIndex(test);
+};
+
 // Draws a black cross over an item's box if it is a cracked pot, and clears it otherwise.
 // Call with every box that shows an item, e.g. the HUD slot and shelf slots (and the kiln's pot box).
 function markCracked(box, item) {
@@ -96,13 +103,19 @@ function markCracked(box, item) {
     box.css({backgroundImage: cracked ? line("top right") + ", " + line("bottom right") : "none"});
 }
 
-// Display colour of an item, for the HUD.
+// Display colour of an item, for the HUD. A glazed pot shows its last dip.
 function itemColor(item) {
+    if (item.type === "model") {
+        return MODEL_COLOR;
+    }
     if (item.type === "log") {
         return LOG_COLOR;
     }
     if (item.type === "clay") {
         return item.clay.color;
+    }
+    if (item.pot.glaze.length > 0) {
+        return GLAZE_BUCKET_COLORS[item.pot.glaze[item.pot.glaze.length - 1]];
     }
     if (!item.before("cooled")) {
         return FIRED_POT_COLOR;

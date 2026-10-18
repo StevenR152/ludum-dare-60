@@ -1,14 +1,14 @@
-// The player: sprite, arrow-key movement, and an Inventory of FOX_INVENTORY_CAPACITY items
-// of one type at a time (clay or pots). Each kg of clay carried slows the fox by
-// FOX_SLOWDOWN_PER_KG of its base speed.
-// E steps through the slots; SPACE drops the selected item.
+// The player: sprite, arrow-key movement, and an Inventory of FOX_INVENTORY_CAPACITY items of any
+// kind in any mix (2 dug clays, weighed clay and a model, 2 pots, a pot and a model...).
+// Each 1000 g of clay carried slows the fox by FOX_SLOWDOWN_PER_KG of its base speed.
+// E steps through the slots; SPACE drops the selected item (a dropped model goes back to the bench).
 //   var player = Crafty.e("Fox").attr({x: 920, y: 820});
 Crafty.c("Fox", {
     init: function() {
         this.requires("2D, DOM, fox, Fourway, Collision, Keyboard");
         this.attr({w: 160, h: 102});
         this.fourway(FOX_SPEED);
-        this.inventory = new Inventory(FOX_INVENTORY_CAPACITY);
+        this.inventory = new Inventory(FOX_INVENTORY_CAPACITY, {fits: function () { return true; }});
         this.bind("InventoryChanged", function (changed) {
             if (changed === this.inventory) {
                 this.updateSpeed();
@@ -18,9 +18,10 @@ Crafty.c("Fox", {
     },
 
     updateSpeed: function() {
-        var items = this.inventory.items;
-        var kilos = items.length > 0 && items[0].type === "clay" ? items.length : 0;
-        var speed = FOX_SPEED * (1 - FOX_SLOWDOWN_PER_KG * kilos);
+        var grams = this.inventory.items.reduce(function (sum, item) {
+            return sum + (item.type === "clay" ? item.clay.weight : 0);
+        }, 0);
+        var speed = FOX_SPEED * (1 - FOX_SLOWDOWN_PER_KG * grams / 1000);
         console.log("Speed changed to " + speed);
         this.speed({x: speed, y: speed});
     },
@@ -41,14 +42,19 @@ Crafty.c("Fox", {
         this.inventory.selectNext();
     },
 
-    // Dropped items just disappear.
+    // Dropped clay and pots just disappear; a model goes back to its spot on the bench.
     dropSelected: function() {
         var dropped = this.inventory.take();
         if (!dropped) {
             showStatus("Nothing to drop");
             return;
         }
-        showStatus(dropped.type === "clay" ? "Dropped one kilo of " + dropped.clay.name + " clay" : dropped.type === "log" ? "Dropped a log" : "Dropped the pot");
+        if (dropped.type === "model") {
+            Crafty.trigger("ModelReturned", dropped);
+            showStatus("Put the model back on the bench");
+            return;
+        }
+        showStatus(dropped.type === "clay" ? "Dropped " + dropped.clay.weight + " g of " + dropped.clay.name + " clay" : "Dropped the pot");
     },
 
     // Returns false (and changes nothing) when the item doesn't fit.
@@ -56,9 +62,7 @@ Crafty.c("Fox", {
         if (this.inventory.add(item)) {
             return true;
         }
-        showStatus(this.inventory.items.length >= this.inventory.capacity
-            ? "Backpack full, you can't put more in"
-            : "You can only carry one kind of thing at a time");
+        showStatus("Backpack full, you can't put more in");
         return false;
     }
 });

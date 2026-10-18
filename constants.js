@@ -27,7 +27,7 @@ var CLAY_TYPES = {
 var FIRE_LEVELS = ["low", "mid", "high"];
 var CLAY_DUG_COLOR = '#BBB';
 
-// Fox movement and inventory; each kg of clay carried takes 20% off the base speed.
+// Fox movement and inventory; each 1000 g of clay carried takes 20% off the base speed.
 var FOX_SPEED = 250;
 var FOX_SLOWDOWN_PER_KG = 0.2;
 var FOX_INVENTORY_CAPACITY = 2;
@@ -47,9 +47,11 @@ var KILN_STATE_COLORS = {
     ready: "rgba(255, 255, 255, 0.25)"
 };
 
-// Inventory sizes of the owl (clay in, pots out) and the kiln. The fox's is FOX_INVENTORY_CAPACITY.
+// Inventory sizes of the owl (clay and a model in, pots out) and the kiln. The fox's is FOX_INVENTORY_CAPACITY.
 var OWL_INPUT_CAPACITY = 1;
-var OWL_OUTPUT_CAPACITY = 1;
+var OWL_OUTPUT_CAPACITY = 3;
+
+var OWL_MODEL_CAPACITY = 1;
 var KILN_CAPACITY = 4;
 
 // Wood: logs the kiln holds, logs per fire level (1 log low, 2 mid, 3 high), how long the fox chops one, colours.
@@ -64,6 +66,7 @@ var TORCH_COLOR = "#F28C28";
 var ITEM_SHAPES = {
     clay: {w: 28, h: 28},
     pot: {w: 16, h: 30},
+    model: {w: 26, h: 16},
     log: {w: 32, h: 12}
 };
 // Orders: a new customer order every ORDER_INTERVAL_MS (the first at 0:00), at most ORDER_MAX listed.
@@ -78,7 +81,8 @@ var ORDER_CLAY_GRAMS = {
     Vase: { Small: 300, Medium: 500, Large: 1500 }
 };
 // Each glaze is the buckets dipped in order, shown as coloured squares (GLAZE_BUCKET_COLORS).
-var ORDER_GLAZES = [["Glaze A"], ["Glaze B"], ["Glaze A", "Glaze B"], ["Glaze B", "Glaze A"]];
+// An empty list is an unglazed order.
+var ORDER_GLAZES = [[], ["Glaze A"], ["Glaze B"], ["Glaze A", "Glaze B"], ["Glaze B", "Glaze A"]];
 // How long a customer waits, by speed.
 var ORDER_SPEEDS = {
     Slow:   { deadlineMs: 10 * 60 * 1000 },
@@ -90,15 +94,23 @@ var ORDER_SPEEDS = {
 var GLAZE_BUCKET_COLORS = { "Glaze A": "#F2C230", "Glaze B": "#D62828" };
 
 // The path a Pottery follows, in order. An optional state (none yet; glaze will be one) may be skipped.
+// Every pot is fired twice: a bisque firing, then a glaze firing (glazed or not, to vitrify it).
 var POTTERY_STATES = [
-    {name: "dug"}, {name: "wedged"}, {name: "thrown"}, {name: "drying"}, {name: "dried"},
-    {name: "firing"}, {name: "cooling"}, {name: "cooled"}, {name: "shelved"}
+    {name: "dug"}, {name: "wedged"}, {name: "weighed"}, {name: "thrown"}, {name: "drying"}, {name: "dried"},
+    {name: "firing"}, {name: "cooling"}, {name: "cooled"},
+    {name: "glazed", optional: true}, {name: "glazeFiring"}, {name: "glazeCooling"}, {name: "glazeCooled"},
+    {name: "shelved"}
 ];
-// What the fox weighs out when wedging one kilo, in grams.
-var WEDGED_CLAY_GRAMS = 1000;
-var PLACEHOLDER_POT = {shape: "pot", size: "medium"};
+// Grams in one dug kilo of clay.
+var DUG_CLAY_GRAMS = 1000;
+// Scales: the slider's step and smallest weight, in grams.
+var WEIGH_STEP_GRAMS = 50;
+// Models on the bench, one per shape and size, and their HUD colour.
+var MODEL_COLOR = "#8A8F98";
+// Glaze: dips per pot, at most one per bucket.
+var MAX_GLAZE_DIPS = 2;
 
-// Workbench: how long the fox holds to wedge (and measure out) one kilo of clay.
+// Workbench: how long the fox holds to wedge one kilo of clay onto the bench pile.
 var WEDGE_MS = 3000;
 // Drying shelf: slots, how long a pot takes to dry, and the dried pot colour.
 var DRY_SLOTS = 3;
