@@ -90,5 +90,5 @@ function itemColor(item) {
     if (item.type === "clay") {
         return item.color;
     }
-    return item.fired ? FIRED_POT_COLOR : POT_COLOR;
+    return item.fired ? FIRED_POT_COLOR : item.dried ? DRIED_POT_COLOR : POT_COLOR;
 }

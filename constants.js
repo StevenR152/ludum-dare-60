@@ -75,3 +75,15 @@ var ORDER_SPEEDS = {
 
 // Glazing station: two buckets, placeholder colours.
 var GLAZE_BUCKET_COLORS = { "Glaze A": "#F2C230", "Glaze B": "#D62828" };
+
+// Workbench: how long the fox holds to wedge (and measure out) one kilo of clay.
+var WEDGE_MS = 3000;
+// Drying shelf: slots, how long a pot takes to dry, and the dried pot colour.
+var DRY_SLOTS = 3;
+var DRY_MS = 15000;
+var DRIED_POT_COLOR = "#E3CDA8";
+// Completed shelf: how many finished pots end the game.
+var COMPLETED_CAPACITY = 3;
+// Zone square colours of the inside stations.
+var WORKBENCH_COLOR = "rgba(139, 90, 43, 0.45)";
+var SHELF_COLOR = "rgba(90, 120, 160, 0.35)";
