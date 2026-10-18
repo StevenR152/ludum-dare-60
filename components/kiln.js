@@ -1,6 +1,7 @@
 // The kiln: a translucent zone square holding one pot in its inventory. Every pot is fired twice, each
 // time for KILN_FIRE_MS then cooling for KILN_COOL_MS, then it waits, shown as a box, to be taken out:
-// - bisque: a dried pot goes firing -> cooling -> cooled;
+// - bisque: an unfired pot at any dryness goes firing -> cooling -> cooled; it cracks unless it went in
+//   bone dry (and at its clay's fire level), which only shows once it has cooled;
 // - glaze firing: a cooled (unglazed) or glazed pot goes glazeFiring -> glazeCooling -> glazeCooled.
 // Kiln states: empty -> firing -> cooling -> ready -> empty. The square's colour shows the state.
 // The pot can only be taken once ready (transferItem(kiln.inventory, fox.inventory)).
@@ -14,7 +15,8 @@ Crafty.c("Kiln", {
         this.requires("2D, DOM, Color, Delay");
         var kiln = this;
         this.inventory = new Inventory(KILN_CAPACITY, {
-            accepts: function (item) { return !!kiln.passFor(item); },
+            // Pots only go in while the kiln waits to be lit, never while it fires or while fired pots wait to be taken.
+            accepts: function (item) { return (kiln.state === "empty" || kiln.state === "loaded") && !!kiln.passFor(item); },
             releases: function () { return kiln.state === "ready"; }
         });
         this.woodInventory = new Inventory(KILN_WOOD_CAPACITY, {
@@ -45,7 +47,7 @@ Crafty.c("Kiln", {
 
     // Which firing a pot is ready for, or null.
     passFor: function(item) {
-        if (item.state === "dried") {
+        if (item.state === "thrown" && !item.pot.cracked) {
             return KILN_PASSES.bisque;
         }
         return item.state === "cooled" || item.state === "glazed" ? KILN_PASSES.glaze : null;
@@ -117,6 +119,7 @@ Crafty.c("Kiln", {
                 box.color(itemColor(pot));
             }
             markCracked(box, pot);
+            markBorder(box, pot);
         }, this);
     }
 });

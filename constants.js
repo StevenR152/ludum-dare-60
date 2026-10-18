@@ -31,8 +31,9 @@ var CLAY_DUG_COLOR = '#BBB';
 var FOX_SPEED = 250;
 var FOX_SLOWDOWN_PER_KG = 0.2;
 var FOX_INVENTORY_CAPACITY = 2;
-// Pottery: how long the owl takes to throw a pot, and the placeholder pot colour.
+// Pottery: how long the owl takes to throw a pot and to trim one, and the placeholder pot colour.
 var POT_MAKE_MS = 8000;
+var POT_TRIM_MS = 5000;
 var POT_COLOR = "#C8A27A";
 
 // Kiln: how long it fires and cools a pot, the fired pot colour, and the zone square's colour per state.
@@ -47,11 +48,9 @@ var KILN_STATE_COLORS = {
     ready: "rgba(255, 255, 255, 0.25)"
 };
 
-// Inventory sizes of the owl (clay and a model in, pots out) and the kiln. The fox's is FOX_INVENTORY_CAPACITY.
-var OWL_INPUT_CAPACITY = 1;
-var OWL_OUTPUT_CAPACITY = 3;
-
-var OWL_MODEL_CAPACITY = 1;
+// Inventory sizes of the owl (everything he holds: clay, models, pots to trim and pots to collect) and
+// the kiln. The fox's is FOX_INVENTORY_CAPACITY.
+var OWL_CAPACITY = 5;
 var KILN_CAPACITY = 4;
 
 // Wood: logs the kiln holds, logs per fire level (1 log low, 2 mid, 3 high), how long the fox chops one, colours.
@@ -95,8 +94,9 @@ var GLAZE_BUCKET_COLORS = { "Glaze A": "#F2C230", "Glaze B": "#D62828" };
 
 // The path a Pottery follows, in order. An optional state (none yet; glaze will be one) may be skipped.
 // Every pot is fired twice: a bisque firing, then a glaze firing (glazed or not, to vitrify it).
+// Drying is not a state: a thrown pot has a dryness from 0 (wet) to 1 (bone dry), see DRY_MS_PER_GRAM.
 var POTTERY_STATES = [
-    {name: "dug"}, {name: "wedged"}, {name: "weighed"}, {name: "thrown"}, {name: "drying"}, {name: "dried"},
+    {name: "dug"}, {name: "wedged"}, {name: "weighed"}, {name: "thrown"},
     {name: "firing"}, {name: "cooling"}, {name: "cooled"},
     {name: "glazed", optional: true}, {name: "glazeFiring"}, {name: "glazeCooling"}, {name: "glazeCooled"},
     {name: "shelved"}
@@ -112,10 +112,20 @@ var MAX_GLAZE_DIPS = 2;
 
 // Workbench: how long the fox holds to wedge one kilo of clay onto the bench pile.
 var WEDGE_MS = 3000;
-// Drying shelf: slots, how long a pot takes to dry, and the dried pot colour.
+// Drying: a pot goes from wet (dryness 0) to bone dry (1) in DRY_BASE_MS plus DRY_MS_PER_GRAM per gram of
+// clay on the drying shelf (a 200 g cup: leather hard after 18 s, bone dry after 3 min), OFF_SHELF_SLOWDOWN times slower
+// anywhere else, and not at all in the kiln. It is leather hard from LEATHER_HARD_AT. Each stage has its own colour; the bar under a pot shows how far it has got.
 var DRY_SLOTS = 3;
-var DRY_MS = 15000;
-var DRIED_POT_COLOR = "#E3CDA8";
+var DRY_BASE_MS = 130000;
+var DRY_MS_PER_GRAM = 250;
+var OFF_SHELF_SLOWDOWN = 3;
+var LEATHER_HARD_AT = 0.1;
+var DRY_STAGE_COLORS = { wet: "#8C6440", leatherHard: "#B9946A", boneDry: "#E3CDA8" };
+var DRY_STAGE_LABELS = { wet: "wet", leatherHard: "LH", boneDry: "dry" };
+var DRY_BAR_COLOR = "#555";
+// Border of a pot's box: trimmed and not.
+var TRIMMED_BORDER_COLOR = "#2E7D32";
+var UNTRIMMED_BORDER_COLOR = "#E67E22";
 // Completed shelf: how many finished pots end the game.
 var COMPLETED_CAPACITY = 3;
 // Zone square colours of the inside stations.

@@ -42,16 +42,16 @@ Crafty.defineScene("Game", function() {
     var owl = Crafty.e("2D, DOM, owl, Mouse, Potter")
         .attr({x: INSIDE_X + 1250, y: 820, w: 160, h: 152});
 
-    // Clicking the owl the fox is touching takes his finished pot, if the fox can carry it;
-    // otherwise it hands him weighed clay and a model (see Potter.receiveFrom).
+    // Clicking the owl the fox is touching takes his oldest finished pot, if the fox can carry it;
+    // otherwise it hands him a pot to trim, or weighed clay and a model (see Potter.receiveFrom).
     owl.bind("Click", function () {
         if (!this.intersect(player.x, player.y, player.w, player.h)) {
             return;
         }
-        if (this.output.items.length === 0) {
+        if (!this.hasFinishedPot()) {
             showStatus(this.receiveFrom(player));
-        } else if (!transferItem(this.output, player.inventory)) {
-            showStatus("You can't carry the pot: your pack is full or holds clay or a model");
+        } else if (!this.takePot(player)) {
+            showStatus("You can't carry the pot: your pack is full");
         }
     });
 
@@ -75,9 +75,8 @@ Crafty.defineScene("Game", function() {
     // One HUD entity owns the music button, timer and inventory bar: hud.enable(false) hides it all.
     Crafty.e("GameHud").build(player, owl, kiln);
 
-    // Clicking the kiln the fox is touching loads the selected pot (dried, or bisque-fired for its glaze
-    // firing), or collects a fired one.
-    // Clicking the kiln the fox is touching loads the selected logs or dried pot, or collects a fired pot.
+    // Clicking the kiln the fox is touching loads the selected logs or pot (unfired at any dryness, or
+    // bisque-fired for its glaze firing), or collects a fired pot.
     kiln.bind("Click", function () {
         if (!this.intersect(player.x, player.y, player.w, player.h)) {
             return;
@@ -97,16 +96,14 @@ Crafty.defineScene("Game", function() {
             return;
         }
         var held = player.inventory.selectedItem();
-        if (this.state === "empty" && held && held.type === "pot" && held.before("dried")) {
-            showStatus("The pot needs to dry first");
+        if ((this.state === "empty" || this.state === "loaded") && held && held.type === "pot" && held.pot.cracked) {
+            showStatus("This pot is cracked, it can't be fired");
         } else if (this.state === "empty" && held && held.state === "glazeCooled") {
             showStatus("This pot is finished, take it to the completed shelf");
         } else if (this.state === "ready" && !transferItem(this.inventory, player.inventory)) {
             showStatus("You can't carry the pot: your pack is full or holds clay");
         } else if (held && held.type === "pot") {
-            if (held.before("dried")) {
-                showStatus("The pot needs to dry first");
-            } else if (this.state === "firing" || this.state === "cooling") {
+            if (this.state === "firing" || this.state === "cooling") {
                 showStatus("The kiln is busy");
             } else {
                 showStatus("The kiln is full");
@@ -123,6 +120,14 @@ Crafty.defineScene("Game", function() {
     Crafty.e("Workbench").place(INSIDE_X + 600, 560, 520, 200);
     var dryingShelf = Crafty.e("DryingShelf").place(INSIDE_X + 1500, 330, 280, 160);
     var completedShelf = Crafty.e("CompletedShelf").place(INSIDE_X + 1500, 700, 300, 160);
+    // Unfired pots dry fastest on the drying shelf, slower in the fox's pack and the owl's hands, not in the kiln.
+    Crafty.e("PotDrier").dry(dryingShelf.inventory, [player.inventory, owl.inventory]);
+    // Clicking a pot on the drying shelf takes that pot; clicking the shelf elsewhere puts one on.
+    dryingShelf.bind("SlotClicked", function (index) {
+        if (this.intersect(player.x, player.y, player.w, player.h)) {
+            this.takeAt(player, index);
+        }
+    });
     [dryingShelf, completedShelf].forEach(function (shelf) {
         shelf.bind("Click", function () {
             if (this.intersect(player.x, player.y, player.w, player.h)) {
