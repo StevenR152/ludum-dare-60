@@ -13,14 +13,14 @@ Crafty.c("GameHud", {
     // Call once the fox, owl and kiln exist.
     build: function(fox, owl, kiln) {
         this.parts.push(Crafty.e("2D, HUD, Color")
-            .attr({x: 10, y: 10, w: 200, h: 200, z: 999})
+            .attr({x: 10, y: 10, w: 430, h: 200, z: 999})
             .color("rgba(255, 255, 255, 0.8)")
             .css({borderRadius: "8px"}));
         this.parts.push(Crafty.e("MuteButton").attr({x: 20, y: 20}));
         this.parts.push(Crafty.e("GameTimer").attr({x: 125, y: 20}));
         this.addRow("Fox", [fox.inventory], 60);
         this.addRow("Master", [owl.input, owl.output], 110);
-        this.addRow("Kiln", [kiln.inventory], 160);
+        this.addRow("Kiln", [kiln.inventory, kiln.woodInventory], 160);
         this.bind("Remove", function () {
             this.parts.concat(this.rows).forEach(function (part) { part.destroy(); });
         });

@@ -53,9 +53,10 @@ Pottery.prototype = {
     // Returns false, warns and changes nothing unless `to` may follow the current state.
     advance: function (to) {
         if (!this.canAdvance(to)) {
-            console.warn("Pottery can't go from " + this.state + " to " + to, this);
+            console.warn("potterystate: rejected " + this.state + " -> " + to, this);
             return false;
         }
+        console.log("potterystate: advanced " + this.state + " -> " + to);
         this.state = to;
         if (to === "wedged") {
             this.clay.wedged = true;

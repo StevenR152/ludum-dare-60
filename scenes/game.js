@@ -74,16 +74,40 @@ Crafty.defineScene("Game", function() {
         }
     });
 
-    // The kiln, Outside. Its square covers where the fox stands at the kiln: fox positions (1605, 527) to (1800, 657).
+    // The kiln, Outside. Its square stops short of the torch beside it (1850, 615).
     var kiln = Crafty.e("Kiln, Mouse")
-        .attr({x: 1605, y: 527, w: 355, h: 232});
+        .attr({x: 1605, y: 527, w: 240, h: 232});
+
+    // The torch lights the kiln. The fox stands on it, e.g. at (1850, 615), and clicks.
+    var torch = Crafty.e("2D, DOM, Color, Mouse")
+        .attr({x: 1850, y: 615, w: 40, h: 60})
+        .color(TORCH_COLOR);
+    torch.bind("Click", function () {
+        if (this.intersect(player.x, player.y, player.w, player.h)) {
+            kiln.light();
+        }
+    });
+
+    // The forest, Outside left: hold on it to chop logs. Fox positions (5, 350) to (370, 555).
+    Crafty.e("Forest").attr({x: 5, y: 350, w: 525, h: 307});
 
     // One HUD entity owns the music button, timer and inventory bar: hud.enable(false) hides it all.
     Crafty.e("GameHud").build(player, owl, kiln);
 
-    // Clicking the kiln the fox is touching loads the selected unfired pot, or collects a fired one.
+    // Clicking the kiln the fox is touching loads the selected logs or dried pot, or collects a fired pot.
     kiln.bind("Click", function () {
         if (!this.intersect(player.x, player.y, player.w, player.h)) {
+            return;
+        }
+        var carried = player.inventory.selectedItem();
+        if (carried && carried.type === "log") {
+            var moved = false;
+            while (transferItem(player.inventory, this.woodInventory)) {
+                moved = true;
+            }
+            if (!moved) {
+                showStatus("The kiln is full of wood");
+            }
             return;
         }
         if (transferItem(player.inventory, this.inventory)) {

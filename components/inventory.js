@@ -98,6 +98,9 @@ function markCracked(box, item) {
 
 // Display colour of an item, for the HUD.
 function itemColor(item) {
+    if (item.type === "log") {
+        return LOG_COLOR;
+    }
     if (item.type === "clay") {
         return item.clay.color;
     }
