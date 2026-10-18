@@ -10,7 +10,7 @@ Crafty.c("Scales", {
         this.text("Scales").textFont({size: "16px", weight: "bold"}).textColor("#333").unselectable()
             .css({lineHeight: "140px", textAlign: "center"});
         this.panel = null;
-        this.bind("Click", this.open);
+        this.bind("MouseDown", this.open);
         this.bind("InventoryChanged", function (changed) {
             if (this.panel && changed === this.bench.pile) {
                 this.refresh();

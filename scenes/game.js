@@ -43,7 +43,7 @@ Crafty.defineScene("Game", function() {
 
     // Clicking the owl the fox is touching takes his oldest finished pot, if the fox can carry it;
     // otherwise it hands him a pot to trim, or weighed clay and a model (see Potter.receiveFrom).
-    owl.bind("Click", function () {
+    owl.bind("MouseDown", function () {
         if (!this.intersect(player.x, player.y, player.w, player.h)) {
             return;
         }
@@ -65,7 +65,7 @@ Crafty.defineScene("Game", function() {
     var torch = Crafty.e("2D, DOM, Color, Mouse")
         .attr({x: 1850, y: 615, w: 40, h: 60})
         .color(TORCH_COLOR);
-    torch.bind("Click", function () {
+    torch.bind("MouseDown", function () {
         if (this.intersect(player.x, player.y, player.w, player.h)) {
             kiln.light();
         }
@@ -79,7 +79,7 @@ Crafty.defineScene("Game", function() {
 
     // Clicking the kiln the fox is touching loads the selected logs or pot (unfired at any dryness, or
     // bisque-fired for its glaze firing), or collects a fired pot.
-    kiln.bind("Click", function () {
+    kiln.bind("MouseDown", function () {
         if (!this.intersect(player.x, player.y, player.w, player.h)) {
             return;
         }
@@ -131,7 +131,7 @@ Crafty.defineScene("Game", function() {
         }
     });
     [dryingShelf, completedShelf].forEach(function (shelf) {
-        shelf.bind("Click", function () {
+        shelf.bind("MouseDown", function () {
             if (this.intersect(player.x, player.y, player.w, player.h)) {
                 this.useWith(player);
             }
@@ -172,8 +172,8 @@ Crafty.defineScene("Game", function() {
         player.x = door.x + (door.w - player.w) / 2;
         player.y = door.y + door.h + 20;
     }
-    outsideDoor.bind("Click", useDoor);
-    insideDoor.bind("Click", useDoor);
+    outsideDoor.bind("MouseDown", useDoor);
+    insideDoor.bind("MouseDown", useDoor);
 
     makeCameraTrackEntity(player, 0);
     TouchControls.follow(player);

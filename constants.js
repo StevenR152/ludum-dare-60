@@ -15,6 +15,8 @@ var CREDITS = [
 //click timing
 var CLAY_DIG_MS=2000;
 var CLAY_RESPAWN_MS = 20000;
+// Clay of a node's colour dropped on a dug node takes this share of CLAY_RESPAWN_MS off its respawn.
+var CLAY_REFILL_PERCENT = 0.5;
 
 //clay
 var CLAY_TYPES = {
@@ -31,6 +33,20 @@ var CLAY_DUG_COLOR = '#BBB';
 var FOX_SPEED = 250;
 var FOX_SLOWDOWN_PER_KG = 0.2;
 var FOX_INVENTORY_CAPACITY = 2;
+// Dropped items: drawn DROPPED_ITEM_SCALE times their HUD size; each one the fox overlaps multiplies its
+// speed by DROPPED_ITEM_SLOWDOWN. The first touch of a pot may damage it: POT_BREAK_CHANCES by cook state,
+// DAMAGE_PER_BREAK per hit. A pot cracks at BREAK_DAMAGE and is destroyed at DESTROY_DAMAGE.
+var DROPPED_ITEM_SCALE = 2;
+var DROPPED_ITEM_Z = 20;
+var DROPPED_ITEM_SLOWDOWN = 0.5;
+var POT_BREAK_CHANCES = {thrown: 0.99, cooled: 0.75, glazed: 0.75, glazeCooled: 0.5, shelved: 0.5};
+var DAMAGE_PER_BREAK = 1;
+var BREAK_DAMAGE = 1;
+var DESTROY_DAMAGE = 3;
+// Stumbling: a moving fox that carries something drops a random item with this chance per second, plus
+// STUMBLE_PER_SLOW times its slowdown (0 = full speed, 0.4 = 40% slower, from clay weight and dropped items).
+var STUMBLE_BASE_CHANCE = 0.005;
+var STUMBLE_PER_SLOW = 0.05;
 // Pottery: how long the owl takes to throw a pot and to trim one, and the placeholder pot colour.
 var POT_MAKE_MS = 8000;
 var POT_TRIM_MS = 5000;

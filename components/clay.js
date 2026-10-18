@@ -51,7 +51,29 @@ Crafty.c("Clay", {
         this.dug = true;
         this.color(CLAY_DUG_COLOR);
         this.trigger("ClayDug", this.clayType);
+        this.respawnDue = Date.now() + CLAY_RESPAWN_MS;
         this.delay(this.respawn, CLAY_RESPAWN_MS);
+    },
+
+    // Clay of this node's colour dropped on it while it is dug (dug, wedged, weighed, or a thrown unfired
+    // pot of it) is used up and takes CLAY_REFILL_PERCENT of CLAY_RESPAWN_MS off the respawn (the fox's
+    // offerToStations). Returns false, changing nothing, for anything else.
+    acceptDrop: function(item) {
+        var usable = item.type === "pot" ? item.state === "thrown" : ["dug", "wedged", "weighed"].indexOf(item.state) >= 0;
+        if (!this.dug || !item.clay || item.clay.name !== this.clayType.name || !usable) {
+            return false;
+        }
+        this.cancelDelay(this.respawn);
+        var left = this.respawnDue - Date.now() - CLAY_RESPAWN_MS * CLAY_REFILL_PERCENT;
+        if (left <= 0) {
+            this.respawn();
+            showStatus("The " + this.clayType.name + " clay patch is full again");
+        } else {
+            this.respawnDue = Date.now() + left;
+            this.delay(this.respawn, left);
+            showStatus("The " + this.clayType.name + " clay patch will be ready in " + Math.ceil(left / 1000) + " s");
+        }
+        return true;
     },
 
     // Pile reappears so the same spot can be re-harvested.

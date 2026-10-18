@@ -8,6 +8,7 @@ Built with [CraftyJS](http://craftyjs.com/api/) 0.9.0 (loaded from cdnjs).
 ## How to play
 - Arrow keys or WASD walk the fox. On phones, touch and hold to walk toward your finger.
 - Click a door you're standing at to move between Inside and Outside.
+- Things you click in the world (doors, owl, kiln, shelves...) act the moment you press the button or touch, not when you let go. Menu buttons still act on release.
 - Hold-click a clay square (Outside) while standing on it to dig a kilo (1000 g) into your inventory (2 slots, HUD top left). You carry any 2 items in any mix (2 dug clays, a weighed piece and a model, 2 pots...). E picks a slot.
 - Hold-click the workbench (Inside) for 3s while standing on it to wedge the selected kilo onto the bench. Kilos of the same clay add up in one pile; different clays sit side by side (e.g. 1000 g blue and 800 g red).
 - Click the scales on the workbench to open a panel, choose a clay and the grams (up to what's in that pile) and press Weigh. A piece is always one clay. The weighed piece (white outline) goes in your pack; the rest stays on the bench.
@@ -24,7 +25,7 @@ Built with [CraftyJS](http://craftyjs.com/api/) 0.9.0 (loaded from cdnjs).
 - Click the completed shelf (Inside) to put a fired pot on it. Cracked pots are refused. Three completed pots end the game.
 - Hold on the forest (Outside, left) for 1s to chop a log (carry 2). Click the kiln to load logs (it holds 3) and pots (it fires up to 4 at once), in either order, then click the torch beside the kiln: 1, 2 or 3 logs make a low, mid or high fire. It fires for 10s and cools for 10s; then click the kiln again to collect the fired pots, one per click. The pots fire together at one level, so a mixed batch cracks the pots whose clay needs another level. Clicking with a pot when the kiln is full or lit says so.
 - Click the completed shelf (Inside) to put a fired pot on it. Three completed pots end the game.
-- SPACE (a tap on phones) drops the selected item. This is a testing aid.
+- SPACE (a tap on phones) at the workbench puts a carried model back on the bench; on a dug clay patch it uses up clay of that patch's colour (dug, wedged, weighed, or a thrown unfired pot of it) and cuts half of the patch's respawn time. Elsewhere it drops the selected item on the ground where the fox stands, and a heavy or slowed fox may stumble and drop one. Click a dropped item while touching it to pick it up. Each dropped item the fox overlaps halves its speed (they multiply). The first time the fox walks onto a dropped pot, it may take damage: 99% chance if unfired, 75% once fired, 50% once glaze-fired. One hit cracks it, three destroy it. Clay, logs and models never break. Dropped pots keep drying, as slowly as in your pack.
 
 ## Run locally
 Serve the folder over HTTP (asset loading fails from `file://`):

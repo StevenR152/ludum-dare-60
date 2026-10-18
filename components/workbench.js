@@ -61,7 +61,7 @@ Crafty.c("Workbench", {
             .css({lineHeight: "56px", textAlign: "center"});
         spot.model = model;
         spot.home = true;
-        spot.bind("Click", function () { bench.takeModel(spot); });
+        spot.bind("MouseDown", function () { bench.takeModel(spot); });
         this.parts.push(spot);
         this.modelSpots.push(spot);
         this.drawModelSpot(spot);
@@ -82,6 +82,16 @@ Crafty.c("Workbench", {
             this.drawModelSpot(spot);
             showStatus("Picked up the " + spot.model.size + " " + spot.model.shape + " model");
         }
+    },
+
+    // A model dropped while the fox is at the bench goes back to its spot (the fox's offerToStations).
+    acceptDrop: function(item) {
+        if (item.type !== "model") {
+            return false;
+        }
+        Crafty.trigger("ModelReturned", item);
+        showStatus("Put the model back on the bench");
+        return true;
     },
 
     returnModel: function(model) {

@@ -101,7 +101,7 @@ Pottery.prototype = {
             this.clay.wedged = true;
         } else if (to === "thrown") {
             this.pot = {shape: model.shape, size: model.size, weight: this.clay.weight, glaze: [],
-                dryness: 0, trimmed: false, fired: false, completed: false, fireLevel: null, cracked: false};
+                dryness: 0, trimmed: false, fired: false, completed: false, fireLevel: null, cracked: false, damage: 0};
         } else if (to === "cooled") {
             this.pot.fired = true;
             // No level set counts as a mismatch. Pots don't dry in the kiln, so this is the dryness it went in
