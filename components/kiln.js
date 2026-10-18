@@ -72,32 +72,34 @@ Crafty.c("Kiln", {
     },
 
     startFiring: function() {
-        var pot = this.inventory.items[0];
-        var pass = this.passFor(pot);
+        // Each pot keeps the pass it started with: its state changes as it fires.
+        this.passes = this.inventory.items.map(this.passFor, this);
         this.setState("firing");
-          var logs = this.woodInventory.items.length;
+        var logs = this.woodInventory.items.length;
         this.fireLevel = KILN_FIRE_LEVELS[logs - 1];
         this.woodInventory.items.length = 0;
         this.woodInventory.selected = 0;
         this.woodInventory.changed();
         showStatus("The kiln is lit: " + this.fireLevel + " fire");
-        this.inventory.items.forEach(function (pot) {
-            pot.setFireLevel(this.fireLevel);
-            pot.advance("firing");
+        this.inventory.items.forEach(function (pot, i) {
+            if (this.passes[i] === KILN_PASSES.bisque) {
+                pot.setFireLevel(this.fireLevel);
+            }
+            pot.advance(this.passes[i].firing);
         }, this);
         this.delay(function () {
             this.setState("cooling");
-            this.inventory.items.forEach(function (pot) { pot.advance("cooling"); });
+            this.inventory.items.forEach(function (pot, i) { pot.advance(this.passes[i].cooling); }, this);
             this.delay(this.finishPot, KILN_COOL_MS, 0);
         }, KILN_FIRE_MS, 0);
     },
 
     finishPot: function() {
-        this.inventory.items.forEach(function (pot) { pot.advance(pass.done); });
+        this.inventory.items.forEach(function (pot, i) { pot.advance(this.passes[i].done); }, this);
         this.setState("ready");
         this.showPots();
     },
-  
+
     // One box per pot waiting, in a row centred on the square (placed now: the kiln's position is set after init).
     showPots: function() {
         var count = this.inventory.items.length;

@@ -8,7 +8,7 @@
 // `type` is "clay" until there is a pot, then "pot", so Inventory's one-type rule works as before.
 function Pottery(clayType, states) {
     this.states = states || POTTERY_STATES;
-    this.clay = {name: clayType.name, color: clayType.color, wedged: false, weight: DUG_CLAY_GRAMS};
+    this.clay = {name: clayType.name, color: clayType.color, fireLevel: clayType.fireLevel, wedged: false, weight: DUG_CLAY_GRAMS};
     this.pot = null;
     this.state = this.states[0].name;
 }
@@ -56,6 +56,8 @@ Pottery.prototype = {
         piece.advance("weighed");
         this.clay.weight -= grams;
         return piece;
+    },
+    
     // The kiln calls this with a FIRE_LEVELS name before advance("firing"). Returns false, warns and
     // changes nothing for an unknown level or unless the pottery is dried and not yet in the kiln.
     setFireLevel: function (level) {
@@ -68,8 +70,9 @@ Pottery.prototype = {
     },
 
     // Returns false, warns and changes nothing unless `to` may follow the current state.
-    advance: function (to) {
-        if (!this.canAdvance(to)) {
+    // Throwing also needs the `model` to copy.
+    advance: function (to, model) {
+        if (!this.canAdvance(to, model)) {
             console.warn("potterystate: rejected " + this.state + " -> " + to, this);
             return false;
         }

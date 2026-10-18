@@ -60,7 +60,7 @@ Crafty.c("Potter", {
     },
 
     startPot: function() {
-        if (this.making || this.output.items.length > 0 || this.input.items.length === 0) {
+        if (this.making || this.outputFull() || this.input.items.length === 0) {
             return;
         }
         this.making = true;
@@ -91,8 +91,12 @@ Crafty.c("Potter", {
         this.startPot();
     },
 
-    // No clay waiting, no pot on the wheel or in his hands: the only time he takes clay.
+    outputFull: function() {
+        return this.output.items.length >= this.output.capacity;
+    },
+
+    // No clay waiting, no pot on the wheel, room for another pot: the only time he takes clay.
     isIdle: function() {
-        return this.input.items.length === 0 && !this.making && this.output.items.length === 0;
+        return this.input.items.length === 0 && !this.making && !this.outputFull();
     }
 });

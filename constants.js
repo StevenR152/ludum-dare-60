@@ -49,7 +49,7 @@ var KILN_STATE_COLORS = {
 
 // Inventory sizes of the owl (clay and a model in, pots out) and the kiln. The fox's is FOX_INVENTORY_CAPACITY.
 var OWL_INPUT_CAPACITY = 1;
-var OWL_OUTPUT_CAPACITY = 1;
+var OWL_OUTPUT_CAPACITY = 3;
 
 var OWL_MODEL_CAPACITY = 1;
 var KILN_CAPACITY = 4;
@@ -66,7 +66,7 @@ var TORCH_COLOR = "#F28C28";
 var ITEM_SHAPES = {
     clay: {w: 28, h: 28},
     pot: {w: 16, h: 30},
-    model: {w: 26, h: 16}
+    model: {w: 26, h: 16},
     log: {w: 32, h: 12}
 };
 // Orders: a new customer order every ORDER_INTERVAL_MS (the first at 0:00), at most ORDER_MAX listed.

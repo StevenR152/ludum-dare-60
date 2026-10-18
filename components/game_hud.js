@@ -20,7 +20,7 @@ Crafty.c("GameHud", {
         this.parts.push(Crafty.e("GameTimer").attr({x: 125, y: 20}));
         this.addRow("Fox", [fox.inventory], 60);
         this.addRow("Master", [owl.input, owl.modelIn, owl.output], 110);
-        this.addRow("Kiln", [kiln.inventory], 160);
+        this.addRow("Kiln", [kiln.inventory, kiln.woodInventory], 160);
         this.bind("Remove", function () {
             this.parts.concat(this.rows).forEach(function (part) { part.destroy(); });
         });
