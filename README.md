@@ -15,18 +15,42 @@ Built with [CraftyJS](http://craftyjs.com/api/) 0.9.0 (loaded from cdnjs).
 - Hold-click the workbench (Inside) for 3s while standing on it with the weighed piece selected to wedge it. Wedged clay has a white outline.
 - Click a model on the workbench (Small/Medium/Large Bowl, Cup or Vase) to carry it.
 - Click the owl (Inside) with wedged clay and a model. He takes them only when the clay is wedged and weighs what the order list says that shape needs, and throws that pot in 8s. The model goes back to the bench. Click him again to take the finished pot. He holds up to 5 things (clay, models, pots) and does one job at a time, the first given first.
-- A thrown pot is wet. It dries to leather hard (LH) and then bone dry, fastest on the drying shelf and 3x slower anywhere else (not at all in the kiln). Heavier pots take longer: on the shelf a 200 g cup is leather hard after 18 s and bone dry after 3 minutes, a 1500 g vase after 50 s and 8 min 25 s. A bar under the pot (shelf and HUD) shows how far it has got.
+- A thrown pot is wet. It dries to leather hard (LH) and then bone dry, fastest on the drying shelf and 3x slower anywhere else (not at all in the kiln). Heavier pots take longer: on the shelf a 200 g cup is leather hard after 1.2 s and bone dry after 12 s, a 500 g bowl or vase after 1.7 s and 17 s. A bar under the pot (shelf and HUD) shows how far it has got.
 - Click the drying shelf (Inside) to put the selected unfired pot on it (3 places), or to take the driest pot off, at any stage.
 - Give the owl a leather-hard pot to trim it (5s). A wet pot collapses and a bone-dry one cracks. A trimmed pot has a solid green border and an untrimmed one a dashed orange border (in your pack, on the shelf, on the owl and in the kiln); untrimmed pots can still be fired.
 - Click the kiln (Outside) to load an unfired pot. Only a bone-dry pot survives the firing; any other cracks, which you see when it has cooled.
 - Optionally click the glaze buckets (Inside) to dip a fired pot: orange, pink, or both in either order, once each.
 - Every pot, glazed or not, goes back in the kiln for a second (glaze) firing.
 - Click the completed shelf (Inside) to put a twice-fired pot on it. Three completed pots end the game.
-- Each clay needs its own firing level: black low, red mid, white high. A pot fired at any other level cracks when it cools. Every spoilt pot (too wet or too dry to trim, not bone dry in the kiln, wrong level) is cracked and drawn with a black cross.
+- Each clay needs its own firing level for the first (bisque) firing: black low, red mid, white high. A pot bisque-fired at any other level cracks when it cools; the glaze firing can be at any level. Every spoilt pot (too wet or too dry to trim, not bone dry in the kiln, wrong level) is cracked and drawn with a black cross.
 - Click the completed shelf (Inside) to put a fired pot on it. Cracked pots are refused. Three completed pots end the game.
-- Hold on the forest (Outside, left) for 1s to chop a log (carry 2). Click the kiln to load logs (it holds 3) and pots (it fires up to 4 at once), in either order, then click the torch beside the kiln: 1, 2 or 3 logs make a low, mid or high fire. It fires for 10s and cools for 10s; then click the kiln again to collect the fired pots, one per click. The pots fire together at one level, so a mixed batch cracks the pots whose clay needs another level. Clicking with a pot when the kiln is full or lit says so.
+- Hold on the forest (Outside, left) for 1s to chop a log (carry 2). Click the kiln to load logs (it holds 3) and pots (it fires up to 4 at once), in either order, then click the torch beside the kiln: 1, 2 or 3 logs make a low, mid or high fire. It fires for 2s and cools for 2s; then click the kiln again to collect the fired pots, one per click. The pots fire together at one level, so a mixed batch cracks the pots whose clay needs another level. Clicking with a pot when the kiln is full or lit says so.
 - Click the completed shelf (Inside) to put a fired pot on it. Three completed pots end the game.
 - SPACE (a tap on phones) at the workbench puts a carried model back on the bench; on a dug clay patch it uses up clay of that patch's colour (dug, wedged, weighed, or a thrown unfired pot of it) and cuts half of the patch's respawn time. Elsewhere it drops the selected item on the ground where the fox stands, and a heavy or slowed fox may stumble and drop one. Click a dropped item while touching it to pick it up. Each dropped item the fox overlaps halves its speed (they multiply). The first time the fox walks onto a dropped pot, it may take damage: 99% chance if unfired, 75% once fired, 50% once glaze-fired. One hit cracks it, three destroy it. Clay, logs and models never break. Dropped pots keep drying, as slowly as in your pack.
+
+## Clay and wood
+Each clay needs its own fire level, and the fire level is set by how many logs go in the kiln (the torch burns them all):
+
+| Clay  | Fire level | Logs (wood) |
+|-------|------------|-------------|
+| Black | low        | 1           |
+| Red   | mid        | 2           |
+| White | high       | 3           |
+
+- The kiln holds at most 3 logs and the fox carries 2, so a high fire takes two trips to the forest.
+- A pot fired at any other level than its clay's cracks when it cools. All pots in one firing share a level, so a mixed batch cracks the ones that need another level.
+- Only the first (bisque) firing is checked against the clay. The glaze firing needs at least 1 log but any level is fine.
+- In code: `fireLevel` per clay in `constants.js` (`CLAY_TYPES`), `KILN_FIRE_LEVELS` (index + 1 = logs), `KILN_WOOD_CAPACITY`.
+
+## How drying works
+A thrown pot has a dryness from 0 (wet) to 1 (bone dry). It is leather hard (LH) from 10% dryness, and only then can the owl trim it.
+
+- Time to bone dry on the drying shelf: `DRY_BASE_MS` (8.7 s) + `DRY_MS_PER_GRAM` (0.017 s) per gram of clay. So a 200 g cup takes 12 s, a 500 g bowl or vase 17 s. Leather hard comes at 10% of that.
+- Anywhere else (your pack, the owl's hands, the ground) it dries `OFF_SHELF_SLOWDOWN` (3x) slower.
+- In the kiln it doesn't dry at all, so the dryness it goes in with is the dryness it fires at.
+- Only a bone-dry pot survives its firing; a damper one cracks. A wet pot collapses if trimmed and a bone-dry one cracks.
+- A bar under the pot (shelf and HUD) shows the progress, with a tick at leather hard.
+- In code: `Pottery.dry()` in `components/pottery.js`, `PotDrier` in `components/drying_shelf.js`, constants in `constants.js`.
 
 ## Run locally
 Serve the folder over HTTP (asset loading fails from `file://`):

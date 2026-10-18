@@ -53,8 +53,8 @@ var POT_MAKE_MS = 8000;
 var POT_TRIM_MS = 5000;
 
 // Kiln: how long it fires and cools a pot, and the zone square's colour per state.
-var KILN_FIRE_MS = 10000;
-var KILN_COOL_MS = 10000;
+var KILN_FIRE_MS = 2000; // reduced from 8000 for testing
+var KILN_COOL_MS = 2000; // reduced from 8000 for testing
 var KILN_STATE_COLORS = {
     empty: "rgba(255, 255, 255, 0.25)",
     firing: "rgba(230, 80, 30, 0.5)",
@@ -133,11 +133,11 @@ var MAX_GLAZE_DIPS = 2;
 // Workbench: how long the fox holds to wedge a weighed piece of clay.
 var WEDGE_MS = 3000;
 // Drying: a pot goes from wet (dryness 0) to bone dry (1) in DRY_BASE_MS plus DRY_MS_PER_GRAM per gram of
-// clay on the drying shelf (a 200 g cup: leather hard after 18 s, bone dry after 3 min), OFF_SHELF_SLOWDOWN times slower
+// clay on the drying shelf (a 200 g cup: leather hard after 1.2 s, bone dry after 12 s), OFF_SHELF_SLOWDOWN times slower
 // anywhere else, and not at all in the kiln. It is leather hard from LEATHER_HARD_AT. Each stage has its own colour; the bar under a pot shows how far it has got.
 var DRY_SLOTS = 3;
-var DRY_BASE_MS = 130000;
-var DRY_MS_PER_GRAM = 250;
+var DRY_BASE_MS = 26000 / 3; // reduced for testing
+var DRY_MS_PER_GRAM = 50 / 3; // reduced for testing
 var OFF_SHELF_SLOWDOWN = 3;
 var LEATHER_HARD_AT = 0.1;
 var DRY_STAGE_COLORS = { wet: "#8C6440", leatherHard: "#B9946A", boneDry: "#E3CDA8" };
