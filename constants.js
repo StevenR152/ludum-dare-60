@@ -18,16 +18,16 @@ var CLAY_RESPAWN_MS = 20000;
 
 //clay
 var CLAY_TYPES = {
-    brown: { name: "brown", color: '#311909' },
-    red:   { name: "red",   color: '#650b0b' },
-    blue:  { name: "blue",  color: '#15a0a0' },
+    brown: { type: "clay", name: "brown", color: '#311909' },
+    red:   { type: "clay", name: "red",   color: '#650b0b' },
+    blue:  { type: "clay", name: "blue",  color: '#15a0a0' },
 };
 var CLAY_DUG_COLOR = '#BBB';
 
-// Fox movement and backpack; each kg of clay carried takes 20% off the base speed.
+// Fox movement and inventory; each kg of clay carried takes 20% off the base speed.
 var FOX_SPEED = 250;
 var FOX_SLOWDOWN_PER_KG = 0.2;
-var BACKPACK_CAPACITY = 2;
+var FOX_INVENTORY_CAPACITY = 2;
 // Pottery: how long the owl takes to throw a pot, and the placeholder pot colour.
 var POT_MAKE_MS = 8000;
 var POT_COLOR = "#C8A27A";
@@ -42,3 +42,8 @@ var KILN_STATE_COLORS = {
     cooling: "rgba(110, 140, 180, 0.5)",
     ready: "rgba(255, 255, 255, 0.25)"
 };
+
+// Inventory sizes of the owl (clay in, pots out) and the kiln. The fox's is FOX_INVENTORY_CAPACITY.
+var OWL_INPUT_CAPACITY = 1;
+var OWL_OUTPUT_CAPACITY = 1;
+var KILN_CAPACITY = 1;

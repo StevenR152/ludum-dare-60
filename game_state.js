@@ -5,7 +5,6 @@ var gameState;
 function resetGameState() {
     gameState = {
         seconds: 0,
-        heldItem: null, // what the fox carries, e.g. {type: "pot"}
     };
 }
 

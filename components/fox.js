@@ -1,39 +1,28 @@
-// The player: sprite, arrow-key movement, and a backpack of up to BACKPACK_CAPACITY clays.
-// Each kg carried slows the fox by FOX_SLOWDOWN_PER_KG of its base speed.
-// E steps through the backpack slots; SPACE drops the selected clay.
+// The player: sprite, arrow-key movement, and an Inventory of FOX_INVENTORY_CAPACITY items
+// of one type at a time (clay or pots). Each kg of clay carried slows the fox by
+// FOX_SLOWDOWN_PER_KG of its base speed.
+// E steps through the slots; SPACE drops the selected item.
 //   var player = Crafty.e("Fox").attr({x: 920, y: 820});
 Crafty.c("Fox", {
     init: function() {
         this.requires("2D, DOM, fox, Fourway, Collision, Keyboard");
         this.attr({w: 160, h: 102});
         this.fourway(FOX_SPEED);
-        this.backpack = [];
-        this.selected = 0;
-        this.backpackSquares = [];
-        this.bind("BackpackChanged", this.updateSpeed);
-        this.bind("BackpackChanged", this.drawBackpack);
+        this.inventory = new Inventory(FOX_INVENTORY_CAPACITY);
+        this.bind("InventoryChanged", function (changed) {
+            if (changed === this.inventory) {
+                this.updateSpeed();
+            }
+        });
         this.bind("KeyDown", this.onKeyDown);
     },
 
-    // Kept separate from addClay so anything that changes the backpack
-    // only has to trigger "BackpackChanged".
     updateSpeed: function() {
-        var speed = FOX_SPEED * (1 - FOX_SLOWDOWN_PER_KG * this.backpack.length);
+        var items = this.inventory.items;
+        var kilos = items.length > 0 && items[0].type === "clay" ? items.length : 0;
+        var speed = FOX_SPEED * (1 - FOX_SLOWDOWN_PER_KG * kilos);
         console.log("Speed changed to " + speed);
         this.speed({x: speed, y: speed});
-    },
-
-    // Rebuilt from scratch, since dropping from the middle shifts the rest left.
-    // Top-left, under the mute button: stays visible even in a short window.
-    drawBackpack: function() {
-        this.backpackSquares.forEach(function (square) { square.destroy(); });
-        this.backpackSquares = this.backpack.map(function (type, slot) {
-            return Crafty.e("BackpackDisplay")
-                .attr({x: 20 + slot * 50, y: 60, w: 40, h: 40})
-                .clay(type)
-                .selected(slot === this.selected);
-        }, this);
-        console.log("Backpack: " + (this.backpack.map(function (t) { return t.name; }).join(", ") || "empty"));
     },
 
     onKeyDown: function(e) {
@@ -45,43 +34,31 @@ Crafty.c("Fox", {
     },
 
     selectNext: function() {
-        if (this.backpack.length === 0) {
-            showStatus("Backpack is empty, nothing to choose");
+        if (this.inventory.items.length === 0) {
+            showStatus("Nothing to choose, you're carrying nothing");
             return;
         }
-        this.selected = (this.selected + 1) % this.backpack.length;
-        this.trigger("BackpackChanged", this.backpack);
+        this.inventory.selectNext();
     },
 
+    // Dropped items just disappear.
     dropSelected: function() {
-        var dropped = this.takeSelected();
+        var dropped = this.inventory.take();
         if (!dropped) {
-            showStatus("Backpack is empty, nothing to drop");
+            showStatus("Nothing to drop");
             return;
         }
-        showStatus("Dropped one kilo of " + dropped.name + " clay");
+        showStatus(dropped.type === "clay" ? "Dropped one kilo of " + dropped.name + " clay" : "Dropped the pot");
     },
 
-    // Removes and returns the selected clay, or null when the backpack is empty.
-    takeSelected: function() {
-        if (this.backpack.length === 0) {
-            return null;
+    // Returns false (and changes nothing) when the item doesn't fit.
+    pickUp: function(item) {
+        if (this.inventory.add(item)) {
+            return true;
         }
-        var taken = this.backpack.splice(this.selected, 1)[0];
-        this.selected = Math.min(this.selected, Math.max(this.backpack.length - 1, 0));
-        this.trigger("BackpackChanged", this.backpack);
-        return taken;
-    },
-
-    // Returns false (and changes nothing) when the backpack is full.
-    addClay: function(type) {
-        if (this.backpack.length >= BACKPACK_CAPACITY) {
-            showStatus("Backpack full, you can't put more in");
-            return false;
-        }
-        this.backpack.push(type);
-        console.log("One kilo of " + type.name + " clay harvested");
-        this.trigger("BackpackChanged", this.backpack);
-        return true;
+        showStatus(this.inventory.items.length >= this.inventory.capacity
+            ? "Backpack full, you can't put more in"
+            : "You can only carry one kind of thing at a time");
+        return false;
     }
 });

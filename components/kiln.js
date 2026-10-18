@@ -1,13 +1,30 @@
-// The kiln: a translucent zone square that fires one unfired pot for KILN_FIRE_MS,
-// cools it for KILN_COOL_MS, then holds the fired pot, shown as a box, until takePot().
+// The kiln: a translucent zone square holding one pot in its inventory. An unfired pot put in
+// fires for KILN_FIRE_MS, cools for KILN_COOL_MS, then waits, shown as a box, to be taken out.
 // States: empty -> firing -> cooling -> ready -> empty. The square's colour shows the state.
+// The pot can only be taken once ready (transferItem(kiln.inventory, fox.inventory)).
 Crafty.c("Kiln", {
     init: function() {
         this.requires("2D, DOM, Color, Delay");
+        var kiln = this;
+        this.inventory = new Inventory(KILN_CAPACITY, {
+            accepts: function (item) { return item.type === "pot" && !item.fired; },
+            releases: function () { return kiln.state === "ready"; }
+        });
         this.potBox = Crafty.e("2D, DOM, Color")
             .attr({w: 40, h: 40, visible: false})
             .color(FIRED_POT_COLOR);
         this.setState("empty");
+        this.bind("InventoryChanged", function (changed) {
+            if (changed !== this.inventory) {
+                return;
+            }
+            if (this.state === "empty" && this.inventory.items.length > 0) {
+                this.startFiring();
+            } else if (this.state === "ready" && this.inventory.items.length === 0) {
+                this.potBox.visible = false;
+                this.setState("empty");
+            }
+        });
     },
 
     setState: function(state) {
@@ -15,20 +32,16 @@ Crafty.c("Kiln", {
         this.color(KILN_STATE_COLORS[state]);
     },
 
-    // Takes an unfired pot and starts firing it. Returns false if the kiln can't take it.
-    loadPot: function(pot) {
-        if (this.state !== "empty" || !pot || pot.type !== "pot" || pot.fired) {
-            return false;
-        }
+    startFiring: function() {
         this.setState("firing");
         this.delay(function () {
             this.setState("cooling");
             this.delay(this.finishPot, KILN_COOL_MS, 0);
         }, KILN_FIRE_MS, 0);
-        return true;
     },
 
     finishPot: function() {
+        this.inventory.items[0].fired = true;
         this.setState("ready");
         // Centred on the square; placed now because the kiln's position is set after init.
         this.potBox.attr({
@@ -37,15 +50,5 @@ Crafty.c("Kiln", {
             z: this.z + 1,
             visible: true
         });
-    },
-
-    // Returns the fired pot, or null if there isn't one, and empties the kiln.
-    takePot: function() {
-        if (this.state !== "ready") {
-            return null;
-        }
-        this.potBox.visible = false;
-        this.setState("empty");
-        return {type: "pot", fired: true};
     }
 });

@@ -26,23 +26,31 @@
 7. Reset on new run via `resetGameState()`/scene creation.
 
 **Acceptance criteria**
-- [ ] Dig clay twice: 2 slots filled, third dig refused, fox slower per clay as before.
-- [ ] Owl takes selected clay only when idle; pot appears after 8 s; clicking owl moves it to the fox's HUD.
-- [ ] Fox carrying clay cannot take a pot (and vice versa); a full inventory refuses too; nothing is lost.
-- [ ] Pot loads into kiln, fires 10 s, cools 10 s, fired pot (darker) returns to fox.
-- [ ] E cycles, SPACE drops the selected item (clay or pot).
-- [ ] Play Again starts with everything empty. No console errors.
-- [ ] Grep finds no `heldItem` or `backpack` remnants.
+- [x] Dig clay twice: 2 slots filled, third dig refused, fox slower per clay as before.
+- [x] Owl takes selected clay only when idle; pot appears after 8 s; clicking owl moves it to the fox's HUD.
+- [x] Fox carrying clay cannot take a pot (and vice versa); a full inventory refuses too; nothing is lost.
+- [x] Pot loads into kiln, fires 10 s, cools 10 s, fired pot (darker) returns to fox.
+- [x] E cycles, SPACE drops the selected item (clay or pot).
+- [x] Play Again starts with everything empty. No console errors.
+- [x] Grep finds no `heldItem` or `backpack` remnants.
 
 **Constraints** — Crafty 0.9.0, no new deps, plain script tags in `index.html`. New `components/inventory.js`; edits to `fox.js`, `potter.js`, `kiln.js`, `game.js`, `game_state.js`, `constants.js`, HUD component. Update `components/README.md` if it lists components.
 
 **Open questions** — None. Decided: the fox holds one item type at a time (so it can now carry 2 pots); the owl takes one clay at a time, only when idle.
 
 **Tasks**
-- [ ] Write `Inventory` + `transfer` helper
-- [ ] Fox onto Inventory (selection, drop, speed)
-- [ ] Merge HUD components into one inventory display
-- [ ] Owl (`Potter`) onto Inventory
-- [ ] Kiln onto Inventory
-- [ ] Simplify click handlers in `game.js`; remove `heldItem`/`backpack`
-- [ ] Verify all acceptance criteria in browser
+- [x] Write `Inventory` + `transfer` helper
+- [x] Fox onto Inventory (selection, drop, speed)
+- [x] Merge HUD components into one inventory display
+- [x] Owl (`Potter`) onto Inventory
+- [x] Kiln onto Inventory
+- [x] Simplify click handlers in `game.js`; remove `heldItem`/`backpack`
+- [x] Verify all acceptance criteria in browser
+
+## Decisions
+1. Clay-blocks-pot deadlock → status message, drop with SPACE (default).
+2. Kiln loads the selected pot only if unfired; fired pot in hand is refused (default). With room and a ready pot it collects it.
+3. E/SPACE one mechanism on `Inventory.selected` (default). Fox holding one type at a time; may carry 2 pots.
+4. Owl: input holds clay only while idle; `ClayDelivered` event dropped (clay now arrives via `transferItem`).
+5. HUD: one row of capacity slots at (20, 60) (default). Click owl: collect pot first, then give clay (default).
+Verified in browser with simulated frames (preview pane throttles timers). Tap on a device not tested.
