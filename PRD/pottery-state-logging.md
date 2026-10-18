@@ -10,12 +10,12 @@
 
 **Flow**
 1. Game code calls `pottery.advance(to)`.
-2. Success: console shows `Pottery advanced: dug -> wedged`.
-3. Rejection: console shows `Pottery rejected: dug -> firing` as a warning, plus the pottery object.
+2. Success: console shows `potterystate: advanced dug -> wedged`.
+3. Rejection: console shows `potterystate: rejected dug -> firing` as a warning, plus the pottery object.
 
 **Requirements**
-1. A successful advance logs `Pottery advanced: <from> -> <to>` via `console.log`, after the state changes.
-2. A rejected advance logs `Pottery rejected: <from> -> <to>` via `console.warn` with the pottery object.
+1. A successful advance logs `potterystate: advanced <from> -> <to>` via `console.log`.
+2. A rejected advance logs `potterystate: rejected <from> -> <to>` via `console.warn` with the pottery object.
 3. Return values and state transitions are unchanged.
 
 **Acceptance criteria**
