@@ -9,7 +9,7 @@ var MUSIC_VOLUME = 0.25;
 
 // Shown along the bottom of the Start scene.
 var CREDITS = [
-    { role: "Game Dev", name: "Steven Rutherford" },
+    { role: "Game Dev", name: "Steve, Crystal, Jacke, Caleri, James" },
 ];
 
 //click timing
