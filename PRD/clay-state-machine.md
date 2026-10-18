@@ -1,48 +1,57 @@
-# PRD: Clay state machine
+# PRD: Clay state machine (Pottery object)
 
-**Goal** — Every kilo of clay carries one `stage` that moves along a fixed path, and each station may only do its step when the item is in the right stage.
+**Goal** — Every dug kilo of clay becomes one `Pottery` object whose `state` only moves along a fixed path, and each station does its step only when the pottery is in the right state.
 
 **Context**
-- Progress is spread over flags: `wedged` (clay), `drying`/`dried`/`fired` (pot), plus the kiln's own `state`. Each station checks its own flags in its `Inventory` `accepts`/`releases` rules (`workbench.js`, `potter.js`, `drying_shelf.js`, `kiln.js`, `completed_shelf.js`).
-- `itemColor` in `inventory.js` picks colours from those flags; the Kiln already walks empty → firing → cooling → ready.
-- The loop already plays in this order, but nothing says what comes next or rejects a step out of order.
+- Progress is spread over loose flags: `wedged` (clay), `drying`/`dried`/`fired` (pot), plus the Kiln's own `state`. Each station checks them in its `Inventory` `accepts`/`releases` rules (`workbench.js`, `potter.js`, `drying_shelf.js`, `kiln.js`, `completed_shelf.js`).
+- `Inventory` allows one item `type` at a time ("clay" or "pot"); `itemColor` and the HUD outline read the flags.
+- The loop already plays in order, but nothing enforces it.
 
-**Scope** — A small `ITEM_STAGES` table and `advanceStage(item, to)` helper (one place that knows the path); replace the scattered flags with `item.stage`; stations call `advanceStage` and check `item.stage`; `itemColor` reads `stage`.
-**Out of scope** — New stations, glaze, cracking or failure stages, order matching, timings, art, sounds; changing the Kiln's own zone-colour `state` (it stays the station's state, the item's stage follows it).
+**Scope** — A `Pottery` class (new `pottery.js`) with `clay`, `pot` and `state`; a `POTTERY_STATES` table; stations use it instead of flags. **Out of scope** — Glaze (the table just supports optional states), cracking/failure, order matching, new stations, timings, art, sounds, the Kiln's zone-colour `state`.
 
-**Flow** (stage in brackets)
-1. Fox digs clay [dug].
-2. Hold on workbench 3 s [wedged].
-3. Owl takes it and throws a pot [thrown].
-4. Pot put on the drying shelf [drying], then after 15 s [dried].
-5. Dried pot put in the kiln, firing starts [firing].
-6. Firing ends, cooling starts [cooling].
-7. Cooling ends [cooled]; the fox takes it out.
-8. Cooled pot put on the completed shelf [shelved].
+**Flow** (state in brackets)
+1. Dig clay: new Pottery, clay copied from the clay type (name, colour) [dug].
+2. Hold on workbench 3 s: weighed and wedged [wedged].
+3. Owl throws it: `pot` created [thrown].
+4. On drying shelf [drying], after 15 s [dried].
+5. Placed in kiln: firing starts [firing]; then cooling [cooling]; then [cooled]; fox takes it out.
+6. Put on completed shelf [shelved].
 
 **Requirements**
-1. `ITEM_STAGES` in `constants.js` lists the order: dug, wedged, thrown, drying, dried, firing, cooling, cooled, shelved.
-2. `advanceStage(item, to)` succeeds only when `to` is the stage right after `item.stage`; otherwise it returns false and changes nothing. No skipping, no going back.
-3. Dug clay starts as `dug`; the owl's output pot is `thrown`. Both types otherwise unchanged.
-4. Each station's accepts rule is "item is in the stage before mine": workbench `dug`, owl `wedged`, drying shelf `thrown`, kiln `dried`, completed shelf `cooled`. The drying shelf releases only `dried`, the kiln only `cooled`.
-5. Timers advance the stage (drying→dried, firing→cooling→cooled) through `advanceStage`; no code reads `wedged`, `dried`, `drying` or `fired` any more.
-6. Refusal statuses stay as today, based on stage (e.g. "Wedge the clay first", "The pot needs to dry first").
-7. `itemColor` and the HUD outline derive from `stage` and look the same as now for each step (wedged outline, wet/dried/fired colours; a cooling pot shows the in-kiln colour).
+1. `Pottery` has `clay` `{name, color, wedged:false, weight:null}`, `pot` (null until thrown) and `state`. Both `clay` and `pot` start null before the dig; the dig fills `clay`. Shared `CLAY_TYPES` is never mutated.
+2. Wedging sets `clay.wedged = true` and `clay.weight = 1000` (grams, the measured kilo). Throwing sets `pot = {shape, size, dried:false, fired:false, completed:false}` (shape/size placeholders, `"pot"`/`"medium"`); `dried`, `fired`, `completed` flip true on the matching transitions. The pot inherits `clay.color`.
+3. `POTTERY_STATES` in `constants.js` is an ordered list `{name, optional}`: dug, wedged, thrown, drying, dried, firing, cooling, cooled, shelved (none optional yet). `pottery.advance(to)` succeeds if `to` is the next state, or every state between is `optional`; else it returns false, warns in the console and changes nothing. No going back.
+4. `pottery.type` is `"clay"` until `pot` exists, then `"pot"`, so `Inventory`'s one-type rule and the "clay or pots, never both" pack are unchanged.
+5. Each station's accept rule is "pottery is in the state before mine": workbench `dug`, owl `wedged`, drying shelf `thrown`, kiln `dried`, completed shelf `cooled`. Drying shelf releases only `dried`; kiln only `cooled`. The owl moves the same Pottery from input to output (no new object).
+6. Timers advance state through `advance` (drying→dried; firing→cooling→cooled). The Kiln keeps its own `state` for its zone colour, but release now checks `pottery.state === "cooled"`.
+7. No code reads `wedged`, `drying`, `dried`, `fired` on items any more. Refusal statuses stay as today.
+8. `itemColor`/HUD derive from state: dug/wedged clay use `clay.color` (wedged outline as today); thrown/drying use the wet colour; dried/firing/cooling the dried colour; cooled/shelved the fired colour.
 
 **Acceptance criteria**
-- [ ] Full run dig → wedge → owl → dry → kiln → shelf works end to end and the 3rd shelved pot ends the game.
-- [ ] Owl refuses `dug` clay; kiln refuses a `thrown`/`drying` pot; shelf refuses a pot not `cooled`; drying shelf refuses clay.
-- [ ] A pot in the kiln cannot be taken during firing or cooling, only once `cooled`.
-- [ ] `advanceStage` unit check in the console: a skip (`dug`→`thrown`) and a repeat both return false.
-- [ ] HUD and shelf colours match today's for every step; no console errors; `grep` finds no `.wedged`, `.dried`, `.fired`, `.drying`.
+- [ ] Full run dig → wedge → owl → dry → kiln → shelf works; the 3rd shelved pot ends the game.
+- [ ] Owl refuses `dug` clay; kiln refuses a `thrown`/`drying` pot; completed shelf refuses a pot not `cooled`; drying shelf refuses clay.
+- [ ] Pot in the kiln can't be taken during firing or cooling, only when `cooled`.
+- [ ] Console: `advance` on a skip (`dug`→`thrown`) or repeat returns false; a table with an optional middle state lets it be skipped.
+- [ ] After throwing, `pottery.pot` holds shape, size and the three flags; `clay.weight` is 1000 after wedging.
+- [ ] HUD/shelf colours match today's at each step; no console errors; grep finds no `.wedged`/`.dried`/`.fired`/`.drying` on items.
 
-**Constraints** — Crafty 0.9.0, no new deps. Helper lives in `components/inventory.js` beside `itemColor`; edits to `constants.js`, `clay.js`, `workbench.js`, `potter.js`, `drying_shelf.js`, `kiln.js`, `completed_shelf.js`, `inventory_hud.js`; README mentions updated.
+**Constraints** — Crafty 0.9.0, no new deps. New `components/pottery.js` (in `index.html`); edits to `constants.js`, `clay.js`, `workbench.js`, `potter.js`, `drying_shelf.js`, `kiln.js`, `completed_shelf.js`, `inventory.js`, `inventory_hud.js`; README updates.
 
-**Open questions** — None. (Assumed: placing a pot in the kiln starts firing at once, so "placed in kiln" and "firing" share one stage.)
+**Open questions** — None.
 
 **Tasks**
-- [ ] `ITEM_STAGES` + `advanceStage`; `itemColor`/HUD from `stage`
-- [ ] Clay, workbench, owl use stages
-- [ ] Drying shelf and kiln use stages (timers advance them)
-- [ ] Completed shelf uses stages; remove old flags
+- [ ] `Pottery` class, `POTTERY_STATES`, `advance`; `type`, `itemColor`/HUD from state
+- [ ] Clay dig creates Pottery; workbench wedges/weighs; owl throws the pot
+- [ ] Drying shelf and kiln use states (timers advance them)
+- [ ] Completed shelf uses states; remove old flags
 - [ ] README/components README; verify acceptance criteria in the browser
+
+## Decisions
+1. Pottery object with `clay`, `pot`, `state`; owl turns clay into a pot on the same object; optional states supported (user).
+2. Kiln keeps its zone `state`; Pottery state is the truth for release (default).
+3. Drying shelf releases only `dried`.
+4. Colours as listed in req. 8 (default).
+5. Rejected `advance` returns false and warns in the console.
+6. `Pottery` is a plain global, testable from the console.
+7. SPACE drop discards the item as today (default).
+8. Weight = 1000 g set at wedge (my reading of "etc for weight").
