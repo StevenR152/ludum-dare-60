@@ -8,7 +8,7 @@ Crafty.c("Potter", {
         this.making = false;
         var owl = this;
         this.input = new Inventory(OWL_INPUT_CAPACITY, {
-            accepts: function (item) { return item.type === "clay" && owl.isIdle(); }
+            accepts: function (item) { return item.type === "clay" && item.wedged && owl.isIdle(); }
         });
         this.output = new Inventory(OWL_OUTPUT_CAPACITY);
         this.potBox = Crafty.e("2D, DOM, Color")

@@ -67,6 +67,8 @@ Crafty.defineScene("Game", function() {
         }
         if (transferItem(player.inventory, this.input)) {
             showStatus("Gave the master one kilo of " + clay.name + " clay");
+        } else if (clay.type === "clay" && !clay.wedged) {
+            showStatus("Wedge the clay on the workbench first");
         } else {
             showStatus(this.isIdle() ? "The master only wants clay" : "The master is busy, come back when he's done");
         }
@@ -87,13 +89,32 @@ Crafty.defineScene("Game", function() {
         if (transferItem(player.inventory, this.inventory)) {
             return;
         }
-        if (this.state === "ready" && !transferItem(this.inventory, player.inventory)) {
+        var held = player.inventory.selectedItem();
+        if (this.state === "empty" && held && held.type === "pot" && !held.fired && !held.dried) {
+            showStatus("The pot needs to dry first");
+        } else if (this.state === "ready" && !transferItem(this.inventory, player.inventory)) {
             showStatus("You can't carry the pot: your pack is full or holds clay");
         }
     });
 
     // Glazing station, Inside left of the door. Placeholder buckets, not clickable yet.
     Crafty.e("GlazeStation").station(INSIDE_X + 800, 780);
+
+    // Inside stations. The workbench is worked by holding (see Workbench); the shelves by clicking
+    // while the fox touches them. The third completed pot ends the game, after a pause to see it.
+    Crafty.e("Workbench").attr({x: INSIDE_X + 300, y: 560, w: 300, h: 160});
+    var dryingShelf = Crafty.e("DryingShelf").place(INSIDE_X + 1500, 330, 280, 160);
+    var completedShelf = Crafty.e("CompletedShelf").place(INSIDE_X + 1500, 700, 300, 160);
+    [dryingShelf, completedShelf].forEach(function (shelf) {
+        shelf.bind("Click", function () {
+            if (this.intersect(player.x, player.y, player.w, player.h)) {
+                this.useWith(player);
+            }
+        });
+    });
+    completedShelf.bind("OrdersComplete", function () {
+        this.delay(function () { player.trigger("GameOver"); }, 1500, 0);
+    });
 
     var clayOne = Crafty.e("Clay")
         .attr({x: 195, y: 775, w: 80, h: 80})

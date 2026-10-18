@@ -1,4 +1,4 @@
-// The kiln: a translucent zone square holding one pot in its inventory. An unfired pot put in
+// The kiln: a translucent zone square holding one pot in its inventory. A dried, unfired pot put in
 // fires for KILN_FIRE_MS, cools for KILN_COOL_MS, then waits, shown as a box, to be taken out.
 // States: empty -> firing -> cooling -> ready -> empty. The square's colour shows the state.
 // The pot can only be taken once ready (transferItem(kiln.inventory, fox.inventory)).
@@ -7,7 +7,7 @@ Crafty.c("Kiln", {
         this.requires("2D, DOM, Color, Delay");
         var kiln = this;
         this.inventory = new Inventory(KILN_CAPACITY, {
-            accepts: function (item) { return item.type === "pot" && !item.fired; },
+            accepts: function (item) { return item.type === "pot" && item.dried && !item.fired; },
             releases: function () { return kiln.state === "ready"; }
         });
         this.potBox = Crafty.e("2D, DOM, Color")

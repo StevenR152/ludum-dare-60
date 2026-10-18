@@ -44,7 +44,8 @@ Crafty.c("Clay", {
             showStatus("Can't harvest clay without moving fox to spot");
             return;
         }
-        if (!fox.pickUp(this.clayType)) {
+        // A copy, so wedging one kilo never changes the shared type.
+        if (!fox.pickUp(Object.assign({}, this.clayType, {wedged: false}))) {
             return;
         }
         this.dug = true;
