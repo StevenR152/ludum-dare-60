@@ -7,6 +7,8 @@ Crafty.defineScene("Game", function() {
     // HUD (the music button, timer and inventory bar are built together once the holders exist, below)
     Crafty.e("PlayerNotification");
     Crafty.e("StatusMessage");
+    Crafty.e("InventorySlot").attr({x: 20, y: 60});
+    Crafty.e("OrderPanel").attr({x: GAME_SCREEN_WIDTH - 300, y: 60}).start();
 
     // Outside map, drawn at half its 4000x2160 source size; z keeps it behind everything.
     Crafty.e("2D, DOM, backgroundOutside")
@@ -89,6 +91,9 @@ Crafty.defineScene("Game", function() {
             showStatus("You can't carry the pot: your pack is full or holds clay");
         }
     });
+
+    // Glazing station, Inside left of the door. Placeholder buckets, not clickable yet.
+    Crafty.e("GlazeStation").station(INSIDE_X + 800, 780);
 
     var clayOne = Crafty.e("Clay")
         .attr({x: 195, y: 775, w: 80, h: 80})
