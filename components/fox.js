@@ -15,6 +15,14 @@ Crafty.c("Fox", {
             }
         });
         this.bind("KeyDown", this.onKeyDown);
+        // The sprite faces right; mirror it while walking left, keep the last facing when stopped/vertical.
+        this.bind("NewDirection", function (direction) {
+            if (direction.x < 0) {
+                this.flip("X");
+            } else if (direction.x > 0) {
+                this.unflip("X");
+            }
+        });
     },
 
     updateSpeed: function() {
