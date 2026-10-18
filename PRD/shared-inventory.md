@@ -17,8 +17,8 @@
 4. E selects, SPACE drops, as today.
 
 **Requirements**
-1. `Inventory(capacity)` rejects `add` when full (returns false) and never exceeds capacity.
-2. Fox has one inventory holding clay and pots; capacity stays 2 slots. Speed slowdown still counts clay only.
+1. `Inventory(capacity)` rejects `add` when full, or when the item's `type` differs from those held (returns false); never exceeds capacity. Unfired and fired pots are both `pot`.
+2. Fox has one 2-slot inventory holding one item type at a time (all clay or all pots). Speed slowdown still counts clay only.
 3. Owl input inventory holds clay; output holds ≤1 pot. Kiln holds 1 pot (in, then fired out). Capacities are constants in `constants.js`.
 4. `gameState.heldItem`, `fox.backpack`, `Potter.clay/hasPot`, `BackpackChanged` and the `Potter`/`Kiln` ad-hoc take/load plumbing are removed.
 5. A single `transfer(from, to, item)` moves items atomically (fails without change if `to` is full or refuses).
@@ -28,7 +28,7 @@
 **Acceptance criteria**
 - [ ] Dig clay twice: 2 slots filled, third dig refused, fox slower per clay as before.
 - [ ] Owl takes selected clay only when idle; pot appears after 8 s; clicking owl moves it to the fox's HUD.
-- [ ] Fox with a full inventory cannot take the owl's/kiln's pot; nothing is lost.
+- [ ] Fox carrying clay cannot take a pot (and vice versa); a full inventory refuses too; nothing is lost.
 - [ ] Pot loads into kiln, fires 10 s, cools 10 s, fired pot (darker) returns to fox.
 - [ ] E cycles, SPACE drops the selected item (clay or pot).
 - [ ] Play Again starts with everything empty. No console errors.
@@ -36,9 +36,7 @@
 
 **Constraints** — Crafty 0.9.0, no new deps, plain script tags in `index.html`. New `components/inventory.js`; edits to `fox.js`, `potter.js`, `kiln.js`, `game.js`, `game_state.js`, `constants.js`, HUD component. Update `components/README.md` if it lists components.
 
-**Open questions**
-1. Should clay and pots share the fox's 2 slots (assumed), or keep a separate pot slot?
-2. Owl holds only 1 clay at a time today (idle-only intake); keep that rule (assumed) or allow queueing up to capacity?
+**Open questions** — None. Decided: the fox holds one item type at a time (so it can now carry 2 pots); the owl takes one clay at a time, only when idle.
 
 **Tasks**
 - [ ] Write `Inventory` + `transfer` helper
