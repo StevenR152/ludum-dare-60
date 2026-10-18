@@ -5,6 +5,7 @@
 //   var pottery = new Pottery(CLAY_TYPES.brown);   // state "dug", 1000 g
 //   pottery.advance("wedged");                      // true; pottery.advance("firing") would be false
 //   var piece = pile.weighOut(200);                 // a new "weighed" 200 g Pottery; the pile keeps the rest
+// A thrown pot also has a dryness (0 wet .. 1 bone dry, see dryStage and dry) and a trimmed flag.
 // `type` is "clay" until there is a pot, then "pot", so Inventory's one-type rule works as before.
 function Pottery(clayType, states) {
     this.states = states || POTTERY_STATES;
@@ -58,10 +59,28 @@ Pottery.prototype = {
         return piece;
     },
     
+    // "wet", "leatherHard" or "boneDry" (DRY_STAGE_COLORS' keys).
+    dryStage: function () {
+        if (this.pot.dryness >= 1) {
+            return "boneDry";
+        }
+        return this.pot.dryness >= LEATHER_HARD_AT ? "leatherHard" : "wet";
+    },
+
+    // Dries an unfired, uncracked pot for `ms`, `slowdown` times slower than on the drying shelf.
+    // Returns true if its dryness changed.
+    dry: function (ms, slowdown) {
+        if (this.state !== "thrown" || this.pot.cracked || this.pot.dryness >= 1) {
+            return false;
+        }
+        this.pot.dryness = Math.min(1, this.pot.dryness + ms / ((DRY_BASE_MS + this.pot.weight * DRY_MS_PER_GRAM) * slowdown));
+        return true;
+    },
+
     // The kiln calls this with a FIRE_LEVELS name before advance("firing"). Returns false, warns and
-    // changes nothing for an unknown level or unless the pottery is dried and not yet in the kiln.
+    // changes nothing for an unknown level or unless the pot is thrown and not yet in the kiln.
     setFireLevel: function (level) {
-        if (FIRE_LEVELS.indexOf(level) < 0 || this.state !== "dried") {
+        if (FIRE_LEVELS.indexOf(level) < 0 || this.state !== "thrown") {
             console.warn("Pottery can't be fired at " + level + " while " + this.state, this);
             return false;
         }
@@ -82,13 +101,12 @@ Pottery.prototype = {
             this.clay.wedged = true;
         } else if (to === "thrown") {
             this.pot = {shape: model.shape, size: model.size, weight: this.clay.weight, glaze: [],
-                dried: false, fired: false, completed: false, fireLevel: null, cracked: false};
-        } else if (to === "dried") {
-            this.pot.dried = true;
+                dryness: 0, trimmed: false, fired: false, completed: false, fireLevel: null, cracked: false};
         } else if (to === "cooled") {
             this.pot.fired = true;
-            // No level set counts as a mismatch.
-            this.pot.cracked = this.pot.fireLevel !== this.clay.fireLevel;
+            // No level set counts as a mismatch. Pots don't dry in the kiln, so this is the dryness it went in
+            // with; anything short of bone dry cracks. A pot cracked before firing stays cracked.
+            this.pot.cracked = this.pot.cracked || this.pot.fireLevel !== this.clay.fireLevel || this.pot.dryness < 1;
         } else if (to === "shelved") {
             this.pot.completed = true;
         }

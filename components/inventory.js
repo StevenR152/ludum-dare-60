@@ -120,5 +120,57 @@ function itemColor(item) {
     if (!item.before("cooled")) {
         return FIRED_POT_COLOR;
     }
-    return item.before("dried") ? POT_COLOR : DRIED_POT_COLOR;
+    return item.before("firing") ? DRY_STAGE_COLORS[item.dryStage()] : POT_COLOR;
 }
+
+// True for a pot that dries: thrown, not yet fired, not cracked.
+function isDrying(item) {
+    return !!item && item.type === "pot" && item.state === "thrown" && !item.pot.cracked;
+}
+
+// The border that marks an item's box: on a pot, solid green if trimmed and dashed orange if not (cracked
+// or fired, too); white on weighed clay. Use markBorder to apply it to every box that shows an item.
+function itemBorder(item) {
+    if (item && item.type === "pot") {
+        return item.pot.trimmed ? "3px solid " + TRIMMED_BORDER_COLOR : "3px dashed " + UNTRIMMED_BORDER_COLOR;
+    }
+    return item && item.state === "weighed" ? "2px solid #FFF" : "none";
+}
+
+function markBorder(box, item) {
+    box.css({boxSizing: 'border-box', border: itemBorder(item)});
+}
+
+// A wet—leather hard—bone dry bar under a drying pot: a dark track, a fill in the pot's stage colour as
+// long as its dryness, and a white tick where leather hard starts. `layer` is "DOM" or "HUD".
+//   var bar = new DryBar("HUD");
+//   bar.place(x, y, 40, z).show(pot);   // hidden unless the pot is drying
+function DryBar(layer) {
+    var parts = "2D, " + layer + ", Color";
+    this.track = Crafty.e(parts).attr({h: DRY_BAR_H, visible: false}).color(DRY_BAR_COLOR);
+    this.fill = Crafty.e(parts).attr({h: DRY_BAR_H, visible: false});
+    this.tick = Crafty.e(parts).attr({w: 1, h: DRY_BAR_H, visible: false}).color("#FFF");
+}
+var DRY_BAR_H = 6;
+
+DryBar.prototype.place = function (x, y, w, z) {
+    this.track.attr({x: x, y: y, w: w, z: z});
+    this.fill.attr({x: x, y: y, z: z + 1});
+    this.tick.attr({x: x + Math.round(w * LEATHER_HARD_AT), y: y, z: z + 2});
+    return this;
+};
+
+DryBar.prototype.show = function (item, shown) {
+    var on = shown !== false && isDrying(item);
+    this.track.visible = this.tick.visible = this.fill.visible = on;
+    if (on) {
+        this.fill.attr({w: Math.max(1, this.track.w * item.pot.dryness)}).color(DRY_STAGE_COLORS[item.dryStage()]);
+    }
+    return this;
+};
+
+DryBar.prototype.destroy = function () {
+    this.track.destroy();
+    this.fill.destroy();
+    this.tick.destroy();
+};

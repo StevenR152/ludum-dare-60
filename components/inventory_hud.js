@@ -1,9 +1,10 @@
 // One HUD row: a label, then a grey square per slot of each inventory given. An item in a slot is
 // drawn centred in it in its own colour and shape (ITEM_SHAPES: clay square, pot thin).
-// The selected slot of an inventory with more than one item is outlined in white.
-// Redraws whenever one of its inventories changes.
+// The selected slot of an inventory with more than one item is outlined in white. A drying pot has a
+// DryBar under its slot; a pot a border: solid green if trimmed, dashed orange if not (markBorder).
+// Redraws whenever one of its inventories changes, and as pots dry ("PotsDried").
 //   Crafty.e("InventoryHud").attr({x: 20, y: 60}).show("Fox", [player.inventory]);
-//   Crafty.e("InventoryHud").attr({x: 20, y: 105}).show("Master", [owl.input, owl.output]);
+//   Crafty.e("InventoryHud").attr({x: 20, y: 105}).show("Master", [owl.inventory]);
 var INVENTORY_HUD_LABEL_W = 70;
 Crafty.c("InventoryHud", {
     init: function() {
@@ -16,6 +17,7 @@ Crafty.c("InventoryHud", {
                 this.refresh();
             }
         });
+        this.bind("PotsDried", this.refresh);
         this.bind("Remove", function () {
             this.parts.forEach(function (part) { part.destroy(); });
         });
@@ -37,7 +39,9 @@ Crafty.c("InventoryHud", {
                 this.parts.push(slot);
                 var itemBox = Crafty.e("2D, HUD, Color").attr({z: 1001, visible: false});
                 this.parts.push(itemBox);
-                this.slots.push({box: slot, itemBox: itemBox, inventory: inventory, index: i});
+                var bar = new DryBar("HUD").place(x + 2, this.y + 34, 36, 1002);
+                this.parts.push(bar);
+                this.slots.push({box: slot, itemBox: itemBox, bar: bar, inventory: inventory, index: i});
                 x += 50;
             }
         }, this);
@@ -64,8 +68,8 @@ Crafty.c("InventoryHud", {
                 slot.itemBox.color(itemColor(item));
             }
             markCracked(slot.itemBox, item);
-            // Weighed clay gets a white outline.
-            slot.itemBox.css({boxSizing: 'border-box', border: item && item.state === "weighed" ? '2px solid #FFF' : 'none'});
+            slot.bar.show(item, this.shown);
+            markBorder(slot.itemBox, item);
             slot.box.css({boxSizing: 'border-box', border: outlined ? '3px solid #FFF' : '3px solid #222'});
         }, this);
         return this;
