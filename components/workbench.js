@@ -84,6 +84,16 @@ Crafty.c("Workbench", {
         }
     },
 
+    // A model dropped while the fox is at the bench goes back to its spot (the fox's offerToStations).
+    acceptDrop: function(item) {
+        if (item.type !== "model") {
+            return false;
+        }
+        Crafty.trigger("ModelReturned", item);
+        showStatus("Put the model back on the bench");
+        return true;
+    },
+
     returnModel: function(model) {
         this.modelSpots.forEach(function (spot) {
             if (spot.model === model) {

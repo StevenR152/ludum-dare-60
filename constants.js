@@ -15,6 +15,8 @@ var CREDITS = [
 //click timing
 var CLAY_DIG_MS=2000;
 var CLAY_RESPAWN_MS = 20000;
+// Clay of a node's colour dropped on a dug node takes this share of CLAY_RESPAWN_MS off its respawn.
+var CLAY_REFILL_PERCENT = 0.5;
 
 //clay
 var CLAY_TYPES = {

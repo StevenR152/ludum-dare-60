@@ -2,8 +2,9 @@
 // kind in any mix (2 dug clays, weighed clay and a model, 2 pots, a pot and a model...).
 // Each 1000 g of clay carried slows the fox by FOX_SLOWDOWN_PER_KG of its base speed, and every dropped
 // item it overlaps multiplies its speed by DROPPED_ITEM_SLOWDOWN (see DroppedItem).
-// E steps through the slots; SPACE drops the selected item on the ground. A moving fox carrying something
-// may also stumble and drop a random item; the more it is slowed, the likelier.
+// E steps through the slots; SPACE puts the selected item back at the Workbench or Clay node the fox stands
+// at if that takes it, else drops it on the ground. A moving fox carrying something may also stumble and
+// drop a random item on the ground; the more it is slowed, the likelier.
 //   var player = Crafty.e("Fox").attr({x: 920, y: 820});
 Crafty.c("Fox", {
     init: function() {
@@ -63,15 +64,35 @@ Crafty.c("Fox", {
         this.inventory.selectNext();
     },
 
-    // The selected item lands on the ground at the fox's feet.
+    // The selected item goes back to the station the fox stands at if it takes it (a model to the
+    // workbench, clay to its clay node), otherwise it lands on the ground at the fox's feet.
     dropSelected: function() {
         var dropped = this.inventory.take();
         if (!dropped) {
             showStatus("Nothing to drop");
             return;
         }
+        if (this.offerToStations(dropped)) {
+            Crafty.trigger("ItemMoved", {item: dropped, from: this.inventory, to: null});
+            return;
+        }
         this.dropItem(dropped);
         showStatus(dropped.type === "clay" ? "Dropped " + dropped.clay.weight + " g of " + dropped.clay.name + " clay" : "Dropped the " + dropped.type);
+    },
+
+    // True if a Workbench or Clay node the fox overlaps took the item (their acceptDrop(item, fox)).
+    // Stumbles skip this: a stumbled item always hits the ground.
+    offerToStations: function(item) {
+        var fox = this;
+        var taken = false;
+        ["Workbench", "Clay"].forEach(function (name) {
+            Crafty(name).each(function () {
+                if (!taken && this.intersect(fox.x, fox.y, fox.w, fox.h) && this.acceptDrop(item, fox)) {
+                    taken = true;
+                }
+            });
+        });
+        return taken;
     },
 
     // Puts an item already out of the inventory on the ground.
