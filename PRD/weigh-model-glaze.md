@@ -62,4 +62,4 @@
 6. The scales open the slider when the fox touches them and clicks.
 7. Bench 520×200 with the scales, the pile and a 3×3 model grid (enlarge, user).
 8. One dip per bucket, at most 2, in order, instant (default).
-9. Wedged clay goes onto the bench pile, not the pack, so the fox never carries unweighed wedged clay (my reading of "puts it on the bench").
+9. All wedged clay stays on the bench until it is weighed; only the weighed piece is carried by the fox (user).
