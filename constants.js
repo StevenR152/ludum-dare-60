@@ -142,6 +142,8 @@ var COMPLETED_CAPACITY = 3;
 // Zone square colours of the inside stations.
 var WEIGHING_STATION_COLOR = "#800080";
 var WORKBENCH_COLOR = "rgba(139, 90, 43, 0.45)";
+// Shelf slot boxes: how far below the shelf box's top they sit.
+var SHELF_SLOT_TOP = 2;
 var SHELF_COLOR = "rgba(90, 120, 160, 0.35)";
 
 // Sound names (see gameAssets.audio). GameSounds picks pot sounds by stage and, for wet pots, by clay.

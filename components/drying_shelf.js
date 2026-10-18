@@ -35,7 +35,7 @@ Crafty.c("DryingShelf", {
     drawBars: function() {
         for (var i = 0; i < this.inventory.capacity; i++) {
             var x = this.x + 20 + i * 60;
-            var y = this.y + (this.h - 40) / 2 + 46;
+            var y = this.slotTop() + 46;
             if (!this.bars[i]) {
                 this.slotBoxes[i].addComponent("Mouse").bind("MouseDown", this.trigger.bind(this, "SlotClicked", i));
                 this.bars[i] = new DryBar("DOM");

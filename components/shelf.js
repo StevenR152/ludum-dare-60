@@ -22,6 +22,11 @@ Crafty.c("Shelf", {
         return this;
     },
 
+    // Slots sit SHELF_SLOT_TOP below the top of the shelf box, whatever its height.
+    slotTop: function() {
+        return this.y + SHELF_SLOT_TOP;
+    },
+
     // Positioned now, not in init, because the shelf's position is set after init.
     drawSlots: function() {
         for (var i = 0; i < this.inventory.capacity; i++) {
@@ -30,7 +35,7 @@ Crafty.c("Shelf", {
             }
             var item = this.inventory.items[i];
             this.slotBoxes[i]
-                .attr({x: this.x + 20 + i * 60, y: this.y + (this.h - 40) / 2, z: this.z + 1})
+                .attr({x: this.x + 20 + i * 60, y: this.slotTop(), z: this.z + 1})
                 .color(item ? itemColor(item) : "rgba(255, 255, 255, 0.4)");
             markCracked(this.slotBoxes[i], item);
             markBorder(this.slotBoxes[i], item);

@@ -3,7 +3,7 @@
 //   in the pack, now "wedged"). Clay is weighed first, at the WeighingStation.
 // - Models (right): one per ORDER_SHAPES; click one to carry it to the owl. It comes
 //   back to its spot on "ModelReturned".
-//   Crafty.e("Workbench").place(INSIDE_X + 600, 560, 520, 200);
+//   Crafty.e("Workbench").place(-1850, 242, 260, 50);
 Crafty.c("Workbench", {
     init: function() {
         this.requires("2D, DOM, Color, Mouse, Delay, Collision");
@@ -22,19 +22,22 @@ Crafty.c("Workbench", {
     // Parts are laid out from the bench's position, so they are made here rather than in init.
     place: function(x, y, w, h) {
         this.attr({x: x, y: y, w: w, h: h});
+        // One model spot per shape, side by side across the left half; the right half is bare bench to wedge on.
+        var gap = 3;
+        var spotW = (w / 2 - gap * (ORDER_SHAPES.length + 1)) / ORDER_SHAPES.length;
         ORDER_SHAPES.forEach(function (shape, col) {
-            this.addModelSpot({type: "model", shape: shape}, x + 320 + col * 66, y + 10);
+            this.addModelSpot({type: "model", shape: shape}, x + gap + col * (spotW + gap), y + gap, spotW, h - gap * 2);
         }, this);
         return this;
     },
 
-    addModelSpot: function(model, x, y) {
+    addModelSpot: function(model, x, y, w, h) {
         var bench = this;
         var spot = Crafty.e("2D, DOM, Color, Text, Mouse")
-            .attr({x: x, y: y, w: 62, h: 56, z: this.z + 1})
+            .attr({x: x, y: y, w: w, h: h, z: this.z + 1})
             .text(model.shape)
             .textFont({size: "12px", weight: "bold"}).textColor("#FFF").unselectable()
-            .css({lineHeight: "56px", textAlign: "center"});
+            .css({lineHeight: h + "px", textAlign: "center"});
         spot.model = model;
         spot.home = true;
         spot.bind("MouseDown", function () { bench.takeModel(spot); });
