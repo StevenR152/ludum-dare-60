@@ -1,6 +1,6 @@
 // Placeholder glazing station: two bucket squares, Glaze A (yellow) and Glaze B (red).
 // Not interactive yet.
-//   Crafty.e("GlazeStation").station(1300, 600);
+//   Crafty.e("GlazeStation").station(INSIDE_X + 800, 780);
 Crafty.c("GlazeStation", {
     station: function(x, y) {
         var names = Object.keys(GLAZE_BUCKET_COLORS);

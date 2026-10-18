@@ -88,8 +88,8 @@ Crafty.defineScene("Game", function() {
         }
     });
 
-    // Glazing station, Outside between the door and the kiln. Placeholder buckets, not clickable yet.
-    Crafty.e("GlazeStation").station(1300, 600);
+    // Glazing station, Inside left of the door. Placeholder buckets, not clickable yet.
+    Crafty.e("GlazeStation").station(INSIDE_X + 800, 780);
 
     var clayOne = Crafty.e("Clay")
         .attr({x: 195, y: 775, w: 80, h: 80})

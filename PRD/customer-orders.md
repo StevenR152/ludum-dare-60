@@ -23,7 +23,7 @@
 4. `ORDER_INTERVAL_MS = 120000` is in `constants.js`. Orders are created by game time (first at 0:00), so they pause with `Crafty.pause()`. No order is created while 5 are listed.
 5. Orders live in `gameState.orders` and reset with `resetGameState()`.
 6. The panel shows a square in the order's `CLAY_TYPES` colour, the words, and a progress bar of time left; it grows downward under the timer, at most 5 orders. At 0 the bar is empty and the order stays.
-7. Outside has a glazing station with two squares, Glaze A yellow and Glaze B red. Clicking them does nothing yet.
+7. Inside has a glazing station with two squares, Glaze A yellow and Glaze B red. Clicking them does nothing yet.
 8. New orders trigger `Crafty.trigger("OrderAdded", order)` for later features.
 
 **Acceptance criteria**
@@ -31,7 +31,7 @@
 - [x] Each order has all five fields, drawn from the allowed values only.
 - [x] Each order shows one clay square in a valid clay colour.
 - [x] The bar drains over 10, 7 or 3 minutes for Slow, Medium, Fast (check with a shortened scale) and stops at empty.
-- [x] The glazing station shows a yellow and a red square Outside.
+- [x] The glazing station shows a yellow and a red square Inside.
 - [x] Grams match the table for all nine shape/size combinations (check in console).
 - [x] The panel doesn't overlap the timer, and multiple orders stack readably.
 - [x] Start a new run: orders are cleared and the clock restarts.
