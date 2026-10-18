@@ -56,6 +56,15 @@ Pottery.prototype = {
         piece.advance("weighed");
         this.clay.weight -= grams;
         return piece;
+    // The kiln calls this with a FIRE_LEVELS name before advance("firing"). Returns false, warns and
+    // changes nothing for an unknown level or unless the pottery is dried and not yet in the kiln.
+    setFireLevel: function (level) {
+        if (FIRE_LEVELS.indexOf(level) < 0 || this.state !== "dried") {
+            console.warn("Pottery can't be fired at " + level + " while " + this.state, this);
+            return false;
+        }
+        this.pot.fireLevel = level;
+        return true;
     },
 
     // Returns false, warns and changes nothing unless `to` may follow the current state.
@@ -70,11 +79,13 @@ Pottery.prototype = {
             this.clay.wedged = true;
         } else if (to === "thrown") {
             this.pot = {shape: model.shape, size: model.size, weight: this.clay.weight, glaze: [],
-                dried: false, fired: false, completed: false};
+                dried: false, fired: false, completed: false, fireLevel: null, cracked: false};
         } else if (to === "dried") {
             this.pot.dried = true;
         } else if (to === "cooled") {
             this.pot.fired = true;
+            // No level set counts as a mismatch.
+            this.pot.cracked = this.pot.fireLevel !== this.clay.fireLevel;
         } else if (to === "shelved") {
             this.pot.completed = true;
         }

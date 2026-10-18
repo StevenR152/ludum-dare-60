@@ -18,10 +18,13 @@ var CLAY_RESPAWN_MS = 20000;
 
 //clay
 var CLAY_TYPES = {
-    brown: { type: "clay", name: "brown", color: '#311909' },
-    red:   { type: "clay", name: "red",   color: '#650b0b' },
-    blue:  { type: "clay", name: "blue",  color: '#15a0a0' },
+    brown: { type: "clay", name: "brown", color: '#311909', fireLevel: "low" },
+    red:   { type: "clay", name: "red",   color: '#650b0b', fireLevel: "mid" },
+    blue:  { type: "clay", name: "blue",  color: '#15a0a0', fireLevel: "high" },
 };
+// Firing levels, lowest first (the kiln burns 1, 2 or 3 logs for them). A pot fired at any other
+// level than its clay's cracks when it cools.
+var FIRE_LEVELS = ["low", "mid", "high"];
 var CLAY_DUG_COLOR = '#BBB';
 
 // Fox movement and inventory; each 1000 g of clay carried takes 20% off the base speed.
@@ -40,20 +43,31 @@ var KILN_STATE_COLORS = {
     empty: "rgba(255, 255, 255, 0.25)",
     firing: "rgba(230, 80, 30, 0.5)",
     cooling: "rgba(110, 140, 180, 0.5)",
+    loaded: "rgba(255, 255, 255, 0.25)",
     ready: "rgba(255, 255, 255, 0.25)"
 };
 
 // Inventory sizes of the owl (clay and a model in, pots out) and the kiln. The fox's is FOX_INVENTORY_CAPACITY.
 var OWL_INPUT_CAPACITY = 1;
 var OWL_OUTPUT_CAPACITY = 1;
+
 var OWL_MODEL_CAPACITY = 1;
-var KILN_CAPACITY = 1;
+var KILN_CAPACITY = 4;
+
+// Wood: logs the kiln holds, logs per fire level (1 log low, 2 mid, 3 high), how long the fox chops one, colours.
+var KILN_WOOD_CAPACITY = 3;
+var KILN_FIRE_LEVELS = ["low", "mid", "high"];
+var LOG_CHOP_MS = 1000;
+var LOG_COLOR = "#6B4423";
+var FOREST_COLOR = "rgba(40, 120, 50, 0.4)";
+var TORCH_COLOR = "#F28C28";
 
 // How an item looks inside an inventory HUD slot (a 40x40 grey square): clay a square, pots thinner.
 var ITEM_SHAPES = {
     clay: {w: 28, h: 28},
     pot: {w: 16, h: 30},
     model: {w: 26, h: 16}
+    log: {w: 32, h: 12}
 };
 // Orders: a new customer order every ORDER_INTERVAL_MS (the first at 0:00), at most ORDER_MAX listed.
 var ORDER_INTERVAL_MS = 120000;

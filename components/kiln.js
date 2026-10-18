@@ -17,19 +17,28 @@ Crafty.c("Kiln", {
             accepts: function (item) { return !!kiln.passFor(item); },
             releases: function () { return kiln.state === "ready"; }
         });
-        this.potBox = Crafty.e("2D, DOM, Color")
-            .attr({w: 40, h: 40, visible: false})
-            .color(FIRED_POT_COLOR);
+        this.woodInventory = new Inventory(KILN_WOOD_CAPACITY, {
+            accepts: function (item) { return item.type === "log"; }
+        });
+        this.fireLevel = null;
+        this.potBoxes = [];
+        for (var i = 0; i < KILN_CAPACITY; i++) {
+            this.potBoxes.push(Crafty.e("2D, DOM, Color")
+                .attr({w: 40, h: 40, visible: false})
+                .color(FIRED_POT_COLOR));
+        }
         this.setState("empty");
         this.bind("InventoryChanged", function (changed) {
             if (changed !== this.inventory) {
                 return;
             }
             if (this.state === "empty" && this.inventory.items.length > 0) {
-                this.startFiring();
-            } else if (this.state === "ready" && this.inventory.items.length === 0) {
-                this.potBox.visible = false;
-                this.setState("empty");
+                this.setState("loaded");
+            } else if (this.state === "ready") {
+                this.showPots();
+                if (this.inventory.items.length === 0) {
+                    this.setState("empty");
+                }
             }
         });
     },
@@ -47,27 +56,65 @@ Crafty.c("Kiln", {
         this.color(KILN_STATE_COLORS[state]);
     },
 
+    // Starts firing if there is a pot and wood; otherwise says what is missing. Returns true if lit.
+    light: function() {
+        if (this.state !== "loaded" && this.state !== "empty") {
+            showStatus("The kiln is already lit");
+        } else if (this.state === "empty") {
+            showStatus("Put a pot in the kiln first");
+        } else if (this.woodInventory.items.length === 0) {
+            showStatus("Put wood in the kiln first");
+        } else {
+            this.startFiring();
+            return true;
+        }
+        return false;
+    },
+
     startFiring: function() {
         var pot = this.inventory.items[0];
         var pass = this.passFor(pot);
         this.setState("firing");
-        pot.advance(pass.firing);
+          var logs = this.woodInventory.items.length;
+        this.fireLevel = KILN_FIRE_LEVELS[logs - 1];
+        this.woodInventory.items.length = 0;
+        this.woodInventory.selected = 0;
+        this.woodInventory.changed();
+        showStatus("The kiln is lit: " + this.fireLevel + " fire");
+        this.inventory.items.forEach(function (pot) {
+            pot.setFireLevel(this.fireLevel);
+            pot.advance("firing");
+        }, this);
         this.delay(function () {
             this.setState("cooling");
-            pot.advance(pass.cooling);
-            this.delay(function () { this.finishPot(pot, pass); }, KILN_COOL_MS, 0);
+            this.inventory.items.forEach(function (pot) { pot.advance("cooling"); });
+            this.delay(this.finishPot, KILN_COOL_MS, 0);
         }, KILN_FIRE_MS, 0);
     },
 
-    finishPot: function(pot, pass) {
-        pot.advance(pass.done);
+    finishPot: function() {
+        this.inventory.items.forEach(function (pot) { pot.advance(pass.done); });
         this.setState("ready");
-        // Centred on the square; placed now because the kiln's position is set after init.
-        this.potBox.attr({
-            x: this.x + (this.w - this.potBox.w) / 2,
-            y: this.y + (this.h - this.potBox.h) / 2,
-            z: this.z + 1,
-            visible: true
-        }).color(itemColor(pot));
+        this.showPots();
+    },
+  
+    // One box per pot waiting, in a row centred on the square (placed now: the kiln's position is set after init).
+    showPots: function() {
+        var count = this.inventory.items.length;
+        var gap = 10;
+        this.potBoxes.forEach(function (box, i) {
+            var rowW = count * box.w + (count - 1) * gap;
+            box.attr({
+                x: this.x + (this.w - rowW) / 2 + i * (box.w + gap),
+                y: this.y + (this.h - box.h) / 2,
+                z: this.z + 1,
+                visible: i < count
+            });
+            var pot = this.inventory.items[i];
+            if (pot) {
+                box.color(itemColor(pot));
+            }
+            markCracked(box, pot);
+        }, this);
     }
 });

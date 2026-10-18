@@ -92,10 +92,24 @@ Inventory.prototype.find = function (test) {
     return this.items.findIndex(test);
 };
 
+// Draws a black cross over an item's box if it is a cracked pot, and clears it otherwise.
+// Call with every box that shows an item, e.g. the HUD slot and shelf slots (and the kiln's pot box).
+function markCracked(box, item) {
+    var line = function (corner) {
+        return "linear-gradient(to " + corner + ", transparent calc(50% - 1.5px), #000 calc(50% - 1.5px), " +
+            "#000 calc(50% + 1.5px), transparent calc(50% + 1.5px))";
+    };
+    var cracked = item && item.type === "pot" && item.pot.cracked;
+    box.css({backgroundImage: cracked ? line("top right") + ", " + line("bottom right") : "none"});
+}
+
 // Display colour of an item, for the HUD. A glazed pot shows its last dip.
 function itemColor(item) {
     if (item.type === "model") {
         return MODEL_COLOR;
+    }
+    if (item.type === "log") {
+        return LOG_COLOR;
     }
     if (item.type === "clay") {
         return item.clay.color;
