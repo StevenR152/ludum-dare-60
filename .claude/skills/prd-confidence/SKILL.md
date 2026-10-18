@@ -40,5 +40,5 @@ Then stop and wait for answers.
 - Edit the PRD in place: tighten the affected requirements, flow steps, and acceptance checks, and resolve or remove any **Open questions**.
 - Add a short `## Decisions` section at the end: one line per question → answer (mark taken defaults as "(default)").
 - Keep the PRD crisp. Rewrite lines rather than adding new paragraphs.
-- Commit just that file: `git add PRD/<file>.md && git commit -m "PRD: clarify <feature>"`.
+- Don't commit; leave the edited PRD uncommitted for the user.
 - Summarise what changed in 2–3 lines. If an answer revealed new major uncertainty, offer one more short round.

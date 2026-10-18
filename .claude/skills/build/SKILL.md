@@ -28,12 +28,10 @@ Work through an approved PRD's Tasks, then leave a running preview the user can 
 - Tick the criteria that passed. Leave any you couldn't verify unticked, with a short note why (e.g. "touch not device-tested").
 
 ## 5. Hand back
-- Tick the Tasks, then commit the code and the PRD together, describing what changed and why.
-- Push the branch (`git push -u origin HEAD`) and open a **draft** PR against `main` with `gh pr create --draft`. Title: the PRD title. Body: the PRD's Goal, then its acceptance criteria with ticks, noting any left unverified. Never mark it ready for review or enable auto-merge; the user does that.
-- If the push or `gh` fails (no remote, not signed in), say so and leave the commit local.
+- Tick the Tasks in the PRD.
+- Do not commit, push, or open a PR; leave all changes uncommitted in the worktree for the user to review and commit.
 - Leave the preview server running.
 - End with:
-  - The draft PR link.
   - **Play it:** `http://localhost:<port>` (the port from step 4).
   - What was verified, and what wasn't.
   - The worktree name and branch, so the user knows where the work is.
