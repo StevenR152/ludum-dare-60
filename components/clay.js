@@ -1,6 +1,6 @@
 // Hold for CLAY_DIG_MS to dig; the pile greys out and triggers "ClayDug" with its
 // type, then respawns (own colour, diggable again) after CLAY_RESPAWN_MS.
-//   Crafty.e("Clay").attr({x: 195, y: 775, w: 80, h: 80}).clay(CLAY_TYPES.brown);
+//   Crafty.e("Clay").attr({x: 195, y: 775, w: 80, h: 80}).clay(CLAY_TYPES.black);
 Crafty.c("Clay", {
     init: function() {
         this.requires("2D, DOM, Color, Mouse, Delay, Collision");

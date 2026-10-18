@@ -17,8 +17,7 @@ Crafty.c("Potter", {
             releases: function (item) { return this.isFinished(item); }.bind(this)
         });
         this.potBox = Crafty.e("2D, DOM, Color")
-            .attr({w: 40, h: 40, visible: false})
-            .color(POT_COLOR);
+            .attr({w: 40, h: 40, visible: false});
         this.bind("InventoryChanged", function (changed) {
             if (changed === this.inventory) {
                 this.showPot();
@@ -159,8 +158,8 @@ Crafty.c("Potter", {
                 x: this.x + (this.w - this.potBox.w) / 2,
                 y: this.y + this.h - this.potBox.h - 10,
                 z: this.z + 1
-            }).color(itemColor(pot));
-            markCracked(this.potBox, pot);
+            });
+            paintItem(this.potBox, pot);
             markBorder(this.potBox, pot);
         }
         this.potBox.visible = index >= 0;

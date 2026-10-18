@@ -1,5 +1,5 @@
 // Base for the inside shelves: a translucent zone square that owns an Inventory and draws one
-// box per slot (the item's colour, or faint white when empty). Components built on it call
+// box per slot (the item's colour or picture, or faint white when empty). Components built on it call
 // holdItems(capacity, rules) from init; the Inventory rules decide what goes on and what comes off.
 //   transferItem(fox.inventory, shelf.inventory);
 Crafty.c("Shelf", {
@@ -36,8 +36,8 @@ Crafty.c("Shelf", {
             var item = this.inventory.items[i];
             this.slotBoxes[i]
                 .attr({x: this.x + 20 + i * 60, y: this.slotTop(), z: this.z + 1})
-                .color(item ? itemColor(item) : "rgba(255, 255, 255, 0.4)");
-            markCracked(this.slotBoxes[i], item);
+                .color("rgba(255, 255, 255, 0.4)");
+            paintItem(this.slotBoxes[i], item);
             markBorder(this.slotBoxes[i], item);
         }
     },

@@ -1,6 +1,6 @@
 // Customer orders. OrderPanel creates one at 0:00 and then every ORDER_INTERVAL_MS,
 // keeps them in gameState.orders (max ORDER_MAX), and lists each in the HUD with a
-// clay colour square, words and a bar that drains toward its deadline.
+// picture of the pot, words and a bar that drains toward its deadline.
 // Triggers "OrderAdded" with the order.
 //   Crafty.e("OrderPanel").attr({x: GAME_SCREEN_WIDTH - 300, y: 60}).start();
 var ORDER_CARD_W = 280;
@@ -9,6 +9,14 @@ var ORDER_CARD_GAP = 8;
 
 function randomFrom(list) {
     return list[Math.floor(Math.random() * list.length)];
+}
+
+// A stand-in Pottery of the order's finished pot, so it is drawn like any other pot.
+function orderPot(order) {
+    var piece = new Pottery(order.clay);
+    piece.pot = {shape: order.shape, glaze: order.glaze, cracked: false};
+    piece.state = "glazeCooled";
+    return piece;
 }
 
 function makeOrder() {
@@ -57,27 +65,28 @@ Crafty.c("OrderPanel", {
         card.back = Crafty.e("2D, HUD, Color")
             .attr({x: x, y: y, w: ORDER_CARD_W, h: ORDER_CARD_H, z: 1000})
             .color("rgba(255, 255, 255, 0.85)");
+        // The finished pot: its shape and clay, glazed (after the glaze firing, the last dip shows) or fired bare.
         card.swatch = Crafty.e("2D, HUD, Color")
-            .attr({x: x + 8, y: y + 8, w: 26, h: 26, z: 1001})
-            .color(order.clay.color);
+            .attr({x: x + 4, y: y + 8, w: 38, h: 34, z: 1001});
+        paintItem(card.swatch, orderPot(order));
         card.label = Crafty.e("2D, HUD, Text")
-            .attr({x: x + 42, y: y + 6, w: ORDER_CARD_W - 50, h: 36, z: 1001})
+            .attr({x: x + 48, y: y + 6, w: ORDER_CARD_W - 56, h: 36, z: 1001})
             .text(order.shape + " (" + order.grams + "g)")
             .textFont({size: "13px", weight: "bold"}).textColor("#222").unselectable();
         // Second row: "Glaze" then one square per bucket, in dipping order (or "Unglazed"), then the speed.
         var unglazed = order.glaze.length === 0;
         card.glazeWord = Crafty.e("2D, HUD, Text")
-            .attr({x: x + 42, y: y + 24, w: unglazed ? 70 : 40, h: 16, z: 1001})
+            .attr({x: x + 48, y: y + 24, w: unglazed ? 70 : 40, h: 16, z: 1001})
             .text(unglazed ? "Unglazed" : "Glaze")
             .textFont({size: "13px", weight: "bold"}).textColor("#222").unselectable();
         card.glazeSquares = [];
         for (var i = 0; i < order.glaze.length; i++) {
             card.glazeSquares.push(Crafty.e("2D, HUD, Color")
-                .attr({x: x + 86 + i * 20, y: y + 25, w: 16, h: 16, z: 1001})
+                .attr({x: x + 92 + i * 20, y: y + 25, w: 16, h: 16, z: 1001})
                 .color(GLAZE_BUCKET_COLORS[order.glaze[i]]));
         }
         card.speedLabel = Crafty.e("2D, HUD, Text")
-            .attr({x: unglazed ? x + 112 : x + 86 + order.glaze.length * 20 + 8, y: y + 24, w: 90, h: 16, z: 1001})
+            .attr({x: unglazed ? x + 118 : x + 92 + order.glaze.length * 20 + 8, y: y + 24, w: 90, h: 16, z: 1001})
             .text("· " + order.speed)
             .textFont({size: "13px", weight: "bold"}).textColor("#222").unselectable();
         card.barBack = Crafty.e("2D, HUD, Color")
