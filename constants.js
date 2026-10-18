@@ -1,6 +1,6 @@
-// 1152x768: a standard 3:2 resolution, 28% larger than LD46-48's 900x600.
+// 2304x768: twice the width of the original 1152x768 (3:2) screen.
 // Keep body width in index.html in step.
-var GAME_SCREEN_WIDTH = 1152;
+var GAME_SCREEN_WIDTH = 2304;
 var GAME_SCREEN_HEIGHT = 768;
 
 // gameAssets audio key played on the Start, Game and End scenes.
