@@ -42,3 +42,25 @@ var KILN_STATE_COLORS = {
     cooling: "rgba(110, 140, 180, 0.5)",
     ready: "rgba(255, 255, 255, 0.25)"
 };
+
+// Orders: a new customer order every ORDER_INTERVAL_MS (the first at 0:00), at most ORDER_MAX listed.
+var ORDER_INTERVAL_MS = 120000;
+var ORDER_MAX = 5;
+var ORDER_SHAPES = ["Bowl", "Cup", "Vase"];
+var ORDER_SIZES = ["Small", "Medium", "Large"];
+// Grams of clay per shape and size.
+var ORDER_CLAY_GRAMS = {
+    Bowl: { Small: 200, Medium: 500, Large: 1000 },
+    Cup:  { Small: 150, Medium: 200, Large: 500 },
+    Vase: { Small: 300, Medium: 500, Large: 1500 }
+};
+var ORDER_GLAZES = ["Glaze A", "Glaze B", "Glaze A then B", "Glaze B then A"];
+// How long a customer waits, by speed.
+var ORDER_SPEEDS = {
+    Slow:   { deadlineMs: 10 * 60 * 1000 },
+    Medium: { deadlineMs: 7 * 60 * 1000 },
+    Fast:   { deadlineMs: 3 * 60 * 1000 }
+};
+
+// Glazing station: two buckets, placeholder colours.
+var GLAZE_BUCKET_COLORS = { "Glaze A": "#F2C230", "Glaze B": "#D62828" };

@@ -27,27 +27,27 @@
 8. New orders trigger `Crafty.trigger("OrderAdded", order)` for later features.
 
 **Acceptance criteria**
-- [ ] The first order is at 0:00, then 2:00, 4:00, and so on; never more than 5 listed.
-- [ ] Each order has all five fields, drawn from the allowed values only.
-- [ ] Each order shows one clay square in a valid clay colour.
-- [ ] The bar drains over 10, 7 or 3 minutes for Slow, Medium, Fast (check with a shortened scale) and stops at empty.
-- [ ] The glazing station shows a yellow and a red square Outside.
-- [ ] Grams match the table for all nine shape/size combinations (check in console).
-- [ ] The panel doesn't overlap the timer, and multiple orders stack readably.
-- [ ] Start a new run: orders are cleared and the clock restarts.
+- [x] The first order is at 0:00, then 2:00, 4:00, and so on; never more than 5 listed.
+- [x] Each order has all five fields, drawn from the allowed values only.
+- [x] Each order shows one clay square in a valid clay colour.
+- [x] The bar drains over 10, 7 or 3 minutes for Slow, Medium, Fast (check with a shortened scale) and stops at empty.
+- [x] The glazing station shows a yellow and a red square Outside.
+- [x] Grams match the table for all nine shape/size combinations (check in console).
+- [x] The panel doesn't overlap the timer, and multiple orders stack readably.
+- [x] Start a new run: orders are cleared and the clock restarts.
 
 **Constraints** — Crafty 0.9.0, no new dependencies. New `components/orders.js` (added to `index.html`), data tables in `constants.js`, state in `game_state.js`, wired in `scenes/game.js`. Placeholder visuals: coloured boxes and text.
 
 **Open questions** — None.
 
 **Tasks**
-- [ ] Add interval, shapes, sizes, glazes, speeds and gram table to `constants.js`
-- [ ] Add `orders: []` to `gameState`
-- [ ] `Orders` component: random generator, timer, `OrderAdded` trigger
-- [ ] HUD panel: clay square, text and deadline bar, stacked under the timer, max 5
-- [ ] Glazing station with yellow and red bucket squares Outside
-- [ ] Wire into `scenes/game.js` and `index.html`
-- [ ] Verify acceptance criteria in the browser (temporarily shorten the interval)
+- [x] Add interval, shapes, sizes, glazes, speeds and gram table to `constants.js`
+- [x] Add `orders: []` to `gameState`
+- [x] `Orders` component: random generator, timer, `OrderAdded` trigger
+- [x] HUD panel: clay square, text and deadline bar, stacked under the timer, max 5
+- [x] Glazing station with yellow and red bucket squares INSIDE
+- [x] Wire into `scenes/game.js` and `index.html`
+- [x] Verify acceptance criteria in the browser (temporarily shorten th e interval)
 
 ## Decisions
 1. First order → at 0:00.

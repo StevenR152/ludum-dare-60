@@ -31,11 +31,11 @@ Then open http://localhost:8000.
 - `assets.js`: sprites and audio preloaded by the Loading scene
 - `scenes/`: Loading, Start, Game (Inside and Outside areas with the owl, kiln, doors and clay), End
 - `components/`:
-  - Gameplay: `Potter` (the owl throwing pots), `Kiln` (empty, firing, cooling, ready), `InventorySlot` (HUD view of `gameState.heldItem`, refreshed by `Crafty.trigger("InventoryChanged")`), `TimeClickable` (measures how long it's held, then fires `TimeClicked`)
+  - Gameplay: `OrderPanel` (customer orders in the top right, one every 2 min), `GlazeStation` (placeholder glaze buckets), `Potter` (the owl throwing pots), `Kiln` (empty, firing, cooling, ready), `InventorySlot` (HUD view of `gameState.heldItem`, refreshed by `Crafty.trigger("InventoryChanged")`), `TimeClickable` (measures how long it's held, then fires `TimeClicked`)
   - Shared: `AudioController` (global `audioController`), `MuteButton`, `GameTimer`, `PlayerNotification` (`Crafty.trigger("InstructionText", msg)`), `UIButton` (named so it doesn't replace Crafty's built-in `Button`), `CreditsText`
 - `camera.js`: `makeCameraTrackEntity(entity, yOffset)`
 - `mobile/`: `TouchControls`, gesture controls for phones (touch and hold to walk toward the finger, tap for SPACE); see `mobile/README.md`
-- `PRD/`: product requirement docs, one per feature (door teleport, owl pottery, kiln firing, mobile controls)
+- `PRD/`: product requirement docs, one per feature (door teleport, owl pottery, kiln firing, mobile controls, customer orders)
 - `analytics.js`: `track(event, params)`, a no-op until the GA4 snippet in `index.html` is enabled
 
 Give an entity the `HUD` component to keep it fixed on screen while the camera moves.
