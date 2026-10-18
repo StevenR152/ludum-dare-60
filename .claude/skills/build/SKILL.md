@@ -1,21 +1,20 @@
 ---
 name: build
-description: Implement an approved PRD in its own worktree, verify it in the browser, and hand back a localhost link to play the result. Use when the user says build it, implement the PRD, go ahead, or /build.
+description: Implement an approved PRD on its own branch in the current checkout, verify it in the browser, and hand back a localhost link to play the result. Use when the user ONLY uses /build. For an isolated git worktree instead, use /build-with-worktree.
 ---
 
 # Build a PRD
 
-Work through an approved PRD's Tasks, then leave a running preview the user can open.
+Work through an approved PRD's Tasks on a branch, then leave a running preview the user can open.
 
 ## 1. Pick the PRD
 - Use the PRD the user named, otherwise the one in `PRD/` this session wrote or discussed. If that's still unclear, list `PRD/*.md` and ask.
 - If it has unresolved **Open questions**, ask them first; don't guess.
 
-## 2. Start a worktree named after the work
-- Note the current branch (`git branch --show-current`). If it's `main`, that's fine; the new worktree still gets its own branch.
-- Call `EnterWorktree` with `name` set to the PRD's file slug (e.g. `PRD/workbench-and-shelf.md` -> `workbench-and-shelf`). If a worktree with that name already exists, enter it with `path` instead of creating another.
-- The new worktree branches from a fresh base, so the PRD may be missing. If `PRD/<slug>.md` isn't there, bring it over with `git checkout <previous-branch> -- PRD/<slug>.md`.
-- Run everything below from the new worktree.
+## 2. Switch to a branch named after the work
+- Branch name is the PRD's file slug (e.g. `PRD/workbench-and-shelf.md` -> `workbench-and-shelf`). Work in the current checkout; do not create a worktree.
+- Check `git branch --show-current` and `git status`. Uncommitted changes (including an untracked PRD) carry over to the new branch, so that's fine; if they look unrelated to this PRD, mention it to the user.
+- If the branch doesn't exist, `git switch -c <slug>`. If it does, `git switch <slug>`.
 - Read the files the PRD's Constraints and Tasks name before editing.
 
 ## 3. Build
@@ -29,9 +28,9 @@ Work through an approved PRD's Tasks, then leave a running preview the user can 
 
 ## 5. Hand back
 - Tick the Tasks in the PRD.
-- Do not commit, push, or open a PR; leave all changes uncommitted in the worktree for the user to review and commit.
+- Do not commit, push, or open a PR; leave all changes uncommitted on the branch for the user to review and commit.
 - Leave the preview server running.
 - End with:
   - **Play it:** `http://localhost:<port>` (the port from step 4).
   - What was verified, and what wasn't.
-  - The worktree name and branch, so the user knows where the work is.
+  - The branch name, so the user knows where the work is.
