@@ -76,6 +76,15 @@ var ORDER_SPEEDS = {
 // Glazing station: two buckets, placeholder colours.
 var GLAZE_BUCKET_COLORS = { "Glaze A": "#F2C230", "Glaze B": "#D62828" };
 
+// The path a Pottery follows, in order. An optional state (none yet; glaze will be one) may be skipped.
+var POTTERY_STATES = [
+    {name: "dug"}, {name: "wedged"}, {name: "thrown"}, {name: "drying"}, {name: "dried"},
+    {name: "firing"}, {name: "cooling"}, {name: "cooled"}, {name: "shelved"}
+];
+// What the fox weighs out when wedging one kilo, in grams.
+var WEDGED_CLAY_GRAMS = 1000;
+var PLACEHOLDER_POT = {shape: "pot", size: "medium"};
+
 // Workbench: how long the fox holds to wedge (and measure out) one kilo of clay.
 var WEDGE_MS = 3000;
 // Drying shelf: slots, how long a pot takes to dry, and the dried pot colour.

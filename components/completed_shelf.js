@@ -7,11 +7,19 @@ Crafty.c("CompletedShelf", {
     init: function() {
         this.requires("Shelf, Delay");
         this.holdItems(COMPLETED_CAPACITY, {
-            accepts: function (item) { return item.type === "pot" && item.fired; },
+            accepts: function (item) { return item.state === "cooled"; },
             releases: function () { return false; }
         });
         this.bind("InventoryChanged", function (changed) {
-            if (changed === this.inventory && this.inventory.items.length >= COMPLETED_CAPACITY) {
+            if (changed !== this.inventory) {
+                return;
+            }
+            this.inventory.items.forEach(function (pot) {
+                if (pot.state === "cooled") {
+                    pot.advance("shelved");
+                }
+            });
+            if (this.inventory.items.length >= COMPLETED_CAPACITY) {
                 this.trigger("OrdersComplete");
             }
         });
@@ -23,7 +31,7 @@ Crafty.c("CompletedShelf", {
             return;
         }
         var held = fox.inventory.selectedItem();
-        showStatus(held && held.type === "pot" && !held.fired
+        showStatus(held && held.type === "pot" && held.before("cooled")
             ? "Only fired pots go on the completed shelf"
             : this.inventory.items.length >= COMPLETED_CAPACITY
                 ? "The completed shelf is full"

@@ -28,23 +28,25 @@
 8. `itemColor`/HUD derive from state: dug/wedged clay use `clay.color` (wedged outline as today); thrown/drying use the wet colour; dried/firing/cooling the dried colour; cooled/shelved the fired colour.
 
 **Acceptance criteria**
-- [ ] Full run dig → wedge → owl → dry → kiln → shelf works; the 3rd shelved pot ends the game.
-- [ ] Owl refuses `dug` clay; kiln refuses a `thrown`/`drying` pot; completed shelf refuses a pot not `cooled`; drying shelf refuses clay.
-- [ ] Pot in the kiln can't be taken during firing or cooling, only when `cooled`.
-- [ ] Console: `advance` on a skip (`dug`→`thrown`) or repeat returns false; a table with an optional middle state lets it be skipped.
-- [ ] After throwing, `pottery.pot` holds shape, size and the three flags; `clay.weight` is 1000 after wedging.
-- [ ] HUD/shelf colours match today's at each step; no console errors; grep finds no `.wedged`/`.dried`/`.fired`/`.drying` on items.
+- [ ] Full run in the browser (not run: browser pane denied localhost) dig → wedge → owl → dry → kiln → shelf works; the 3rd shelved pot ends the game.
+- [ ] (browser, not run) Owl refuses `dug` clay; kiln refuses a `thrown`/`drying` pot; completed shelf refuses a pot not `cooled`; drying shelf refuses clay.
+- [ ] (browser, not run) Pot in the kiln can't be taken during firing or cooling, only when `cooled`.
+- [x] Console: `advance` on a skip (`dug`→`thrown`) or repeat returns false; a table with an optional middle state lets it be skipped.
+- [x] After throwing, `pottery.pot` holds shape, size and the three flags; `clay.weight` is 1000 after wedging.
+- [x] grep finds no `.wedged`/`.dried`/`.fired`/`.drying` on items; colour mapping checked in Node (HUD/shelf not seen in a browser).
+- [ ] HUD/shelf colours and no console errors in the running game (browser pane refused localhost, not verified).
 
 **Constraints** — Crafty 0.9.0, no new deps. New `components/pottery.js` (in `index.html`); edits to `constants.js`, `clay.js`, `workbench.js`, `potter.js`, `drying_shelf.js`, `kiln.js`, `completed_shelf.js`, `inventory.js`, `inventory_hud.js`; README updates.
 
 **Open questions** — None.
 
 **Tasks**
-- [ ] `Pottery` class, `POTTERY_STATES`, `advance`; `type`, `itemColor`/HUD from state
-- [ ] Clay dig creates Pottery; workbench wedges/weighs; owl throws the pot
-- [ ] Drying shelf and kiln use states (timers advance them)
-- [ ] Completed shelf uses states; remove old flags
-- [ ] README/components README; verify acceptance criteria in the browser
+- [x] `Pottery` class, `POTTERY_STATES`, `advance`; `type`, `itemColor`/HUD from state
+- [x] Clay dig creates Pottery; workbench wedges/weighs; owl throws the pot
+- [x] Drying shelf and kiln use states (timers advance them)
+- [x] Completed shelf uses states; remove old flags
+- [x] README update
+- [ ] Verify acceptance criteria in the browser (blocked, see above)
 
 ## Decisions
 1. Pottery object with `clay`, `pot`, `state`; owl turns clay into a pot on the same object; optional states supported (user).

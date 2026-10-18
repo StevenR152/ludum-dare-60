@@ -88,7 +88,10 @@ function transferItem(from, to, index) {
 // Display colour of an item, for the HUD.
 function itemColor(item) {
     if (item.type === "clay") {
-        return item.color;
+        return item.clay.color;
     }
-    return item.fired ? FIRED_POT_COLOR : item.dried ? DRIED_POT_COLOR : POT_COLOR;
+    if (!item.before("cooled")) {
+        return FIRED_POT_COLOR;
+    }
+    return item.before("dried") ? POT_COLOR : DRIED_POT_COLOR;
 }

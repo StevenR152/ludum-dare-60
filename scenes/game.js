@@ -66,8 +66,8 @@ Crafty.defineScene("Game", function() {
             return;
         }
         if (transferItem(player.inventory, this.input)) {
-            showStatus("Gave the master one kilo of " + clay.name + " clay");
-        } else if (clay.type === "clay" && !clay.wedged) {
+            showStatus("Gave the master one kilo of " + clay.clay.name + " clay");
+        } else if (clay.state === "dug") {
             showStatus("Wedge the clay on the workbench first");
         } else {
             showStatus(this.isIdle() ? "The master only wants clay" : "The master is busy, come back when he's done");
@@ -90,7 +90,7 @@ Crafty.defineScene("Game", function() {
             return;
         }
         var held = player.inventory.selectedItem();
-        if (this.state === "empty" && held && held.type === "pot" && !held.fired && !held.dried) {
+        if (this.state === "empty" && held && held.type === "pot" && held.before("dried")) {
             showStatus("The pot needs to dry first");
         } else if (this.state === "ready" && !transferItem(this.inventory, player.inventory)) {
             showStatus("You can't carry the pot: your pack is full or holds clay");

@@ -8,7 +8,7 @@ Crafty.c("Potter", {
         this.making = false;
         var owl = this;
         this.input = new Inventory(OWL_INPUT_CAPACITY, {
-            accepts: function (item) { return item.type === "clay" && item.wedged && owl.isIdle(); }
+            accepts: function (item) { return item.state === "wedged" && owl.isIdle(); }
         });
         this.output = new Inventory(OWL_OUTPUT_CAPACITY);
         this.potBox = Crafty.e("2D, DOM, Color")
@@ -33,8 +33,9 @@ Crafty.c("Potter", {
 
     finishPot: function() {
         this.making = false;
-        this.input.take(0);
-        this.output.add({type: "pot"});
+        var pottery = this.input.take(0);
+        pottery.advance("thrown");
+        this.output.add(pottery);
     },
 
     // Low on the owl, centred; placed now because the owl's position is set after init.

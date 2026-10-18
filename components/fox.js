@@ -48,7 +48,7 @@ Crafty.c("Fox", {
             showStatus("Nothing to drop");
             return;
         }
-        showStatus(dropped.type === "clay" ? "Dropped one kilo of " + dropped.name + " clay" : "Dropped the pot");
+        showStatus(dropped.type === "clay" ? "Dropped one kilo of " + dropped.clay.name + " clay" : "Dropped the pot");
     },
 
     // Returns false (and changes nothing) when the item doesn't fit.

@@ -7,8 +7,8 @@ Crafty.c("Kiln", {
         this.requires("2D, DOM, Color, Delay");
         var kiln = this;
         this.inventory = new Inventory(KILN_CAPACITY, {
-            accepts: function (item) { return item.type === "pot" && item.dried && !item.fired; },
-            releases: function () { return kiln.state === "ready"; }
+            accepts: function (item) { return item.state === "dried"; },
+            releases: function (item) { return kiln.state === "ready" && item.state === "cooled"; }
         });
         this.potBox = Crafty.e("2D, DOM, Color")
             .attr({w: 40, h: 40, visible: false})
@@ -34,14 +34,16 @@ Crafty.c("Kiln", {
 
     startFiring: function() {
         this.setState("firing");
+        this.inventory.items[0].advance("firing");
         this.delay(function () {
             this.setState("cooling");
+            this.inventory.items[0].advance("cooling");
             this.delay(this.finishPot, KILN_COOL_MS, 0);
         }, KILN_FIRE_MS, 0);
     },
 
     finishPot: function() {
-        this.inventory.items[0].fired = true;
+        this.inventory.items[0].advance("cooled");
         this.setState("ready");
         // Centred on the square; placed now because the kiln's position is set after init.
         this.potBox.attr({

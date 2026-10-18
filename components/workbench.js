@@ -1,6 +1,6 @@
 // The workbench: a zone square inside the house. Hold the mouse on it for WEDGE_MS while the fox
-// touches it, and the clay the fox has selected becomes wedged ({wedged: true}); the owl only
-// takes wedged clay. One hold measures out and wedges one kilo.
+// touches it, and the clay the fox has selected becomes wedged (it advances to "wedged"); the owl
+// only takes wedged clay. One hold measures out and wedges one kilo.
 //   Crafty.e("Workbench").attr({x: INSIDE_X + 300, y: 560, w: 300, h: 160});
 Crafty.c("Workbench", {
     init: function() {
@@ -28,7 +28,7 @@ Crafty.c("Workbench", {
             showStatus("Carry some clay to wedge it");
             return null;
         }
-        if (clay.wedged) {
+        if (clay.state !== "dug") {
             showStatus("That clay is already wedged");
             return null;
         }
@@ -50,8 +50,8 @@ Crafty.c("Workbench", {
         if (!clay) {
             return;
         }
-        clay.wedged = true;
+        clay.advance("wedged");
         this.touchingFox().inventory.changed();
-        showStatus("Wedged one kilo of " + clay.name + " clay");
+        showStatus("Wedged one kilo of " + clay.clay.name + " clay");
     }
 });
