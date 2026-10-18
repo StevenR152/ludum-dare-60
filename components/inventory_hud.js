@@ -63,6 +63,7 @@ Crafty.c("InventoryHud", {
                     x: slot.box.x + (slot.box.w - shape.w) / 2, y: slot.box.y + (slot.box.h - shape.h) / 2});
                 slot.itemBox.color(itemColor(item));
             }
+            markCracked(slot.itemBox, item);
             // Wedged clay gets a white outline.
             slot.itemBox.css({boxSizing: 'border-box', border: item && item.type === "clay" && item.clay.wedged ? '2px solid #FFF' : 'none'});
             slot.box.css({boxSizing: 'border-box', border: outlined ? '3px solid #FFF' : '3px solid #222'});

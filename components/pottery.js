@@ -6,7 +6,7 @@
 // `type` is "clay" until there is a pot, then "pot", so Inventory's one-type rule works as before.
 function Pottery(clayType, states) {
     this.states = states || POTTERY_STATES;
-    this.clay = {name: clayType.name, color: clayType.color, wedged: false, weight: null};
+    this.clay = {name: clayType.name, color: clayType.color, fireLevel: clayType.fireLevel, wedged: false, weight: null};
     this.pot = null;
     this.state = this.states[0].name;
 }
@@ -39,6 +39,17 @@ Pottery.prototype = {
         return true;
     },
 
+    // The kiln calls this with a FIRE_LEVELS name before advance("firing"). Returns false, warns and
+    // changes nothing for an unknown level or unless the pottery is dried and not yet in the kiln.
+    setFireLevel: function (level) {
+        if (FIRE_LEVELS.indexOf(level) < 0 || this.state !== "dried") {
+            console.warn("Pottery can't be fired at " + level + " while " + this.state, this);
+            return false;
+        }
+        this.pot.fireLevel = level;
+        return true;
+    },
+
     // Returns false, warns and changes nothing unless `to` may follow the current state.
     advance: function (to) {
         if (!this.canAdvance(to)) {
@@ -51,11 +62,13 @@ Pottery.prototype = {
             this.clay.wedged = true;
             this.clay.weight = WEDGED_CLAY_GRAMS;
         } else if (to === "thrown") {
-            this.pot = {shape: PLACEHOLDER_POT.shape, size: PLACEHOLDER_POT.size, dried: false, fired: false, completed: false};
+            this.pot = {shape: PLACEHOLDER_POT.shape, size: PLACEHOLDER_POT.size, dried: false, fired: false, completed: false, fireLevel: null, cracked: false};
         } else if (to === "dried") {
             this.pot.dried = true;
         } else if (to === "cooled") {
             this.pot.fired = true;
+            // No level set counts as a mismatch.
+            this.pot.cracked = this.pot.fireLevel !== this.clay.fireLevel;
         } else if (to === "shelved") {
             this.pot.completed = true;
         }

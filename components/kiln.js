@@ -1,10 +1,11 @@
-// The kiln: a translucent zone square holding up to KILN_CAPACITY pots, plus a wood inventory of up to
-// KILN_WOOD_CAPACITY logs. A dried pot and wood go in, in either order; the torch (see game.js) calls
-// light() to start. Firing uses up the wood: its count is the fire level (1 low, 2 mid, 3 high), kept on
-// the kiln and every pot. The pots fire together for KILN_FIRE_MS, cool for KILN_COOL_MS, then wait to be taken out.
-// States: empty -> loaded (pots in) -> firing -> cooling -> ready -> empty (once all are taken). Pots can only
-// go in while empty or loaded, and only be taken once ready (transferItem(kiln.inventory, fox.inventory)).
-// The square's colour shows the state.
+// The kiln: a translucent zone square holding one pot in its inventory. A dried, unfired pot put in
+// fires for KILN_FIRE_MS, cools for KILN_COOL_MS, then waits, shown as a box, to be taken out.
+// States: empty -> firing -> cooling -> ready -> empty. The square's colour shows the state.
+// The pot can only be taken once ready (transferItem(kiln.inventory, fox.inventory)).
+// NOTE (kiln agent): clay now needs a firing level (see PRD/clay-firing-levels.md). Before
+// advance("firing") call pottery.setFireLevel(level) with the FIRE_LEVELS name for the logs loaded
+// (1 low, 2 mid, 3 high); a pot with no level set cracks. Also call markCracked(this.potBox, pottery)
+// when the pot is ready, so a cracked pot shows the black cross here too.
 Crafty.c("Kiln", {
     init: function() {
         this.requires("2D, DOM, Color, Delay");

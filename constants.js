@@ -18,10 +18,13 @@ var CLAY_RESPAWN_MS = 20000;
 
 //clay
 var CLAY_TYPES = {
-    brown: { type: "clay", name: "brown", color: '#311909' },
-    red:   { type: "clay", name: "red",   color: '#650b0b' },
-    blue:  { type: "clay", name: "blue",  color: '#15a0a0' },
+    brown: { type: "clay", name: "brown", color: '#311909', fireLevel: "low" },
+    red:   { type: "clay", name: "red",   color: '#650b0b', fireLevel: "mid" },
+    blue:  { type: "clay", name: "blue",  color: '#15a0a0', fireLevel: "high" },
 };
+// Firing levels, lowest first (the kiln burns 1, 2 or 3 logs for them). A pot fired at any other
+// level than its clay's cracks when it cools.
+var FIRE_LEVELS = ["low", "mid", "high"];
 var CLAY_DUG_COLOR = '#BBB';
 
 // Fox movement and inventory; each kg of clay carried takes 20% off the base speed.
