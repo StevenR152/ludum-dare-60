@@ -6,7 +6,6 @@ function resetGameState() {
     gameState = {
         seconds: 0,
         orders: [], // customer orders, see components/orders.js
-        heldItem: null, // what the fox carries, e.g. {type: "pot"}
     };
 }
 

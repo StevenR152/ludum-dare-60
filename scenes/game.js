@@ -4,9 +4,7 @@ Crafty.defineScene("Game", function() {
     Crafty.background("#EEE");
     audioController.playMusic(MUSIC_TRACK);
 
-    // HUD
-    Crafty.e("MuteButton").attr({x: 20, y: 20});
-    Crafty.e("GameTimer").attr({x: GAME_SCREEN_WIDTH - 100, y: 20});
+    // HUD (the music button, timer and inventory bar are built together once the holders exist, below)
     Crafty.e("PlayerNotification");
     Crafty.e("StatusMessage");
     Crafty.e("InventorySlot").attr({x: 20, y: 60});
@@ -44,63 +42,53 @@ Crafty.defineScene("Game", function() {
     var owl = Crafty.e("2D, DOM, owl, Mouse, Potter")
         .attr({x: INSIDE_X + 1250, y: 820, w: 160, h: 152});
 
-    // Clicking the owl the fox is touching takes his finished pot, if the fox's hands are free,
-    // then hands him the selected backpack clay if he's idle. One click can do both.
+    // Clicking the owl the fox is touching takes his finished pot, if the fox can carry it,
+    // then hands him the selected clay if he's idle. One click can do both.
     owl.bind("Click", function () {
         if (!this.intersect(player.x, player.y, player.w, player.h)) {
             return;
         }
-        if (!gameState.heldItem) {
-            var pot = this.takePot();
-            if (pot) {
-                gameState.heldItem = pot;
-                Crafty.trigger("InventoryChanged");
+        var tookPot = false;
+        if (this.output.items.length > 0) {
+            tookPot = transferItem(this.output, player.inventory);
+            if (!tookPot) {
+                showStatus("You can't carry the pot: your pack is full or holds clay");
             }
         }
-        if (!this.isIdle()) {
-            if (player.backpack.length > 0) {
-                showStatus("The master is busy, come back when he's done");
-            }
+        var clay = player.inventory.selectedItem();
+        if (tookPot && clay.type !== "clay") {
             return;
         }
-        var clay = player.takeSelected();
         if (!clay) {
-            showStatus("The master needs clay to make pots");
+            if (this.isIdle()) {
+                showStatus("The master needs clay to make pots");
+            }
             return;
         }
-        showStatus("Gave the master one kilo of " + clay.name + " clay");
-        this.trigger("ClayDelivered", 1);
+        if (transferItem(player.inventory, this.input)) {
+            showStatus("Gave the master one kilo of " + clay.name + " clay");
+        } else {
+            showStatus(this.isIdle() ? "The master only wants clay" : "The master is busy, come back when he's done");
+        }
     });
 
     // The kiln, Outside. Its square covers where the fox stands at the kiln: fox positions (1605, 527) to (1800, 657).
     var kiln = Crafty.e("Kiln, Mouse")
         .attr({x: 1605, y: 527, w: 355, h: 232});
 
-    // Clicking the kiln the fox is touching loads an unfired pot, or collects a fired one with empty hands.
+    // One HUD entity owns the music button, timer and inventory bar: hud.enable(false) hides it all.
+    Crafty.e("GameHud").build(player, owl, kiln);
+
+    // Clicking the kiln the fox is touching loads the selected unfired pot, or collects a fired one.
     kiln.bind("Click", function () {
         if (!this.intersect(player.x, player.y, player.w, player.h)) {
             return;
         }
-        if (gameState.heldItem) {
-            if (this.loadPot(gameState.heldItem)) {
-                gameState.heldItem = null;
-                Crafty.trigger("InventoryChanged");
-            }
+        if (transferItem(player.inventory, this.inventory)) {
             return;
         }
-        var pot = this.takePot();
-        if (pot) {
-            gameState.heldItem = pot;
-            Crafty.trigger("InventoryChanged");
-        }
-    });
-
-    // Testing aid: SPACE (a tap on touch screens) drops whatever the fox holds; it just disappears.
-    player.addComponent("Keyboard");
-    player.bind("KeyDown", function (e) {
-        if (e.key === Crafty.keys.SPACE && gameState.heldItem) {
-            gameState.heldItem = null;
-            Crafty.trigger("InventoryChanged");
+        if (this.state === "ready" && !transferItem(this.inventory, player.inventory)) {
+            showStatus("You can't carry the pot: your pack is full or holds clay");
         }
     });
 

@@ -37,14 +37,14 @@ Crafty.c("Clay", {
     },
 
     cancelDig: function() { this.cancelDelay(this.dig); },
-    // The fox may have walked off mid-hold, or have a full backpack.
+    // The fox may have walked off mid-hold, or have no room.
     dig: function() {
         var fox = this.touchingFox();
         if (!fox) {
             showStatus("Can't harvest clay without moving fox to spot");
             return;
         }
-        if (!fox.addClay(this.clayType)) {
+        if (!fox.pickUp(this.clayType)) {
             return;
         }
         this.dug = true;

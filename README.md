@@ -8,10 +8,10 @@ Built with [CraftyJS](http://craftyjs.com/api/) 0.9.0 (loaded from cdnjs).
 ## How to play
 - Arrow keys or WASD walk the fox. On phones, touch and hold to walk toward your finger.
 - Click a door you're standing at to move between Inside and Outside.
-- Hold-click a clay square (Outside) while standing on it to dig a kilo into your backpack. E picks a backpack slot.
-- Click the owl (Inside) to hand him the selected clay. He only takes it when he's idle, and throws a pot from it in 8s. Click him again to take the finished pot. Your hands carry one thing at a time, shown in the HUD slot top left.
-- Click the kiln (Outside) to load an unfired pot. It fires for 10s and cools for 10s; then click it with empty hands to collect the fired pot.
-- SPACE (a tap on phones) drops what you're holding. This is a testing aid.
+- Hold-click a clay square (Outside) while standing on it to dig a kilo into your inventory (2 slots, HUD top left). You carry clay or pots, never both. E picks a slot.
+- Click the owl (Inside) to hand him the selected clay. He only takes it when he's idle, and throws a pot from it in 8s. Click him again to take the finished pot.
+- Click the kiln (Outside) to load an unfired pot. It fires for 10s and cools for 10s; then click it again to collect the fired pot.
+- SPACE (a tap on phones) drops the selected item. This is a testing aid.
 
 ## Run locally
 Serve the folder over HTTP (asset loading fails from `file://`):
@@ -26,10 +26,11 @@ Then open http://localhost:8000.
 
 ## Layout
 - `constants.js`: screen size, music track, credits list, pottery and kiln timings and colours
-- `game_state.js`: per-run state (`seconds`, `heldItem`), reset with `resetGameState()`
+- `game_state.js`: per-run state (`seconds`), reset with `resetGameState()`
 - `assets.js`: sprites and audio preloaded by the Loading scene
 - `scenes/`: Loading, Start, Game (Inside and Outside areas with the owl, kiln, doors and clay), End
 - `components/`:
+  - Gameplay: `Potter` (the owl throwing pots), `Kiln` (empty, firing, cooling, ready), `Inventory` (plain class: fixed capacity, one item type at a time, `transferItem(from, to)` moves items; fox, owl and kiln each own one and every change triggers `InventoryChanged`), `GameHud` (owns the whole Game HUD: panel, music button, timer and inventory rows; `enable(false)` hides it all), `InventoryHud` (HUD row: a label and the slots of the inventories it shows; the game has Fox, Master and Kiln rows), `TimeClickable` (measures how long it's held, then fires `TimeClicked`)
   - Gameplay: `OrderPanel` (customer orders in the top right, one every 2 min), `GlazeStation` (placeholder glaze buckets), `Potter` (the owl throwing pots), `Kiln` (empty, firing, cooling, ready), `InventorySlot` (HUD view of `gameState.heldItem`, refreshed by `Crafty.trigger("InventoryChanged")`), `TimeClickable` (measures how long it's held, then fires `TimeClicked`)
   - Shared: `AudioController` (global `audioController`), `MuteButton`, `GameTimer`, `PlayerNotification` (`Crafty.trigger("InstructionText", msg)`), `UIButton` (named so it doesn't replace Crafty's built-in `Button`), `CreditsText`
 - `camera.js`: `makeCameraTrackEntity(entity, yOffset)`
