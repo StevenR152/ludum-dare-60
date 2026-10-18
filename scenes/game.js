@@ -2,7 +2,6 @@
 
 Crafty.defineScene("Game", function() {
     Crafty.background("#EEE");
-    audioController.playMusic(MUSIC_TRACK);
 
     // HUD (the music button, timer and inventory bar are built together once the holders exist, below)
     Crafty.e("PlayerNotification");
@@ -58,6 +57,9 @@ Crafty.defineScene("Game", function() {
     // The kiln, Outside. Its square stops short of the torch beside it (1850, 615).
     var kiln = Crafty.e("Kiln, Mouse")
         .attr({x: 1605, y: 527, w: 240, h: 232});
+
+    // Ambient loops and sound effects, driven by game events (see GameSounds).
+    Crafty.e("GameSounds").listen(player, kiln);
 
     // The torch lights the kiln. The fox stands on it, e.g. at (1850, 615), and clicks.
     var torch = Crafty.e("2D, DOM, Color, Mouse")

@@ -41,6 +41,7 @@ function dipPot(fox, glazeName) {
         pot.advance("glazed");
     }
     pot.pot.glaze.push(glazeName);
+    Crafty.trigger("PotGlazed", pot);
     fox.inventory.changed();
     showStatus("Dipped the pot in " + glazeName);
 }

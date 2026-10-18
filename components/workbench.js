@@ -129,14 +129,27 @@ Crafty.c("Workbench", {
     startWedge: function() {
         if (this.clayToWedge()) {
             showStatus("Wedging, keep holding");
+            this.wedgeSound = WEDGE_SOUNDS[this.clayToWedge().clay.name];
+            audioController.loopSfx(this.wedgeSound);
             this.delay(this.finishWedge, WEDGE_MS);
         }
     },
 
-    cancelWedge: function() { this.cancelDelay(this.finishWedge); },
+    cancelWedge: function() {
+        this.cancelDelay(this.finishWedge);
+        this.stopWedgeSound();
+    },
+
+    stopWedgeSound: function() {
+        if (this.wedgeSound) {
+            audioController.stopSfx(this.wedgeSound);
+            this.wedgeSound = null;
+        }
+    },
 
     // The fox may have walked off or changed clay mid-hold; check again.
     finishWedge: function() {
+        this.stopWedgeSound();
         var clay = this.clayToWedge();
         if (!clay) {
             return;

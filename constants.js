@@ -131,3 +131,8 @@ var COMPLETED_CAPACITY = 3;
 // Zone square colours of the inside stations.
 var WORKBENCH_COLOR = "rgba(139, 90, 43, 0.45)";
 var SHELF_COLOR = "rgba(90, 120, 160, 0.35)";
+
+// Sound names (see gameAssets.audio). GameSounds picks pot sounds by stage and, for wet pots, by clay.
+var AMBIENT_VOLUME = MUSIC_VOLUME;
+var WEDGE_SOUNDS = {blue: "wedgeBlue", red: "wedgeRed", brown: "wedgeBrown"};
+var WET_POT_SOUND_SUFFIX = {blue: "Blue", red: "Red", brown: "Brown"};
