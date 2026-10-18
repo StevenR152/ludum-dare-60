@@ -71,6 +71,11 @@ var gameAssets = {
             "tileh": 2246,
             "map": {"backgroundInside": [0, 0]}
         },
+        "assets/images/interior-overlay-glazing.png": {
+            "tile": 8364,
+            "tileh": 2246,
+            "map": {"overlayInside": [0, 0]}
+        },
         "assets/images/fox.png": {
             "tile": 845,
             "tileh": 540,
