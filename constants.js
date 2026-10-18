@@ -47,3 +47,9 @@ var KILN_STATE_COLORS = {
 var OWL_INPUT_CAPACITY = 1;
 var OWL_OUTPUT_CAPACITY = 1;
 var KILN_CAPACITY = 1;
+
+// How an item looks inside an inventory HUD slot (a 40x40 grey square): clay a square, pots thinner.
+var ITEM_SHAPES = {
+    clay: {w: 28, h: 28},
+    pot: {w: 16, h: 30}
+};

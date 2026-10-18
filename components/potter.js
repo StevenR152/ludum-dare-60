@@ -1,5 +1,5 @@
-// The master potter: turns 1 clay from his input inventory into a pot over POT_MAKE_MS,
-// whenever his hands are free. The finished pot waits in his output inventory, shown as a
+// The master potter: turns the 1 clay in his input inventory into a pot over POT_MAKE_MS,
+// whenever his hands are free. The clay stays in his input until the pot is finished. The finished pot waits in his output inventory, shown as a
 // light brown box on him, until the fox takes it (transferItem(owl.output, fox.inventory)).
 // He takes clay one at a time, and only when idle.
 Crafty.c("Potter", {
@@ -24,7 +24,7 @@ Crafty.c("Potter", {
     },
 
     startPot: function() {
-        if (this.making || this.output.items.length > 0 || !this.input.take(0)) {
+        if (this.making || this.output.items.length > 0 || this.input.items.length === 0) {
             return;
         }
         this.making = true;
@@ -33,6 +33,7 @@ Crafty.c("Potter", {
 
     finishPot: function() {
         this.making = false;
+        this.input.take(0);
         this.output.add({type: "pot"});
     },
 

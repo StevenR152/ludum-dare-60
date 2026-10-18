@@ -22,11 +22,15 @@
 3. Owl input inventory holds clay; output holds ≤1 pot. Kiln holds 1 pot (in, then fired out). Capacities are constants in `constants.js`.
 4. `gameState.heldItem`, `fox.backpack`, `Potter.clay/hasPot`, `BackpackChanged` and the `Potter`/`Kiln` ad-hoc take/load plumbing are removed.
 5. A single `transfer(from, to, item)` moves items atomically (fails without change if `to` is full or refuses).
-6. The HUD draws the fox's inventory slots (filled by item colour, empty grey, selected outlined); old `InventorySlot`/`BackpackDisplay` merged into it.
+6. A HUD inventory bar (overlay, top-left under the mute button) has one labelled row per holder: **Fox**, **Master** (input slot, output slot) and **Kiln**. Old `InventorySlot`/`BackpackDisplay` merged into it.
 7. Reset on new run via `resetGameState()`/scene creation.
+8. Whatever a holder holds is both tracked in its `Inventory` and shown in its HUD row: nothing held is hidden, nothing shown is untracked. Clay the master is given stays in his input slot, visible, until the pot it makes is finished (then it is used up); the pot waits in his output slot.
+9. Slots are always the same grey square with a dark border (selected slot: white border). Only the item in a slot differs in shape: clay is a square, a pot is a thinner rectangle, both centred in the slot. Item colour is correct: clay in its own colour (brown/red/blue), an unfired pot `POT_COLOR`, a fired pot `FIRED_POT_COLOR`.
 
 **Acceptance criteria**
 - [x] Dig clay twice: 2 slots filled, third dig refused, fox slower per clay as before.
+- [x] Giving the master clay shows that clay (right colour, square) in his input slot until the pot appears in his output slot as a thin rectangle.
+- [x] Every item the fox, master or kiln holds appears in its HUD row in the right colour and shape; clay is square, pots are thin; slots stay square.
 - [x] Owl takes selected clay only when idle; pot appears after 8 s; clicking owl moves it to the fox's HUD.
 - [x] Fox carrying clay cannot take a pot (and vice versa); a full inventory refuses too; nothing is lost.
 - [x] Pot loads into kiln, fires 10 s, cools 10 s, fired pot (darker) returns to fox.
@@ -48,6 +52,7 @@
 - [x] Verify all acceptance criteria in browser
 
 ## Decisions
+0. HUD bar rows Fox / Master (in, out) / Kiln; items drawn as shapes inside fixed square slots. The master keeps the clay in his input slot while he works.
 1. Clay-blocks-pot deadlock → status message, drop with SPACE (default).
 2. Kiln loads the selected pot only if unfired; fired pot in hand is refused (default). With room and a ready pot it collects it.
 3. E/SPACE one mechanism on `Inventory.selected` (default). Fox holding one type at a time; may carry 2 pots.

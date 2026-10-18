@@ -1,4 +1,5 @@
-// One HUD row: a label, then a box per slot of each inventory given, filled with the item's colour.
+// One HUD row: a label, then a grey square per slot of each inventory given. An item in a slot is
+// drawn centred in it in its own colour and shape (ITEM_SHAPES: clay square, pot thin).
 // The selected slot of an inventory with more than one item is outlined in white.
 // Redraws whenever one of its inventories changes.
 //   Crafty.e("InventoryHud").attr({x: 20, y: 60}).show("Fox", [player.inventory]);
@@ -33,7 +34,9 @@ Crafty.c("InventoryHud", {
             for (var i = 0; i < inventory.capacity; i++) {
                 var slot = Crafty.e("2D, HUD, Color").attr({x: x, y: this.y, w: 40, h: 40, z: 1000});
                 this.parts.push(slot);
-                this.slots.push({box: slot, inventory: inventory, index: i});
+                var itemBox = Crafty.e("2D, HUD, Color").attr({z: 1001, visible: false});
+                this.parts.push(itemBox);
+                this.slots.push({box: slot, itemBox: itemBox, inventory: inventory, index: i});
                 x += 50;
             }
         }, this);
@@ -44,7 +47,14 @@ Crafty.c("InventoryHud", {
         this.slots.forEach(function (slot) {
             var item = slot.inventory.items[slot.index];
             var outlined = item && slot.inventory.items.length > 1 && slot.index === slot.inventory.selected;
-            slot.box.color(item ? itemColor(item) : '#DDD');
+            slot.box.color('#DDD');
+            slot.itemBox.visible = !!item;
+            if (item) {
+                var shape = ITEM_SHAPES[item.type];
+                slot.itemBox.attr({w: shape.w, h: shape.h,
+                    x: slot.box.x + (slot.box.w - shape.w) / 2, y: slot.box.y + (slot.box.h - shape.h) / 2});
+                slot.itemBox.color(itemColor(item));
+            }
             slot.box.css({boxSizing: 'border-box', border: outlined ? '3px solid #FFF' : '3px solid #222'});
         });
         return this;
