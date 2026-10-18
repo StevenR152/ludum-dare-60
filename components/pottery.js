@@ -100,7 +100,7 @@ Pottery.prototype = {
         if (to === "wedged") {
             this.clay.wedged = true;
         } else if (to === "thrown") {
-            this.pot = {shape: model.shape, size: model.size, weight: this.clay.weight, glaze: [],
+            this.pot = {shape: model.shape, weight: this.clay.weight, glaze: [],
                 dryness: 0, trimmed: false, fired: false, completed: false, fireLevel: null, cracked: false, damage: 0};
         } else if (to === "cooled") {
             this.pot.fired = true;

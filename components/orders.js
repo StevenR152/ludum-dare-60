@@ -13,13 +13,11 @@ function randomFrom(list) {
 
 function makeOrder() {
     var shape = randomFrom(ORDER_SHAPES);
-    var size = randomFrom(ORDER_SIZES);
     var clayKey = randomFrom(Object.keys(CLAY_TYPES));
     var speed = randomFrom(Object.keys(ORDER_SPEEDS));
     return {
         shape: shape,
-        size: size,
-        grams: ORDER_CLAY_GRAMS[shape][size],
+        grams: ORDER_CLAY_GRAMS[shape],
         clay: CLAY_TYPES[clayKey],
         glaze: randomFrom(ORDER_GLAZES),
         speed: speed,
@@ -64,7 +62,7 @@ Crafty.c("OrderPanel", {
             .color(order.clay.color);
         card.label = Crafty.e("2D, HUD, Text")
             .attr({x: x + 42, y: y + 6, w: ORDER_CARD_W - 50, h: 36, z: 1001})
-            .text(order.size + " " + order.shape + " (" + order.grams + "g)")
+            .text(order.shape + " (" + order.grams + "g)")
             .textFont({size: "13px", weight: "bold"}).textColor("#222").unselectable();
         // Second row: "Glaze" then one square per bucket, in dipping order (or "Unglazed"), then the speed.
         var unglazed = order.glaze.length === 0;
