@@ -1,5 +1,5 @@
 // The player: sprite, arrow-key movement, and an Inventory of FOX_INVENTORY_CAPACITY items of any
-// kind in any mix (2 dug clays, weighed clay and a model, 2 pots, a pot and a model...).
+// kind in any mix (2 dug clays, wedged clay and a model, 2 pots, a pot and a model...).
 // Each 1000 g of clay carried slows the fox by FOX_SLOWDOWN_PER_KG of its base speed, and every dropped
 // item it overlaps multiplies its speed by DROPPED_ITEM_SLOWDOWN (see DroppedItem).
 // E steps through the slots; SPACE puts the selected item back at the Workbench or Clay node the fox stands

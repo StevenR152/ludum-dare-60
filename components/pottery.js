@@ -3,8 +3,8 @@
 // `states` (POTTERY_STATES by default): advance(to) works for the next state, or when every state
 // skipped is optional.
 //   var pottery = new Pottery(CLAY_TYPES.brown);   // state "dug", 1000 g
-//   pottery.advance("wedged");                      // true; pottery.advance("firing") would be false
-//   var piece = pile.weighOut(200);                 // a new "weighed" 200 g Pottery; the pile keeps the rest
+//   var piece = pottery.weighOut(200);              // a new "weighed" 200 g Pottery off a "dug" pile; the pile keeps the rest
+//   piece.advance("wedged");                        // true; piece.advance("firing") would be false
 // A thrown pot also has a dryness (0 wet .. 1 bone dry, see dryStage and dry) and a trimmed flag.
 // `type` is "clay" until there is a pot, then "pot", so Inventory's one-type rule works as before.
 function Pottery(clayType, states) {
@@ -46,14 +46,13 @@ Pottery.prototype = {
         return true;
     },
 
-    // Takes `grams` off this wedged pile as a new weighed Pottery of the same clay, or returns null.
+    // Takes `grams` off this dug pile as a new weighed Pottery of the same clay, or returns null.
     weighOut: function (grams) {
-        if (this.state !== "wedged" || grams <= 0 || grams > this.clay.weight) {
+        if (this.state !== "dug" || grams <= 0 || grams > this.clay.weight) {
             return null;
         }
         var piece = new Pottery(this.clay, this.states);
         piece.clay.weight = grams;
-        piece.advance("wedged");
         piece.advance("weighed");
         this.clay.weight -= grams;
         return piece;

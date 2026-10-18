@@ -107,7 +107,7 @@ var GLAZE_BUCKET_COLORS = { "Glaze A": "#F2C230", "Glaze B": "#D62828" };
 // Every pot is fired twice: a bisque firing, then a glaze firing (glazed or not, to vitrify it).
 // Drying is not a state: a thrown pot has a dryness from 0 (wet) to 1 (bone dry), see DRY_MS_PER_GRAM.
 var POTTERY_STATES = [
-    {name: "dug"}, {name: "wedged"}, {name: "weighed"}, {name: "thrown"},
+    {name: "dug"}, {name: "weighed"}, {name: "wedged"}, {name: "thrown"},
     {name: "firing"}, {name: "cooling"}, {name: "cooled"},
     {name: "glazed", optional: true}, {name: "glazeFiring"}, {name: "glazeCooling"}, {name: "glazeCooled"},
     {name: "shelved"}
@@ -121,7 +121,7 @@ var MODEL_COLOR = "#8A8F98";
 // Glaze: dips per pot, at most one per bucket.
 var MAX_GLAZE_DIPS = 2;
 
-// Workbench: how long the fox holds to wedge one kilo of clay onto the bench pile.
+// Workbench: how long the fox holds to wedge a weighed piece of clay.
 var WEDGE_MS = 3000;
 // Drying: a pot goes from wet (dryness 0) to bone dry (1) in DRY_BASE_MS plus DRY_MS_PER_GRAM per gram of
 // clay on the drying shelf (a 200 g cup: leather hard after 18 s, bone dry after 3 min), OFF_SHELF_SLOWDOWN times slower
@@ -140,6 +140,7 @@ var UNTRIMMED_BORDER_COLOR = "#E67E22";
 // Completed shelf: how many finished pots end the game.
 var COMPLETED_CAPACITY = 3;
 // Zone square colours of the inside stations.
+var WEIGHING_STATION_COLOR = "#800080";
 var WORKBENCH_COLOR = "rgba(139, 90, 43, 0.45)";
 var SHELF_COLOR = "rgba(90, 120, 160, 0.35)";
 

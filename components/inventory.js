@@ -130,12 +130,12 @@ function isDrying(item) {
 }
 
 // The border that marks an item's box: on a pot, solid green if trimmed and dashed orange if not (cracked
-// or fired, too); white on weighed clay. Use markBorder to apply it to every box that shows an item.
+// or fired, too); white on wedged clay. Use markBorder to apply it to every box that shows an item.
 function itemBorder(item) {
     if (item && item.type === "pot") {
         return item.pot.trimmed ? "3px solid " + TRIMMED_BORDER_COLOR : "3px dashed " + UNTRIMMED_BORDER_COLOR;
     }
-    return item && item.state === "weighed" ? "2px solid #FFF" : "none";
+    return item && item.state === "wedged" ? "2px solid #FFF" : "none";
 }
 
 function markBorder(box, item) {

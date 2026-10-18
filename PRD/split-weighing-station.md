@@ -1,43 +1,41 @@
-# PRD: Separate weighing station
+# PRD: Separate weighing station (weigh, then wedge)
 
-**Goal** — Wedging and weighing happen at two different stations: the workbench wedges, a new WeighingStation (the purple rectangle) weighs.
+**Goal** — Clay is weighed at the purple WeighingStation, then wedged at the workbench; the wedged piece plus a model goes to the owl.
 
 **Context**
-- `Workbench` does it all: wedge (hold), the clay pile (`pile`, `pileClay`, `weigh`, pile boxes) and a `Scales` sub-box with the slider panel; `game.js` has a bare purple rectangle placeholder (`#800080`, 280×70 at -2730, 467).
-- Wedging today adds the kilo to a bench pile; weighing takes grams off that pile into the fox's pack.
-- The workbench keeps the model spots, `acceptDrop` and `ModelReturned` (unchanged).
+- Today: dug → wedged → weighed. `Workbench` does it all: hold to wedge a kilo onto a bench pile, a `Scales` sub-box with the slider panel, `weigh`, pile boxes, plus the model spots. `game.js` has a bare purple rectangle placeholder (`#800080`, 280×70 at -2730, 467).
+- `POTTERY_STATES`, `Pottery.weighOut`, `Potter.receiveFrom` (wants `weighed`) and `inventory.js` markBorder (white on `weighed`) encode the old order.
 
-**Scope** — New `WeighingStation` component owning the pile, pile display, `weigh`, and the chooser/slider panel; attach it to the purple rectangle. Workbench only wedges (and keeps models). **Out of scope** — art, owl/potter, kiln, shelves, clay weights, the model spots.
+**Scope** — New `WeighingStation` component on the purple rectangle owns the pile of dug clay, pile boxes, `weigh` and the chooser/slider panel. State order becomes dug → weighed → wedged. Workbench wedges a carried weighed piece and keeps the models. **Out of scope** — art, kiln, shelves, drying, clay weights, model spots, SPACE handling.
 
 **Flow**
-1. Fox holds the workbench with dug clay selected for 3s: the kilo becomes wedged clay (state `wedged`, 1000 g) and stays in the pack.
-2. Fox walks to the purple station and clicks it with wedged clay selected: the kilo joins that clay's pile there (same clay adds up; different clays sit side by side).
-3. Clicking the station with anything else selected opens the panel (clay chooser, grams slider, Weigh); Weigh puts a weighed piece in the pack, the rest stays on the station.
-4. Weighed clay + a model go to the owl as before.
+1. Fox carries a dug kilo to the purple station and clicks it with the kilo selected: it joins that clay's pile (same clay adds up; clays sit side by side).
+2. Clicking the station with anything else selected opens the panel (clay chooser, grams slider, Weigh): a weighed piece goes into the pack, the rest stays on the station.
+3. Fox takes the weighed piece to the workbench and holds it for 3s with the piece selected: it becomes wedged (stays in the pack).
+4. Fox clicks a model on the workbench to carry it, then clicks the owl: he takes wedged clay + model if the grams match the shape.
 
 **Requirements**
-1. `components/weighing_station.js`: `WeighingStation` has `pile` (Inventory), `pileClay`, `weigh`, per-clay pile boxes inside the rectangle, and the panel code moved from `scales.js`; `scales.js` and its `Scales` entity are removed.
-2. `Workbench` has no pile, pile boxes, `weigh` or `Scales`; `finishWedge` advances the selected clay to `wedged` in place.
-3. Wedged clay clicked at the station is added to the pile; not touching the station shows "Walk up to the weighing station first".
-4. The panel opens only at the station and closes when the fox walks off or the pile empties; no wedged clay and no pile says "Wedge some clay at the workbench first".
-5. `game.js` creates the station on the purple rectangle (same position and size, keeps its colour); `index.html` swaps the script tag.
-6. Weighing at the workbench is impossible; wedging at the station is impossible.
+1. `POTTERY_STATES` is dug, weighed, wedged, thrown…; `weighOut` takes grams off a `dug` pile as a `weighed` piece.
+2. `components/weighing_station.js`: pile (Inventory), `pileClay`, `weigh`, pile boxes inside the rectangle, panel code from `scales.js`; `scales.js` and `Scales` removed.
+3. `Workbench` loses pile, pile boxes, `weigh`, `Scales`; `startWedge`/`finishWedge` need a selected `weighed` piece and advance it in place to `wedged`.
+4. Station and workbench require the fox touching them, else "Walk up to the weighing station/workbench first". Wedging a dug or already wedged piece says to weigh first / already wedged; weighing needs a pile.
+5. `Potter.receiveFrom` takes `wedged` clay; its messages and `index.html` help text follow the new order; white border marks `wedged`.
+6. `game.js` builds the station on the purple rectangle (same position, size, colour); `index.html` script tag swapped.
 
 **Acceptance criteria**
-- [ ] Workbench shows only the 3 models; holding it wedges a dug kilo into the pack (no pile appears there).
-- [ ] Wedged kilo clicked at the purple station appears as a coloured pile box with its grams.
-- [ ] Panel weighs 200 g off a 1000 g pile; 800 g remains; piece is in the pack; owl accepts it with a matching model.
-- [ ] Two clays make two piles; the chooser lists both.
-- [ ] Clicking the station while away says to walk up; no panel opens.
-- [ ] No console errors through a full pot route.
+- [x] Dug kilo clicked at the station becomes a coloured pile box with its grams; two clays make two piles.
+- [x] Panel weighs 200 g off 1000 g; 800 g stays; piece in the pack.
+- [x] Holding the weighed piece at the workbench for 3s wedges it; holding with dug clay refuses.
+- [x] Owl refuses weighed-but-unwedged clay; accepts wedged clay + model with matching grams.
+- [x] Away from either station: message, no panel/wedge. No console errors (checked through the owl accepting; the kiln/shelf route was not re-run).
 
-**Constraints** — `components/{weighing_station,workbench}.js`, `components/scales.js` (delete), `scenes/game.js`, `index.html`, `README.md`. Plain Crafty/JS.
+**Constraints** — `constants.js`, `components/{weighing_station,workbench,pottery,potter,inventory}.js`, delete `components/scales.js`, `scenes/game.js`, `index.html`, `README.md`. Plain Crafty/JS.
 
-**Open questions** — Where wedged clay goes after wedging. Assumed: it stays in the pack as a wedged kilo that you carry to the station and click in (alternatives: auto-send to the station, or weigh straight from the pack).
+**Open questions** — None (see defaults to confirm).
 
 **Tasks**
-- [ ] Create `WeighingStation` (pile, boxes, weigh, panel) from workbench + scales code
-- [ ] Strip pile/weigh/Scales from `Workbench`; wedge in place
-- [ ] `game.js`: replace the placeholder rectangle; `index.html` script tag; delete `scales.js`
-- [ ] README update
-- [ ] Verify in browser (wedge, carry, deposit, weigh, owl accepts)
+- [x] Swap state order; `weighOut` from dug pile
+- [x] Create `WeighingStation`; remove pile/weigh/Scales from `Workbench`
+- [x] Workbench wedges a weighed piece; owl takes wedged; border, messages, help text
+- [x] `game.js`, `index.html`, delete `scales.js`, README
+- [x] Verify in browser (deposit, weigh, wedge, model, owl accept/refuse)
