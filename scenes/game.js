@@ -17,7 +17,6 @@ Crafty.defineScene("Game", function() {
 
     // The fox starts on the ground, bottom-middle of the map.
     var player = Crafty.e("Fox").attr({x: 920, y: 820});
-    Crafty.e("InventoryHud").attr({x: 20, y: 60}).show(player.inventory);
 
     // Inside sits left of Outside. The gap is wider than the screen, so the camera never shows both.
     var INSIDE_X = -2000 - 1200;
@@ -76,6 +75,11 @@ Crafty.defineScene("Game", function() {
     // The kiln, Outside. Its square covers where the fox stands at the kiln: fox positions (1605, 527) to (1800, 657).
     var kiln = Crafty.e("Kiln, Mouse")
         .attr({x: 1605, y: 527, w: 355, h: 232});
+
+    // HUD inventory bar under the mute button: what the fox, the master and the kiln hold.
+    Crafty.e("InventoryHud").attr({x: 20, y: 60}).show("Fox", [player.inventory]);
+    Crafty.e("InventoryHud").attr({x: 20, y: 110}).show("Master", [owl.input, owl.output]);
+    Crafty.e("InventoryHud").attr({x: 20, y: 160}).show("Kiln", [kiln.inventory]);
 
     // Clicking the kiln the fox is touching loads the selected unfired pot, or collects a fired one.
     kiln.bind("Click", function () {

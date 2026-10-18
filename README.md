@@ -30,7 +30,7 @@ Then open http://localhost:8000.
 - `assets.js`: sprites and audio preloaded by the Loading scene
 - `scenes/`: Loading, Start, Game (Inside and Outside areas with the owl, kiln, doors and clay), End
 - `components/`:
-  - Gameplay: `Potter` (the owl throwing pots), `Kiln` (empty, firing, cooling, ready), `Inventory` (plain class: fixed capacity, one item type at a time, `transferItem(from, to)` moves items; fox, owl and kiln each own one and every change triggers `InventoryChanged`), `InventoryHud` (HUD strip showing the fox's inventory), `TimeClickable` (measures how long it's held, then fires `TimeClicked`)
+  - Gameplay: `Potter` (the owl throwing pots), `Kiln` (empty, firing, cooling, ready), `Inventory` (plain class: fixed capacity, one item type at a time, `transferItem(from, to)` moves items; fox, owl and kiln each own one and every change triggers `InventoryChanged`), `InventoryHud` (HUD row: a label and the slots of the inventories it shows; the game has Fox, Master and Kiln rows), `TimeClickable` (measures how long it's held, then fires `TimeClicked`)
   - Shared: `AudioController` (global `audioController`), `MuteButton`, `GameTimer`, `PlayerNotification` (`Crafty.trigger("InstructionText", msg)`), `UIButton` (named so it doesn't replace Crafty's built-in `Button`), `CreditsText`
 - `camera.js`: `makeCameraTrackEntity(entity, yOffset)`
 - `mobile/`: `TouchControls`, gesture controls for phones (touch and hold to walk toward the finger, tap for SPACE); see `mobile/README.md`
