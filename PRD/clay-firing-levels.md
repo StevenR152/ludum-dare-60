@@ -27,24 +27,24 @@
 7. `kiln.js` carries a `NOTE` comment: call `pottery.setFireLevel(level)` before `advance("firing")`, and draw the cross on its own ready-pot box with the same helper. (Written as a comment only; no kiln logic changes.)
 
 **Acceptance criteria**
-- [ ] Console: brown fired low → `cracked` false; brown mid/high → true; red needs mid; blue needs high.
-- [ ] Console: `setFireLevel("hot")` and a call on a `thrown` pot return false and warn; `CLAY_TYPES` unchanged.
-- [ ] A pot cooled with no level set is cracked.
-- [ ] A cracked pot in the HUD shows a black cross over its rectangle; a sound pot shows none; SPACE drops it.
-- [ ] The completed shelf refuses a cracked pot with the message and the count stays put; a sound pot still goes on, three end the game.
-- [ ] A cracked pot placed on any other shelf shows the cross there; the existing loop works once the kiln sets a level.
+- [x] Console: brown fired low → `cracked` false; brown mid/high → true; red needs mid; blue needs high.
+- [x] Console: `setFireLevel("hot")` and a call on a `thrown` pot return false and warn; `CLAY_TYPES` unchanged.
+- [x] A pot cooled with no level set is cracked.
+- [x] A cracked pot in the HUD shows a black cross over its rectangle; a sound pot shows none; SPACE drops it.
+- [x] The completed shelf refuses a cracked pot with the message and the count stays put; a sound pot still goes on, three end the game.
+- [ ] A cracked pot placed on another shelf shows the cross there (same helper as the HUD, not seen in the browser); the kiln does not set a level yet, so every pot cracks until the kiln agent adds the call.
 
 **Constraints** — Crafty 0.9.0, no new deps. Edit `constants.js`, `pottery.js`, `inventory.js`, `inventory_hud.js`, `shelf.js`, `completed_shelf.js`, a comment in `kiln.js`, README. No kiln logic changes.
 
 **Open questions** — None.
 
 **Tasks**
-- [ ] `FIRE_LEVELS` and `fireLevel` on `CLAY_TYPES`
-- [ ] `Pottery`: `clay.fireLevel`, `setFireLevel`, `pot.fireLevel/cracked`, crack check on `cooled`
-- [ ] Cross helper; use in HUD and shelf slots
-- [ ] Completed shelf refuses cracked pots
-- [ ] Kiln `NOTE` comment and README
-- [ ] Verify in the browser/console
+- [x] `FIRE_LEVELS` and `fireLevel` on `CLAY_TYPES`
+- [x] `Pottery`: `clay.fireLevel`, `setFireLevel`, `pot.fireLevel/cracked`, crack check on `cooled`
+- [x] Cross helper; use in HUD and shelf slots
+- [x] Completed shelf refuses cracked pots
+- [x] Kiln `NOTE` comment and README
+- [x] Verify in the browser/console
 
 ## Decisions
 1. Pairings brown low, red mid, blue high → yes.

@@ -13,7 +13,8 @@ Built with [CraftyJS](http://craftyjs.com/api/) 0.9.0 (loaded from cdnjs).
 - Click the owl (Inside) to hand him the selected clay. He only takes it when he's idle, and throws a pot from it in 8s. Click him again to take the finished pot.
 - Click the drying shelf (Inside) to put the selected unfired pot on it (3 places). It dries for 15s; click again to take a dried pot.
 - Click the kiln (Outside) to load a dried pot. It fires for 10s and cools for 10s; then click it again to collect the fired pot.
-- Click the completed shelf (Inside) to put a fired pot on it. Three completed pots end the game.
+- Each clay needs its own firing level: brown low, red mid, blue high. A pot fired at any other level cracks when it cools and is drawn with a black cross.
+- Click the completed shelf (Inside) to put a fired pot on it. Cracked pots are refused. Three completed pots end the game.
 - SPACE (a tap on phones) drops the selected item. This is a testing aid.
 
 ## Run locally

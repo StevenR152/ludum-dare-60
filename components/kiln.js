@@ -2,6 +2,10 @@
 // fires for KILN_FIRE_MS, cools for KILN_COOL_MS, then waits, shown as a box, to be taken out.
 // States: empty -> firing -> cooling -> ready -> empty. The square's colour shows the state.
 // The pot can only be taken once ready (transferItem(kiln.inventory, fox.inventory)).
+// NOTE (kiln agent): clay now needs a firing level (see PRD/clay-firing-levels.md). Before
+// advance("firing") call pottery.setFireLevel(level) with the FIRE_LEVELS name for the logs loaded
+// (1 low, 2 mid, 3 high); a pot with no level set cracks. Also call markCracked(this.potBox, pottery)
+// when the pot is ready, so a cracked pot shows the black cross here too.
 Crafty.c("Kiln", {
     init: function() {
         this.requires("2D, DOM, Color, Delay");
