@@ -13,7 +13,7 @@
 **Flow**
 1. The first order appears at 0:00, then one more every 2:00.
 2. Each order appears in the top-right panel, newest at the bottom, below the timer.
-3. An order shows a clay colour square, then words, e.g. `Large Vase (1500g) · Glaze A then B · Fast`, and a bar that drains toward its deadline.
+3. An order shows a clay colour square, then words, e.g. `Large Vase (1500g)` over `Glaze` + yellow square + red square + `Fast` (glaze buckets as coloured squares in dipping order), and a bar that drains toward its deadline.
 4. Orders stay listed until later features remove them. At 5 listed orders, no more are created.
 
 **Requirements**
@@ -52,7 +52,7 @@
 ## Decisions
 1. First order → at 0:00.
 2. Clay → one colour per order, chosen from the 3 clay types (3-colour orders dropped).
-3. Glaze → A then B differs from B then A; placeholder station with yellow (A) and red (B) squares.
+3. Glaze → A then B differs from B then A (shown as the bucket squares in order, e.g. yellow then red); placeholder station with yellow (A) and red (B) squares.
 4. Speed → deadlines of Slow 10 min, Medium 7 min, Fast 3 min, shown as progress bars.
 5. Panel → capped at 5 orders; none created while full (default).
 6. Grams → shown on the order (default).

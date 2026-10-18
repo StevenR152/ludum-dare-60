@@ -54,7 +54,8 @@ var ORDER_CLAY_GRAMS = {
     Cup:  { Small: 150, Medium: 200, Large: 500 },
     Vase: { Small: 300, Medium: 500, Large: 1500 }
 };
-var ORDER_GLAZES = ["Glaze A", "Glaze B", "Glaze A then B", "Glaze B then A"];
+// Each glaze is the buckets dipped in order, shown as coloured squares (GLAZE_BUCKET_COLORS).
+var ORDER_GLAZES = [["Glaze A"], ["Glaze B"], ["Glaze A", "Glaze B"], ["Glaze B", "Glaze A"]];
 // How long a customer waits, by speed.
 var ORDER_SPEEDS = {
     Slow:   { deadlineMs: 10 * 60 * 1000 },

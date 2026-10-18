@@ -64,8 +64,22 @@ Crafty.c("OrderPanel", {
             .color(order.clay.color);
         card.label = Crafty.e("2D, HUD, Text")
             .attr({x: x + 42, y: y + 6, w: ORDER_CARD_W - 50, h: 36, z: 1001})
-            .text(order.size + " " + order.shape + " (" + order.grams + "g)<br>" +
-                  order.glaze + " · " + order.speed)
+            .text(order.size + " " + order.shape + " (" + order.grams + "g)")
+            .textFont({size: "13px", weight: "bold"}).textColor("#222").unselectable();
+        // Second row: "Glaze" then one square per bucket, in dipping order, then the speed.
+        card.glazeWord = Crafty.e("2D, HUD, Text")
+            .attr({x: x + 42, y: y + 24, w: 40, h: 16, z: 1001})
+            .text("Glaze")
+            .textFont({size: "13px", weight: "bold"}).textColor("#222").unselectable();
+        card.glazeSquares = [];
+        for (var i = 0; i < order.glaze.length; i++) {
+            card.glazeSquares.push(Crafty.e("2D, HUD, Color")
+                .attr({x: x + 86 + i * 20, y: y + 25, w: 16, h: 16, z: 1001})
+                .color(GLAZE_BUCKET_COLORS[order.glaze[i]]));
+        }
+        card.speedLabel = Crafty.e("2D, HUD, Text")
+            .attr({x: x + 86 + order.glaze.length * 20 + 8, y: y + 24, w: 90, h: 16, z: 1001})
+            .text("· " + order.speed)
             .textFont({size: "13px", weight: "bold"}).textColor("#222").unselectable();
         card.barBack = Crafty.e("2D, HUD, Color")
             .attr({x: x + 8, y: y + 46, w: ORDER_CARD_W - 16, h: 8, z: 1001})
