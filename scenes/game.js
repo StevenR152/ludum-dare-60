@@ -4,9 +4,7 @@ Crafty.defineScene("Game", function() {
     Crafty.background("#EEE");
     audioController.playMusic(MUSIC_TRACK);
 
-    // HUD
-    Crafty.e("MuteButton").attr({x: 20, y: 20});
-    Crafty.e("GameTimer").attr({x: GAME_SCREEN_WIDTH - 100, y: 20});
+    // HUD (the music button, timer and inventory bar are built together once the holders exist, below)
     Crafty.e("PlayerNotification");
     Crafty.e("StatusMessage");
 
@@ -76,14 +74,8 @@ Crafty.defineScene("Game", function() {
     var kiln = Crafty.e("Kiln, Mouse")
         .attr({x: 1605, y: 527, w: 355, h: 232});
 
-    // HUD inventory bar under the mute button: what the fox, the master and the kiln hold.
-    Crafty.e("2D, HUD, Color")
-        .attr({x: 10, y: 55, w: 190, h: 155, z: 999})
-        .color("rgba(255, 255, 255, 0.8)")
-        .css({borderRadius: "8px"});
-    Crafty.e("InventoryHud").attr({x: 20, y: 60}).show("Fox", [player.inventory]);
-    Crafty.e("InventoryHud").attr({x: 20, y: 110}).show("Master", [owl.input, owl.output]);
-    Crafty.e("InventoryHud").attr({x: 20, y: 160}).show("Kiln", [kiln.inventory]);
+    // One HUD entity owns the music button, timer and inventory bar: hud.enable(false) hides it all.
+    Crafty.e("GameHud").build(player, owl, kiln);
 
     // Clicking the kiln the fox is touching loads the selected unfired pot, or collects a fired one.
     kiln.bind("Click", function () {

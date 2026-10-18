@@ -10,6 +10,7 @@ Crafty.c("InventoryHud", {
         this.requires("2D");
         this.inventories = [];
         this.parts = [];
+        this.shown = true;
         this.bind("InventoryChanged", function (changed) {
             if (this.inventories.indexOf(changed) >= 0) {
                 this.refresh();
@@ -43,12 +44,19 @@ Crafty.c("InventoryHud", {
         return this.refresh();
     },
 
+    // Hides or shows the whole row; items only show while it is shown.
+    enable: function(on) {
+        this.shown = on;
+        this.parts.forEach(function (part) { part.visible = on; });
+        return this.refresh();
+    },
+
     refresh: function() {
         this.slots.forEach(function (slot) {
             var item = slot.inventory.items[slot.index];
             var outlined = item && slot.inventory.items.length > 1 && slot.index === slot.inventory.selected;
             slot.box.color('#DDD');
-            slot.itemBox.visible = !!item;
+            slot.itemBox.visible = this.shown && !!item;
             if (item) {
                 var shape = ITEM_SHAPES[item.type];
                 slot.itemBox.attr({w: shape.w, h: shape.h,
@@ -56,7 +64,7 @@ Crafty.c("InventoryHud", {
                 slot.itemBox.color(itemColor(item));
             }
             slot.box.css({boxSizing: 'border-box', border: outlined ? '3px solid #FFF' : '3px solid #222'});
-        });
+        }, this);
         return this;
     }
 });
