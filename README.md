@@ -8,6 +8,7 @@ Built with [CraftyJS](http://craftyjs.com/api/) 0.9.0 (loaded from cdnjs).
 ## How to play
 - Arrow keys or WASD walk the fox. On phones, touch and hold to walk toward your finger.
 - Click a door you're standing at to move between Inside and Outside.
+- Things you click in the world (doors, owl, kiln, shelves...) act the moment you press the button or touch, not when you let go. Menu buttons still act on release.
 - Hold-click a clay square (Outside) while standing on it to dig a kilo (1000 g) into your inventory (2 slots, HUD top left). You carry any 2 items in any mix (2 dug clays, a weighed piece and a model, 2 pots...). E picks a slot.
 - Hold-click the workbench (Inside) for 3s while standing on it to wedge the selected kilo onto the bench. Kilos of the same clay add up in one pile; different clays sit side by side (e.g. 1000 g blue and 800 g red).
 - Click the scales on the workbench to open a panel, choose a clay and the grams (up to what's in that pile) and press Weigh. A piece is always one clay. The weighed piece (white outline) goes in your pack; the rest stays on the bench.

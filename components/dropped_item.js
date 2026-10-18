@@ -18,7 +18,7 @@ Crafty.c("DroppedItem", {
         this.checkHits("Fox");
         this.bind("HitOn", this.onHitOn);
         this.bind("HitOff", this.onHitOff);
-        this.bind("Click", this.onClick);
+        this.bind("MouseDown", this.onClick);
         // A fresh drop starts overlapped, but Collision only reports HitOff after it has seen a HitOn, so
         // a fox that leaves (or is teleported) first would never clear it. Check directly too.
         this.bind("UpdateFrame", function () {

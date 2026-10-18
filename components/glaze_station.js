@@ -11,7 +11,7 @@ Crafty.c("GlazeStation", {
                 .attr({x: x + i * 90, y: y, w: 70, h: 70})
                 .color(GLAZE_BUCKET_COLORS[names[i]]);
             bucket.glazeName = names[i];
-            bucket.bind("Click", function () {
+            bucket.bind("MouseDown", function () {
                 if (this.intersect(fox.x, fox.y, fox.w, fox.h)) {
                     dipPot(fox, this.glazeName);
                 } else {

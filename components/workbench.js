@@ -61,7 +61,7 @@ Crafty.c("Workbench", {
             .css({lineHeight: "56px", textAlign: "center"});
         spot.model = model;
         spot.home = true;
-        spot.bind("Click", function () { bench.takeModel(spot); });
+        spot.bind("MouseDown", function () { bench.takeModel(spot); });
         this.parts.push(spot);
         this.modelSpots.push(spot);
         this.drawModelSpot(spot);
