@@ -33,6 +33,7 @@ Crafty.c("Shelf", {
                 .attr({x: this.x + 20 + i * 60, y: this.y + (this.h - 40) / 2, z: this.z + 1})
                 .color(item ? itemColor(item) : "rgba(255, 255, 255, 0.4)");
             markCracked(this.slotBoxes[i], item);
+            markBorder(this.slotBoxes[i], item);
         }
     },
 

@@ -1,45 +1,55 @@
-// The master potter: copies the model in his model inventory from the weighed clay in his input,
-// over POT_MAKE_MS, whenever his hands are free. He only takes the two together (receiveFrom), and
-// only when the clay weighs what the model needs (ORDER_CLAY_GRAMS). The clay stays in his input
-// until the pot is finished; then the model goes back to the bench ("ModelReturned") and the pot
-// waits in his output inventory, shown as a box on him, until the fox takes it
-// (transferItem(owl.output, fox.inventory)).
+// The master potter. Everything he holds is in one inventory of OWL_CAPACITY things: weighed clay and
+// models given to him, pots given to him to trim, and finished pots waiting for the fox. He does one
+// job at a time, oldest first:
+// - throw: weighed clay + a model, given together (receiveFrom) and only when the clay weighs what the
+//   model needs (ORDER_CLAY_GRAMS). After POT_MAKE_MS the clay becomes a wet, untrimmed pot and the
+//   model goes back to the bench ("ModelReturned").
+// - trim: an untrimmed pot (receiveFrom). He judges it as he starts: leather hard comes out trimmed
+//   after POT_TRIM_MS; wet collapses and bone dry cracks (pot.cracked). Either way it waits for the fox.
+// Finished pots show as a box on him until the fox takes them (takePot).
 Crafty.c("Potter", {
     init: function() {
         this.requires("2D, Delay");
-        this.making = false;
-        var owl = this;
-        this.input = new Inventory(OWL_INPUT_CAPACITY, {
-            accepts: function (item) { return item.state === "weighed" && owl.isIdle(); }
+        this.jobs = [];
+        this.working = null;
+        this.inventory = new Inventory(OWL_CAPACITY, {
+            fits: function () { return true; },
+            releases: function (item) { return this.isFinished(item); }.bind(this)
         });
-        this.modelIn = new Inventory(OWL_MODEL_CAPACITY, {
-            accepts: function (item) { return item.type === "model" && owl.isIdle(); }
-        });
-        this.output = new Inventory(OWL_OUTPUT_CAPACITY);
         this.potBox = Crafty.e("2D, DOM, Color")
             .attr({w: 40, h: 40, visible: false})
             .color(POT_COLOR);
         this.bind("InventoryChanged", function (changed) {
-            if (changed === this.input) {
-                this.startPot();
-            } else if (changed === this.output) {
+            if (changed === this.inventory) {
                 this.showPot();
+                this.startNext();
             }
         });
     },
 
-    // Takes the fox's weighed clay and model together, or nothing. Returns a status to show.
+    // A pot waiting for the fox: not part of a job still to do or under way.
+    isFinished: function(item) {
+        return item.type === "pot" && !this.jobs.some(function (job) { return job.items.indexOf(item) >= 0; });
+    },
+
+    roomFor: function(count) {
+        return this.inventory.items.length + count <= this.inventory.capacity;
+    },
+
+    // Gives him the fox's selected untrimmed pot to trim, or else its weighed clay and model together.
+    // Returns a status to show.
     receiveFrom: function(fox) {
         var pack = fox.inventory;
+        var held = pack.selectedItem();
+        if (held && held.type === "pot") {
+            return this.receivePot(pack, held);
+        }
         var clayIndex = pack.find(function (item) { return item.state === "weighed"; });
         var modelIndex = pack.find(function (item) { return item.type === "model"; });
-        if (!this.isIdle()) {
-            return "The master is busy, come back when he's done";
-        }
         if (clayIndex < 0 && modelIndex < 0) {
             return pack.items.some(function (item) { return item.type === "clay"; })
                 ? "Wedge and weigh the clay on the workbench first"
-                : "The master needs weighed clay and a model to make pots";
+                : "The master needs weighed clay and a model to make pots, or a pot to trim";
         }
         if (modelIndex < 0) {
             return "Bring a model from the workbench too";
@@ -53,50 +63,102 @@ Crafty.c("Potter", {
         if (clay.clay.weight !== needed) {
             return "That's " + clay.clay.weight + " g, a " + model.size + " " + model.shape + " needs " + needed + " g";
         }
-        // Model first: the clay arriving starts the pot.
-        transferItem(pack, this.modelIn, modelIndex);
-        transferItem(pack, this.input, pack.items.indexOf(clay));
+        if (!this.roomFor(2)) {
+            return "The master's hands are full, come back when he's done";
+        }
+        // The job first, so the clay arriving doesn't count as a finished pot.
+        this.jobs.push({kind: "throw", items: [clay, model]});
+        transferItem(pack, this.inventory, modelIndex);
+        transferItem(pack, this.inventory, pack.items.indexOf(clay));
         return "Gave the master " + needed + " g of " + clay.clay.name + " clay for a " + model.size + " " + model.shape;
     },
 
-    startPot: function() {
-        if (this.making || this.outputFull() || this.input.items.length === 0) {
-            return;
+    receivePot: function(pack, pot) {
+        if (pot.pot.cracked) {
+            return "This pot is cracked, the master can't trim it";
         }
-        this.making = true;
-        this.delay(this.finishPot, POT_MAKE_MS, 0);
+        if (pot.pot.trimmed) {
+            return "This pot is already trimmed";
+        }
+        if (!isDrying(pot)) {
+            return "Only an unfired pot can be trimmed";
+        }
+        if (!this.roomFor(1)) {
+            return "The master's hands are full, come back when he's done";
+        }
+        this.jobs.push({kind: "trim", items: [pot]});
+        transferItem(pack, this.inventory);
+        return "Gave the master the pot to trim";
     },
 
-    finishPot: function() {
-        this.making = false;
-        var pottery = this.input.take(0);
-        var model = this.modelIn.take(0);
+    // The oldest finished pot to the fox, or false.
+    takePot: function(fox) {
+        var index = this.inventory.find(this.isFinished.bind(this));
+        return index >= 0 && transferItem(this.inventory, fox.inventory, index);
+    },
+
+    hasFinishedPot: function() {
+        return this.inventory.find(this.isFinished.bind(this)) >= 0;
+    },
+
+    startNext: function() {
+        if (this.working || this.jobs.length === 0) {
+            return;
+        }
+        var job = this.working = this.jobs[0];
+        if (job.kind === "throw") {
+            this.delay(function () { this.finishThrow(job); }, POT_MAKE_MS, 0);
+        } else {
+            // He feels the pot as he starts; the result shows when he's done.
+            var stage = job.items[0].dryStage();
+            this.delay(function () { this.finishTrim(job, stage); }, POT_TRIM_MS, 0);
+        }
+    },
+
+    finishThrow: function(job) {
+        var pottery = job.items[0];
+        var model = job.items[1];
+        this.inventory.pull(this.inventory.items.indexOf(model));
+        this.inventory.pull(this.inventory.items.indexOf(pottery));
         pottery.advance("thrown", model);
         Crafty.trigger("ModelReturned", model);
-        this.output.add(pottery);
+        this.inventory.items.push(pottery);
+        this.endJob();
+    },
+
+    finishTrim: function(job, stage) {
+        var pot = job.items[0];
+        if (stage === "leatherHard") {
+            pot.pot.trimmed = true;
+            showStatus("The master trimmed the pot");
+        } else {
+            pot.pot.cracked = true;
+            showStatus(stage === "wet"
+                ? "The pot was too wet: it collapsed as the master trimmed it"
+                : "The pot was bone dry: it cracked as the master trimmed it");
+        }
+        this.endJob();
+    },
+
+    endJob: function() {
+        this.jobs.shift();
+        this.working = null;
+        this.inventory.changed();
     },
 
     // Low on the owl, centred; placed now because the owl's position is set after init.
-    // Taking the pot lets him start the next one if he has clay.
     showPot: function() {
-        var hasPot = this.output.items.length > 0;
-        if (hasPot) {
+        var index = this.inventory.find(this.isFinished.bind(this));
+        if (index >= 0) {
+            var pot = this.inventory.items[index];
             this.potBox.attr({
                 x: this.x + (this.w - this.potBox.w) / 2,
                 y: this.y + this.h - this.potBox.h - 10,
                 z: this.z + 1
-            });
+            }).color(itemColor(pot));
+            markCracked(this.potBox, pot);
+            markBorder(this.potBox, pot);
         }
-        this.potBox.visible = hasPot;
-        this.startPot();
-    },
-
-    outputFull: function() {
-        return this.output.items.length >= this.output.capacity;
-    },
-
-    // No clay waiting, no pot on the wheel, room for another pot: the only time he takes clay.
-    isIdle: function() {
-        return this.input.items.length === 0 && !this.making && !this.outputFull();
+        this.potBox.visible = index >= 0;
     }
 });
