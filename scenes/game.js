@@ -24,7 +24,10 @@ Crafty.defineScene("Game", function() {
     Crafty.e("2D, DOM, backgroundInside")
         .attr({x: INSIDE_X, y: 0, w: 8364 / 4, h: 2246 / 4, z: -1});
 
-   
+    // The same art with only the foreground items the fox walks behind, drawn over him (below the HUD).
+    Crafty.e("2D, DOM, overlayInside")
+        .attr({x: INSIDE_X, y: 0, w: 8364 / 4, h: 2246 / 4, z: 50});
+
 
     // Debug aid for laying out the scene: log world coordinates of any click.
     player.logClickPosition = function (e) {
