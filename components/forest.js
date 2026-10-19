@@ -26,7 +26,7 @@ Crafty.c("Forest", {
 
     startChop: function() {
         if (!this.touchingFox()) {
-            showStatus("Walk into the forest first");
+            showStatus("I can't reach the forest from here");
             return;
         }
         showStatus("Chopping, keep holding");

@@ -6,6 +6,7 @@ Crafty.c("Clay", {
         this.requires("2D, DOM, Mouse, Delay, Collision, DebugHitbox");
         this.clayType = null;
         this.dug = false;
+        this.digging = false;
         this.bind("MouseDown", this.startDig);
         this.bind("MouseUp", this.cancelDig);
         this.bind("MouseOut", this.cancelDig);
@@ -39,9 +40,11 @@ Crafty.c("Clay", {
             return;
         }
         if (!this.touchingFox()) {
-            showStatus("Can't harvest clay without moving fox to spot");
+            showStatus("I can't harvest the clay from here");
             return;
         }
+        this.digging = true;
+        showStatus("Digging clay...");
         this.delay(this.dig, CLAY_DIG_MS);
     },
 
@@ -50,18 +53,27 @@ Crafty.c("Clay", {
         return hits ? hits[0].obj : null;
     },
 
-    cancelDig: function() { this.cancelDelay(this.dig); },
+    // Letting go (or leaving the patch with the cursor) during a started dig stops it.
+    cancelDig: function() {
+        this.cancelDelay(this.dig);
+        if (this.digging) {
+            this.digging = false;
+            showStatus("You stopped digging");
+        }
+    },
     // The fox may have walked off mid-hold, or have no room.
     dig: function() {
+        this.digging = false;
         var fox = this.touchingFox();
         if (!fox) {
-            showStatus("Can't harvest clay without moving fox to spot");
+            showStatus("I can't harvest the clay from here");
             return;
         }
         // Each kilo is its own Pottery, so wedging it never changes the shared clay type.
         if (!fox.pickUp(new Pottery(this.clayType))) {
             return;
         }
+        showStatus("Dug up " + this.clayType.name + " clay");
         this.dug = true;
         this.patch.alpha = CLAY_DUG_ALPHA;
         this.trigger("ClayDug", this.clayType);

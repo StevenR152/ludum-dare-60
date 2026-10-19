@@ -110,10 +110,20 @@ Crafty.c("DroppedItem", {
         }
     },
 
+    // How the pickup line names the item.
+    itemName: function() {
+        var item = this.item;
+        if (item.type === "clay") {
+            return item.clay.weight + " g of " + item.clay.name + " clay";
+        }
+        return "the " + (item.type === "model" ? item.shape + " model" : item.type);
+    },
+
     onClick: function() {
         if (!this.overlapping) {
-            showStatus("Walk up to it first");
+            showStatus("I can't reach that from here");
         } else if (this.fox.pickUp(this.item)) {
+            showStatus("Picked up " + this.itemName());
             Crafty.trigger("ItemMoved", {item: this.item, from: null, to: this.fox.inventory});
             this.destroy();
         }

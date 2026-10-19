@@ -16,7 +16,7 @@ Crafty.c("GlazeStation", {
                 if (fox.touches(this)) {
                     dipPot(fox, this.glazeName);
                 } else {
-                    showStatus("Walk up to the glaze bucket first");
+                    showStatus("I can't reach the glaze bucket from here");
                 }
             });
         }

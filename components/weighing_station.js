@@ -71,7 +71,7 @@ Crafty.c("WeighingStation", {
     use: function() {
         var fox = this.touchingFox();
         if (!fox) {
-            showStatus("Walk up to the weighing station first");
+            showStatus("I can't reach the weighing station from here");
             return;
         }
         var held = fox.inventory.selectedItem();

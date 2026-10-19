@@ -48,7 +48,7 @@ Crafty.c("Potter", {
         if (clayIndex < 0 && modelIndex < 0) {
             return pack.items.some(function (item) { return item.type === "clay"; })
                 ? "Weigh the clay at the weighing station, then wedge it at the workbench"
-                : "The master needs wedged clay and a model to make pots, or a pot to trim";
+                : "The master needs wedged clay and a model to make pots, or a dried pot to trim";
         }
         if (modelIndex < 0) {
             return "Bring a model from the workbench too";

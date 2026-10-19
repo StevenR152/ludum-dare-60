@@ -95,6 +95,7 @@ Crafty.defineScene("Game", function() {
     // bisque-fired for its glaze firing), or collects a fired pot.
     kiln.bind("MouseDown", function () {
         if (!player.touches(this)) {
+            showStatus("I can't reach the kiln from here");
             return;
         }
         var carried = player.inventory.selectedItem();
@@ -103,12 +104,11 @@ Crafty.defineScene("Game", function() {
             while (transferItem(player.inventory, this.woodInventory)) {
                 moved = true;
             }
-            if (!moved) {
-                showStatus("The kiln is full of wood");
-            }
+            showStatus(moved ? "Wood loaded into the kiln" : "The kiln is full of wood");
             return;
         }
         if (transferItem(player.inventory, this.inventory)) {
+            showStatus("Kiln loaded");
             return;
         }
         var held = player.inventory.selectedItem();
@@ -116,14 +116,24 @@ Crafty.defineScene("Game", function() {
             showStatus("This pot is cracked, it can't be fired");
         } else if (this.state === "empty" && held && held.state === "glazeCooled") {
             showStatus("This pot is finished, take it to the completed shelf");
-        } else if (this.state === "ready" && !transferItem(this.inventory, player.inventory)) {
-            showStatus("You can't carry the pot: your pack is full or holds clay");
+        } else if (this.state === "ready") {
+            showStatus(transferItem(this.inventory, player.inventory)
+                ? "Took the pot out of the kiln"
+                : "You can't carry the pot: your pack is full or holds clay");
         } else if (held && held.type === "pot") {
             if (this.state === "firing" || this.state === "cooling") {
                 showStatus("The kiln is busy");
             } else {
                 showStatus("The kiln is full");
             }
+        } else {
+            // The press did nothing: say what the kiln is doing.
+            showStatus({
+                empty: "The kiln is cold and empty",
+                loaded: "The kiln is loaded, add wood and light the torch",
+                firing: "The fire is roaring, hands off",
+                cooling: "Still cooling, give it a moment"
+            }[this.state]);
         }
     });
 
@@ -184,6 +194,8 @@ Crafty.defineScene("Game", function() {
     // Where each door leads: the spot in DOOR_DESTINATIONS for the area beyond it.
     outsideDoor.arrival = DOOR_DESTINATIONS.inside;
     insideDoor.arrival = DOOR_DESTINATIONS.outside;
+    outsideDoor.line = "Into the workshop we go";
+    insideDoor.line = "Back out into the fresh air";
 
     // A destination must be in bounds and clear of both doors, or the fox is stuck or walks straight back.
     [{name: "outside", spot: DOOR_DESTINATIONS.outside}, {name: "inside", spot: DOOR_DESTINATIONS.inside}].forEach(function (d) {
@@ -217,6 +229,7 @@ Crafty.defineScene("Game", function() {
             return;
         }
         player.teleportTo(this.arrival.x, this.arrival.y);
+        showStatus(this.line);
         // The sprite faces right unflipped, left when flipped on X.
         if (this.arrival.facing === "right") {
             player.unflip("X");

@@ -55,7 +55,7 @@ Crafty.c("Workbench", {
     takeModel: function(spot) {
         var fox = this.touchingFox();
         if (!fox) {
-            showStatus("Walk up to the workbench first");
+            showStatus("I can't reach the workbench from here");
         } else if (fox.pickUp({type: "model", shape: spot.model.shape})) {
             // A fresh model each time, so a lost one never leaves the player stuck.
             var again = !spot.home;
@@ -93,7 +93,7 @@ Crafty.c("Workbench", {
     clayToWedge: function() {
         var fox = this.touchingFox();
         if (!fox) {
-            showStatus("Walk up to the workbench first");
+            showStatus("I can't reach the workbench from here");
             return null;
         }
         var clay = fox.inventory.selectedItem();
