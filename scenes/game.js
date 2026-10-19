@@ -91,6 +91,8 @@ function buildWorld(config) {
 
     // Ambient loops and sound effects, driven by game events (see GameSounds).
     Crafty.e("GameSounds").listen(player, kiln);
+    // Background theme, layered under the ambient loop at a lower volume than on the menu scenes.
+    audioController.playMusic(MUSIC_TRACK, GAME_MUSIC_VOLUME);
 
     // The torch lights the kiln. The fox stands on it, e.g. at (1526, 555), and clicks.
     var torch = Crafty.e("2D, DOM, Color, Mouse, DebugHitbox")
