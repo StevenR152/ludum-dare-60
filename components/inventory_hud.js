@@ -2,7 +2,7 @@
 // drawn centred in it in its own colour or picture and shape (ITEM_SHAPES: clay square, pot a little wider than tall).
 // With options.lineBreaks each inventory after the first starts a new line. The selected slot of an inventory with more than one item is outlined in white (options.outlined(inventory, index)
 // decides instead, if given; options.watch lists more inventories whose changes redraw the row). A drying pot has a
-// DryBar under its slot; a fired pot its "1x"/"2x" fire badge (paintItem), wedged clay a border (markBorder).
+// DryBar under its slot; a fired pot its "1x"/"2x" fire badge (paintItem).
 // Redraws whenever one of its inventories changes, and as pots dry ("PotsDried").
 //   Crafty.e("InventoryHud").attr({x: 20, y: 60}).show("Fox", [player.inventory]);
 //   Crafty.e("InventoryHud").attr({x: 20, y: 105}).show("Master", [owl.inventory]);
@@ -142,7 +142,6 @@ Crafty.c("InventoryHud", {
             }
             paintItem(slot.itemBox, item);
             slot.bar.show(item, this.shown);
-            markBorder(slot.itemBox, item);
             var hinted = this.flashing && !!item && slot.index === slot.inventory.selected;
             slot.box.css({boxSizing: 'border-box', border: hinted ? '3px solid ' + PACK_HINT_COLOR : outlined ? '3px solid ' + HUD_TEXT_COLOR : '2px solid rgba(122, 74, 43, 0.35)',
                 animation: hinted ? 'packHintPulse ' + PACK_HINT_CYCLE_S + 's ease-in-out infinite' : 'none'});

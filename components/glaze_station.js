@@ -10,7 +10,7 @@ Crafty.c("GlazeStation", {
         for (var i = 0; i < names.length; i++) {
             // The art is a full inside-map canvas with the bucket already in place; the hitbox sits over it.
             Crafty.e("2D, DOM, " + GLAZE_BUCKET_SPRITES[names[i]])
-                .attr(INSIDE_MAP_BOX).attr({z: 0});
+                .attr(INSIDE_MAP_BOX).attr({z: -1});   // same layer as the mid interior, made after it so it draws over it, but under the fox (z 0)
             var bucket = Crafty.e("2D, DOM, Mouse, DebugHitbox")
                 .attr({x: positions[i].x, y: positions[i].y, w: 80, h: 50});
             bucket.glazeName = names[i];

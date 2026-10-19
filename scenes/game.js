@@ -6,7 +6,8 @@
 //   glaze:             the glaze station (needs inside)
 //   clays:             CLAY_TYPES keys that get a patch to dig outside
 //   models:            ORDER_SHAPES names that get a model on the workbench
-//   maxGlazeDips:      glaze dips one pot takes
+//   kilnTrees:         three more choppable trees right of the kiln (KILN_TREES), levels 4 onwards
+//   maxGlazeDips:     glaze dips one pot takes
 //   potsBreakOnGround: whether dropped pots can be damaged by walking onto them
 //   orders:            null for random timed orders, else a list of fixedOrder()s that all arrive at once
 //   prePlaced:         pots lying on the ground at the start: [{clay, shape, x, y}] (x, y the pot's middle)
@@ -45,13 +46,16 @@ function buildWorld(config) {
     if (config.inside) {
         // Inside sits left of Outside. The gap is wider than the screen, so the camera never shows both.
         // House interior art at a quarter of its 8364x2246 source size, keeping its aspect ratio.
-        Crafty.e("2D, DOM, backgroundInside")
+        Crafty.e("2D, DOM, backgroundInterior")
+            .attr(INSIDE_MAP_BOX).attr({z: -2});
+
+        // Back furniture, still behind the fox.
+        Crafty.e("2D, DOM, midInterior")
             .attr(INSIDE_MAP_BOX).attr({z: -1});
 
-        // The same art with only the foreground items the fox walks behind, drawn over him (below the HUD).
-        Crafty.e("2D, DOM, overlayInside")
-            .attr(INSIDE_MAP_BOX).attr({z: 50});
-    }
+        // The foreground items the fox walks behind, drawn over him (below the HUD).
+        Crafty.e("2D, DOM, frontInterior")
+            .attr(INSIDE_MAP_BOX).attr({z: INTERIOR_FRONT_Z});    }
 
 
     // Click to move: press the ground to walk there, or a far station to walk to it (see Fox.enableClickToMove).
@@ -70,7 +74,7 @@ function buildWorld(config) {
     var owl = null;
     if (config.inside) {
         owl = Crafty.e("2D, DOM, owl, Mouse, Potter")
-            .attr({x: -1684, y: 281, w: 208, h: 198});
+            .attr({x: -1616, y: 232, w: 312, h: 297});
 
         // Clicking the owl the fox is touching takes his oldest finished pot while the fox has a free slot; with a full
         // pack it gives him what he can work on instead (a pot to trim, or wedged clay and a model, see
@@ -98,9 +102,9 @@ function buildWorld(config) {
     // Background theme, layered under the ambient loop at a lower volume than on the menu scenes.
     audioController.playMusic(MUSIC_TRACK, GAME_MUSIC_VOLUME);
 
-    // The torch lights the kiln. The fox stands on it, e.g. at (1526, 555), and clicks.
+    // The torch lights the kiln. The fox stands on it, e.g. at (1501, 555), and clicks.
     var torch = Crafty.e("2D, DOM, Color, Mouse, DebugHitbox")
-        .attr({x: 1520, y: 549, w: 52, h: 72}) // the 40x60 torch grown 6 px each side to be easier to reach
+        .attr({x: 1495, y: 549, w: 52, h: 72}) // the 40x60 torch grown 6 px each side to be easier to reach
         .color(TORCH_COLOR, 0); // invisible: the kiln picture shows the fire, the torch only takes the click
     torch.bind("MouseDown", function () {
         if (player.touches(this)) {
@@ -110,11 +114,22 @@ function buildWorld(config) {
 
     // The forest, Outside left: a row of trees filling FOREST_BOX. Hold on a tree the fox touches to chop logs.
     var treeW = FOREST_BOX.w / FOREST_TREES.length;
-    FOREST_TREES.forEach(function (tree, i) {
-        Crafty.e("Forest")
-            .attr({x: FOREST_BOX.x + i * treeW, y: FOREST_BOX.y, w: treeW, h: FOREST_BOX.h})
-            .plant(tree);
-    });
+    // Trees on the same layer overlap in the order they are made, so the `front` trees are made last.
+    FOREST_TREES.map(function (tree, i) { return {tree: tree, i: i}; })
+        .sort(function (a, b) { return !!a.tree.front - !!b.tree.front; })
+        .forEach(function (slot) {
+            Crafty.e("Forest")
+                .attr({x: FOREST_BOX.x + slot.i * treeW, y: FOREST_BOX.y, w: treeW, h: FOREST_BOX.h})
+                .plant(slot.tree);
+        });
+    // Levels 4 onwards: three more trees right of the kiln, each zone as wide as a forest slice, the tree standing on its point.
+    if (config.kilnTrees) {
+        KILN_TREES.forEach(function (spot) {
+            Crafty.e("Forest")
+                .attr({x: spot.x - treeW / 2, y: spot.y + KILN_TREE_REACH - FOREST_BOX.h, w: treeW, h: FOREST_BOX.h})
+                .plant(spot.tree);
+        });
+    }
 
     // One HUD entity owns the music button, timer and inventory bar: hud.enable(false) hides it all.
     var hud = Crafty.e("GameHud").build(player, owl, kiln);
@@ -246,9 +261,9 @@ function buildWorld(config) {
     }
 
     // Each clay node's dig zone is cut from its patch's art (see Clay.clay). The white patch is moved from
-    // the forest to the bottom right, near the kiln (its middle ends up around 1329, 817).
+    // the forest to the bottom right, past the kiln (its middle ends up around 1729, 697).
     config.clays.forEach(function (key) {
-        Crafty.e("Clay").clay(CLAY_TYPES[key], key === "white" ? {x: 860, y: 259} : undefined);
+        Crafty.e("Clay").clay(CLAY_TYPES[key], key === "white" ? {x: 1260, y: 139} : undefined);
     });
 
     TouchControls.follow(player);
@@ -277,8 +292,8 @@ function buildWorld(config) {
 
     // Weighing station (the wooden tray): dug clay goes on its piles and is weighed off (see WeighingStation).
     Crafty.e("WeighingStation").place(-2695 - 70 / 2 - 30, 432 + 70 / 4 + 70 / 2, 280, 70);
-    var dryingShelf = Crafty.e("DryingShelf").place(-2401, 405, 182, 43);
-    var completedShelf = Crafty.e("CompletedShelf").place(-2180, 405, 183, 43);
+    var dryingShelf = Crafty.e("DryingShelf").place(-2401, 483, 182, 43);
+    var completedShelf = Crafty.e("CompletedShelf").place(-2180, 483, 183, 43);
     // Unfired pots dry fastest on the drying shelf, slower in the fox's pack and the owl's hands, not in the kiln.
     Crafty.e("PotDrier").dry(dryingShelf.inventory, [player.inventory, owl.inventory]);
     // Clicking any slot square puts the fox's drying pot on (if there is room); otherwise a filled slot gives its

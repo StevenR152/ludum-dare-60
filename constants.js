@@ -11,7 +11,7 @@ var MUSIC_VOLUME = 0.2;
 // Quieter in the Game scene, where it layers under the ambient loop (AMBIENT_VOLUME) instead of playing alone.
 var GAME_MUSIC_VOLUME = 0.05;
 // Sound starts on. Set true to start muted (handy while developing); players can still toggle it either way.
-var START_MUTED = false;
+var START_MUTED = true;
 
 // The menu screens (Loading, Start, Missions, Level complete) share one look: firelight in a dark
 // workshop, so the warm art and the clay colours sit on something other than flat grey. MENU_FONT is
@@ -60,7 +60,7 @@ var FIRE_LEVELS = ["low", "mid", "high", "scorching"];
 // Debug: outline the fox's and the doors' collision boxes in red, and show the out-of-bounds masks
 // (COLLISION_AREAS) over the HUD, under the outlines. The overlay is every blocked pixel in solid red drawn at
 // exactly DEBUG_MASK_ALPHA, whatever opacity the mask PNGs were painted at.
-var DEBUG_HITBOXES = false;
+var DEBUG_HITBOXES = true;
 var DEBUG_MASK_ALPHA = 0.5;
 // Debug: the door arrival spots (DOOR_DESTINATIONS) are outlined and labelled in this colour instead of red.
 var DEBUG_DESTINATION_COLOR = "lime";
@@ -97,6 +97,8 @@ var STUMBLE_BASE_CHANCE = 0.005;
 var STUMBLE_PER_SLOW = 0.05;
 // Pottery: how long the owl takes to throw a pot and to trim one.
 var POT_MAKE_MS = 8000;
+// The last share of a throw during which the wheel shows the finished pot instead of the lump of clay.
+var POT_REVEAL_SHARE = 0.25;
 var POT_TRIM_MS = 5000;
 
 // Kiln: how long it fires and cools a pot.
@@ -140,21 +142,30 @@ var OUTSIDE_MAP_PX = {w: 5763, h: 2458};
 var OUTSIDE_MAP_Z = -2;
 var OUTSIDE_ART_Z = -1;
 // The forest: the zone is cut into one slice per tree, drawn at TREE_SCALE of the 2268x2180 image and nudged
-// by dx, dy (px, down is positive) so the row is staggered; the chop zone stays the slice.
+// by dx, dy (px, down is positive) so the row is staggered; the chop zone stays the slice. `front` draws a tree over
+// its neighbours (later trees otherwise cover earlier ones).
 var FOREST_BOX = {x: 5, y: 350, w: 525, h: 307};
 var TREE_SCALE = 0.17;
 var FOREST_TREES = [
     {sprite: "tree1", content: [330, 144, 674, 1732], dx: -8, dy: -20},
     {sprite: "tree2", content: [704, 370, 760, 1568], dx: 6, dy: -65},
-    {sprite: "treePair", content: [330, 144, 1134, 1794], dx: 0, dy: -10},
+    {sprite: "treePair", content: [330, 144, 1134, 1794], dx: 0, dy: -10, front: true},
     {sprite: "tree1", content: [330, 144, 674, 1732], dx: -6, dy: -75},
     {sprite: "tree2", content: [704, 370, 760, 1568], dx: 8, dy: -30}
+];
+// Levels 4 onwards add three more choppable trees right of the kiln, each standing with its base at x (middle), y.
+// The chop zone reaches KILN_TREE_REACH px below the base so the fox, standing in front of the trunk, touches it.
+var KILN_TREE_REACH = 80;
+var KILN_TREES = [
+    {x: 1737, y: 605, tree: Object.assign({}, FOREST_TREES[0], {dx: 0, dy: -KILN_TREE_REACH})},
+    {x: 1858, y: 643, tree: Object.assign({}, FOREST_TREES[1], {dx: 0, dy: -KILN_TREE_REACH})},
+    {x: 1963, y: 645, tree: Object.assign({}, FOREST_TREES[3], {dx: 0, dy: -KILN_TREE_REACH})}
 ];
 // Kiln art (idle and lit, both 2268x1177) and the outside door art (2056x2268).
 var KILN_ART_CONTENT = [376, 358, 782, 546];
 // Fired pots appear this far from the middle of the kiln zone (left and down, clear of the torch).
 var KILN_OUTPUT_OFFSET = {x: -20, y: 20};
-var KILN_ART_BOX = {x: 1395, y: 478, w: 260, h: 181};
+var KILN_ART_BOX = {x: 1370, y: 478, w: 260, h: 181};
 var DOOR_ART_CONTENT = [630, 634, 856, 1102];
 // Each house door's trigger zone (top-left x, y and size). The outside one is exactly the door picture.
 var DOOR_BOXES = {
@@ -186,13 +197,14 @@ var CLAY_IMAGES = {
 };
 
 // The wedged clay pictures (4836x2268 each) by clay letter, cropped to their opaque part. WEDGED_CLAY_BOX is the
-// area on the workbench (offset from the bench's top-left, bottom-aligned on its right half) the picture is fitted into.
+// area on the workbench (offset from the bench's top-left, bottom-aligned on its right half) the picture is fitted into
+// (half the size it was, in the same spot).
 var WEDGED_CLAY_IMAGES = {
     A: {url: "assets/images/wedged_clayA_red.png", w: 4836, h: 2268, crop: [2152, 864, 842, 602]},
     B: {url: "assets/images/wedged_clayB_Black.png", w: 4836, h: 2268, crop: [2186, 858, 810, 610]},
     C: {url: "assets/images/wedged_clayC_white.png", w: 4836, h: 2268, crop: [2176, 866, 796, 616]}
 };
-var WEDGED_CLAY_BOX = {x: 140, y: -40, w: 110, h: 85};
+var WEDGED_CLAY_BOX = {x: 167.5, y: 2.5, w: 55, h: 42.5};
 
 // The HUD's left panels (inventory and Goal): wide enough for a label and 5 slots. Inventory slots wrap onto a new line at its edge.
 var HUD_PANEL_X = 10;
@@ -206,13 +218,21 @@ var HUD_PANEL_STYLE = {borderRadius: "10px", boxShadow: "0 3px 12px rgba(40, 26,
 var HUD_TEXT_COLOR = "#3B2A1D";
 var HUD_SLOT_COLOR = "#E4D3B4";
 
+// The clay piles on the weighing station, as a share of the size they were when they filled the table.
+var WEIGHING_PILE_SCALE = 0.6;
+// Pixels the piles sit above the bottom of the weighing station's zone.
+var WEIGHING_PILE_LIFT = 25;
+
 // Inventory sizes of the owl (everything he holds: clay, models, pots to trim and pots to collect) and
 // the kiln. The fox's is FOX_INVENTORY_CAPACITY.
 var OWL_CAPACITY = 4;
-// The master's spinning circle (kick wheel), inside: the clay or pot he is working on, and a finished pot he is
-// holding alone, is drawn fitted and centred in this box. World px, x, y top-left. Move and resize it to
-// line up with the wheel in the inside art.
-var POTTER_WHEEL = {x: -1400, y: 400, w: 80, h: 60};
+// The interior's front layer (the items the fox walks behind). The owl's clay and pot sit just above it.
+var INTERIOR_FRONT_Z = 50;
+// Where the master's items show inside, drawn fitted and centred on a point (world px, cx, cy the middle). Move and
+// resize them to line up with the inside art. The wheel (kick wheel) holds the clay or pot he is working on; the
+// table in front of him holds the oldest finished pot waiting for the fox.
+var POTTER_WHEEL = {cx: -1743, cy: 421, w: 80, h: 60};
+var POTTER_TABLE = {cx: -1591, cy: 437, w: 52, h: 52};
 var KILN_CAPACITY = 4;
 
 // Wood: logs the kiln holds, logs per fire level (1 log low, 2 mid, 3 high, 4 scorching), how long the fox chops one, colours.
@@ -314,19 +334,15 @@ var DRY_BAR_COLOR = "#555";
 // Completed shelf: places for pots waiting for an order, and how many delivered orders end the game (until levels).
 var COMPLETED_CAPACITY = 3;
 var ORDERS_TO_WIN = 3;
-// Zone square colours of the inside stations. The weighing station is a dark wooden tray (it was a placeholder
-// magenta); its empty pile spaces are faint cream outlines.
-var WEIGHING_STATION_COLOR = "rgba(92, 60, 38, 0.86)";
-var WEIGHING_EMPTY_PILE_COLOR = "rgba(250, 242, 226, 0.14)";
 // Where the weighing panel opens, in screen px: right of the HUD's inventory panel, below Restart and Menu.
 var WEIGH_PANEL_X = HUD_PANEL_X + HUD_PANEL_W + 10;
 var WEIGH_PANEL_Y = 58;
 // Extra pixels the workbench zone (where the fox counts as at the bench) extends below the bench.
 var WORKBENCH_REACH = 50;
-var WORKBENCH_COLOR = "rgba(139, 90, 43, 0.45)";
+// Pixels the models on the workbench are raised above the bench's top edge plus its small gap.
+var WORKBENCH_MODEL_LIFT = 5;
 // Shelf slot boxes: how far below the shelf box's top they sit.
 var SHELF_SLOT_TOP = 2;
-var SHELF_COLOR = "rgba(90, 120, 160, 0.35)";
 
 // Timer bars (components/timer_bar.js): the bar that fills above whoever is doing a timed action, the fox
 // while it digs, chops or wedges, the owl while he throws or trims, and the kiln while it fires and cools.

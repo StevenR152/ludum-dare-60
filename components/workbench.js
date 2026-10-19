@@ -7,8 +7,7 @@
 //   Crafty.e("Workbench").place(-1850, 242, 260, 50, ["Cup"]); // only these models
 Crafty.c("Workbench", {
     init: function() {
-        this.requires("2D, DOM, Color, Mouse, Delay, Collision, DebugHitbox");
-        this.color(WORKBENCH_COLOR);
+        this.requires("2D, DOM, Mouse, Delay, Collision, DebugHitbox");
         this.parts = [];
         this.modelSpots = [];
         this.wedging = false;
@@ -34,7 +33,7 @@ Crafty.c("Workbench", {
         var gap = 3;
         var spotW = (w / 2 - gap * (shapes.length + 1)) / shapes.length;
         shapes.forEach(function (shape, col) {
-            this.addModelSpot({type: "model", shape: shape}, x + gap + col * (spotW + gap), y + gap, spotW, h - gap * 2);
+            this.addModelSpot({type: "model", shape: shape}, x + gap + col * (spotW + gap), y + gap - WORKBENCH_MODEL_LIFT, spotW, h - gap * 2);
         }, this);
         // The zone reaches WORKBENCH_REACH further down than the bench is drawn, so the fox counts as at the bench sooner.
         this.h = h + WORKBENCH_REACH;
@@ -43,11 +42,8 @@ Crafty.c("Workbench", {
 
     addModelSpot: function(model, x, y, w, h) {
         var bench = this;
-        var spot = Crafty.e("2D, DOM, Color, Text, Mouse, DebugHitbox")
-            .attr({x: x, y: y, w: w, h: h, z: this.z + 1})
-            .text(model.shape)
-            .textFont({size: "12px", weight: "bold"}).textColor("#FFF").unselectable()
-            .css({lineHeight: h + "px", textAlign: "center"});
+        var spot = Crafty.e("2D, DOM, Color, Mouse, DebugHitbox")
+            .attr({x: x, y: y, w: w, h: h, z: this.z + 1});
         spot.model = model;
         spot.reachVia = bench; // click-to-move walks to the bench, not the model spot
         spot.actsOnArrival = true; // taking a model is one click, so a tap from afar fetches it (Fox.arrive)
@@ -59,7 +55,8 @@ Crafty.c("Workbench", {
     },
 
     drawModelSpot: function(spot) {
-        spot.color(spot.home ? MODEL_COLOR : "rgba(255, 255, 255, 0.25)");
+        paintItem(spot, spot.model);
+        spot.css({opacity: spot.home ? 1 : 0.25});
     },
 
     takeModel: function(spot) {

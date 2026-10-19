@@ -152,7 +152,7 @@ function fireBadgeLayer(box, item) {
 var FIRE_BADGE_BACKING = "radial-gradient(ellipse closest-side, rgba(255, 247, 230, 0.95) 62%, rgba(255, 247, 230, 0) 100%)";
 
 // Paints an item into its box: pots as their picture (cropped to the pot and fitted in the box, with a fired badge
-// once fired, except with noBadges (customer orders), and a black cross over it if cracked), logs and clay as their picture, everything else as a colour. Call with every box that shows an item (or no item,
+// once fired, except with noBadges (customer orders), and a black cross over it if cracked), logs and clay as their picture (wedged clay its own), everything else as a colour. Call with every box that shows an item (or no item,
 // to clear it): HUD slots, shelf slots, the kiln's, the owl's and dropped items.
 function paintItem(box, item, noBadges) {
     var line = function (corner) {
@@ -178,8 +178,10 @@ function paintItem(box, item, noBadges) {
         sizes.push("100% 100%", "100% 100%");
         positions.push("0 0", "0 0");
     }
+    var isModel = !!item && item.type === "model";
     var picture = isPot ? {url: potSprite(item), w: POT_IMAGE_W, h: POT_IMAGE_H, crop: POT_SPRITES[item.pot.shape].crop} :
-        isLog ? LOG_IMAGE : isClay ? CLAY_IMAGES[item.clay.letter] : null;
+        isModel ? {url: modelImage(item.shape), w: POT_IMAGE_W, h: POT_IMAGE_H, crop: POT_SPRITES[item.shape].crop} :
+        isLog ? LOG_IMAGE : isClay ? (item.state === "wedged" ? WEDGED_CLAY_IMAGES : CLAY_IMAGES)[item.clay.letter] : null;
     if (picture) {
         var fit = fitPicture(box, picture);
         layers.push(fit.layer);
@@ -207,16 +209,6 @@ function itemColor(item) {
 // True for a pot that dries: thrown, not yet fired, not cracked.
 function isDrying(item) {
     return !!item && item.type === "pot" && item.state === "thrown" && !item.pot.cracked;
-}
-
-// The border that marks an item's box: black on wedged clay, none otherwise. Use markBorder to apply it to
-// every box that shows an item.
-function itemBorder(item) {
-    return item && item.state === "wedged" ? "2px solid #000" : "none";
-}
-
-function markBorder(box, item) {
-    box.css({boxSizing: 'border-box', border: itemBorder(item)});
 }
 
 // A wet—leather hard—bone dry bar under a drying pot: a dark track, a fill in the pot's stage colour as

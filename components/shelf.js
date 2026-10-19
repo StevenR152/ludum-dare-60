@@ -1,11 +1,11 @@
-// Base for the inside shelves: a translucent zone square that owns an Inventory and draws one
-// box per slot (the item's colour or picture, or faint white when empty). Components built on it call
+// Base for the inside shelves: an invisible but clickable zone square that owns an Inventory and draws one
+// box per slot (the item's colour or picture, nothing when empty). Components built on it call
 // holdItems(capacity, rules) from init; the Inventory rules decide what goes on and what comes off.
 //   transferItem(fox.inventory, shelf.inventory);
 Crafty.c("Shelf", {
     init: function() {
         this.requires("2D, DOM, Color, Mouse, DebugHitbox");
-        this.color(SHELF_COLOR);
+        this.color("#FFF", 0);   // the zone is clickable but not drawn: the art shows the shelf
         this.slotBoxes = [];
         this.bind("InventoryChanged", function (changed) {
             if (changed === this.inventory) {
@@ -36,9 +36,8 @@ Crafty.c("Shelf", {
             var item = this.inventory.items[i];
             this.slotBoxes[i]
                 .attr({x: this.x + 20 + i * 60, y: this.slotTop(), z: this.z + 1})
-                .color("rgba(255, 255, 255, 0.4)");
+                .color("#FFF", 0);   // an empty slot is not drawn; a pot paints itself over it
             paintItem(this.slotBoxes[i], item);
-            markBorder(this.slotBoxes[i], item);
         }
         // For shelves that decorate the slots (the drying shelf's bars and click handlers).
         this.trigger("SlotsDrawn");
