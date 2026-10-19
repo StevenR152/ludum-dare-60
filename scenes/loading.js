@@ -1,23 +1,27 @@
-// The Loading scene: the first thing anyone sees, and it is up for a while, since every sprite and sound is
-// fetched before the Start menu.
+// The Loading scene: the first thing anyone sees. It shares the menu look with Start and Missions
+// (MENU_* in constants.js).
 //
 // The pot in the middle is the game's own vase art, not a drawing of one: it is fetched directly by the
 // browser rather than through Crafty.load, so it does not have to wait for the manifest it is standing in
 // front of. It goes through the three stages a pot really goes through, raw clay to bisque to glaze-fired,
-// as the assets arrive, and the bar under it is Crafty's actual load progress.
-var LOADING_BACKGROUND = "radial-gradient(ellipse at 50% 64%, #5A3A1E 0%, #2B2522 52%, #17130F 100%)";
-var LOADING_TEXT_COLOR = "#E3CDA8";
+// as the assets arrive.
+//
+// The bar is Crafty's real load progress, but paced so it never runs ahead of LOADING_MIN_MS. On a cold
+// cache the assets are the slow part and the pacing does nothing; on a warm one the load is over in a blink
+// and without it the pot would flash through all three firings before anyone saw them.
+var LOADING_MIN_MS = 3000;
+var LOADING_SETTLE_MS = 700;
 var LOADING_BAR_W = 420;
 var LOADING_BAR_H = 10;
 // The pot on show: shape (POT_SPRITES), clay letter for its raw and bisque pictures, and which glaze it
-// comes out of the second firing wearing.
+// comes out of the second firing wearing. Red clay, because black is a silhouette against the firelight.
 var LOADING_POT_SHAPE = "Vase";
 var LOADING_POT_CLAY = "A";
 var LOADING_POT_GLAZE = 1;
 var LOADING_POT_H = 260;
 
 // The pot pictures are a small pot on a big transparent canvas, so show only the part POT_SPRITES crops to,
-// scaled to `height`. Returns the css to put that crop in a box of the returned width.
+// scaled to `height`.
 function loadingPotCss(url, height, filter) {
     var crop = POT_SPRITES[LOADING_POT_SHAPE].crop;
     var scale = height / crop[3];
@@ -41,7 +45,7 @@ function loadingPotStages() {
 }
 
 Crafty.defineScene("Loading", function() {
-    Crafty.background(LOADING_BACKGROUND);
+    Crafty.background(MENU_BACKGROUND);
     var middle = GAME_SCREEN_WIDTH / 2;
     var stages = loadingPotStages();
     // Fetch all three up front (about 35 kB between them) so the pot changes the instant it should,
@@ -64,11 +68,11 @@ Crafty.defineScene("Loading", function() {
         .attr({x: 0, y: 478, w: GAME_SCREEN_WIDTH, h: 40, z: 2})
         .text("Warming the kiln…")
         .textAlign("center")
-        .textFont({size: "26px"})
-        .textColor(LOADING_TEXT_COLOR)
+        // Italic is textFont's `type`: Crafty rebuilds the `font` shorthand on every draw and ignores `style`.
+        .textFont({size: "26px", type: "italic"})
+        .textColor(MENU_TEXT_COLOR)
         .unselectable()
-        .css({fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "italic",
-              textShadow: "0 2px 6px rgba(0,0,0,0.6)"});
+        .css({fontFamily: MENU_FONT, textShadow: "0 2px 6px rgba(0,0,0,0.6)"});
 
     // The bar: a sunken track with a warm fill, the colour of the torch that lights the kiln.
     Crafty.e("2D, DOM, Color")
@@ -82,30 +86,51 @@ Crafty.defineScene("Loading", function() {
 
     var counter = Crafty.e("2D, DOM, Text")
         .attr({x: 0, y: 562, w: GAME_SCREEN_WIDTH, h: 28, z: 2})
-        .text("")
+        .text("0%")
         .textAlign("center")
         .textFont({size: "14px"})
-        .textColor("rgba(227,205,168,0.65)")
+        .textColor(MENU_DIM_TEXT_COLOR)
         .unselectable()
-        .css({fontFamily: "Georgia, 'Times New Roman', serif", letterSpacing: "1px"});
+        .css({fontFamily: MENU_FONT, letterSpacing: "1px"});
 
-    var shown = 0;
-    // gameAssets is defined in assets.js. The callbacks are, in order: done, each asset, each failure.
-    Crafty.load(gameAssets, function () {
-        fill.attr({w: LOADING_BAR_W});
-        counter.text("Ready");
-        setTimeout(function () {
-            Crafty.scene("Start");
-        }, 1000);
-    }, function (progress) {
-        var fraction = Math.min(1, progress.loaded / progress.total);
+    var startedAt = Date.now();
+    var realFraction = 0;
+    var assetsDone = false;
+    var leaving = false;
+    var shownStage = 0;
+
+    function draw(fraction) {
         fill.attr({w: Math.max(2, LOADING_BAR_W * fraction)});
         counter.text(Math.round(fraction * 100) + "%");
         var stage = fraction < 0.34 ? 0 : fraction < 0.7 ? 1 : 2;
-        if (stage !== shown) {
-            shown = stage;
+        if (stage !== shownStage) {
+            shownStage = stage;
             pot.css(loadingPotCss(stages[stage].url, LOADING_POT_H, stages[stage].filter));
         }
+    }
+
+    // Driven by a timer rather than Crafty's frame loop, because this runs before the game proper and only
+    // has to move a bar. The entity exists so the scene ending stops the timer with it.
+    var ticker = Crafty.e("2D");
+    var tick = setInterval(function () {
+        var elapsed = Date.now() - startedAt;
+        var paced = Math.min(realFraction, elapsed / LOADING_MIN_MS);
+        draw(paced);
+        if (assetsDone && !leaving && paced >= 1) {
+            leaving = true;
+            clearInterval(tick);
+            counter.text("Ready");
+            setTimeout(function () { Crafty.scene("Start"); }, LOADING_SETTLE_MS);
+        }
+    }, 40);
+    ticker.bind("Remove", function () { clearInterval(tick); });
+
+    // gameAssets is defined in assets.js. The callbacks are, in order: done, each asset, each failure.
+    Crafty.load(gameAssets, function () {
+        realFraction = 1;
+        assetsDone = true;
+    }, function (progress) {
+        realFraction = Math.min(1, progress.loaded / progress.total);
     }, function (e) {
         console.warn("An asset failed to load", e && e.src);
     });

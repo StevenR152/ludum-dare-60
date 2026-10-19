@@ -1,0 +1,18 @@
+/* Alegreya, by Juan Pablo del Peral for Huerta Tipografica, under the SIL Open Font License 1.1.
+   Taken from Google Fonts and served from here rather than from fonts.gstatic.com, so the game owns
+   everything it needs and a menu never waits on a third party. Latin subset; one variable file per style,
+   covering every weight the menus use. */
+@font-face {
+    font-family: "Alegreya";
+    font-style: normal;
+    font-weight: 400 800;
+    font-display: swap;
+    src: url("alegreya-latin-variable.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Alegreya";
+    font-style: italic;
+    font-weight: 400 700;
+    font-display: swap;
+    src: url("alegreya-latin-italic-variable.woff2") format("woff2");
+}

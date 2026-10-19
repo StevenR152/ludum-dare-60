@@ -10,6 +10,22 @@ var GAME_MUSIC_VOLUME = 0.05;
 // Sound starts muted while we develop. TODO: set to false (music on by default) when we launch.
 var START_MUTED = true;
 
+// The menu screens (Loading, Start, Missions, Level complete) share one look: firelight in a dark
+// workshop, so the warm art and the clay colours sit on something other than flat grey. MENU_FONT is
+// Alegreya, served from assets/fonts (see assets/fonts/fonts.css), with web-safe serifs behind it.
+var MENU_FONT = "'Alegreya', Georgia, 'Times New Roman', serif";
+var MENU_BACKGROUND = "radial-gradient(ellipse at 50% 58%, #5A3A1E 0%, #2B2522 52%, #17130F 100%)";
+var MENU_TEXT_COLOR = "#E3CDA8";
+var MENU_DIM_TEXT_COLOR = "rgba(227, 205, 168, 0.60)";
+// Buttons are thrown clay: warm brown, lighter under the cursor, and nearly out of the firelight when a
+// mission is still locked.
+var MENU_BUTTON_COLOR = "#7A4A2B";
+var MENU_BUTTON_HOVER_COLOR = "#9C5F35";
+var MENU_BUTTON_LOCKED_COLOR = "rgba(72, 58, 47, 0.55)";
+// The name on the title screen. The game had none and showed "Ludum Dare #60"; this is what the README and
+// the design doc call it, so it is one line to change if the team settles on something else.
+var GAME_TITLE = "Blind Master's Kiln";
+
 // Shown along the bottom of the Start scene.
 var CREDITS = [
     { role: "Game Dev", name: "Steve, Crystal, Jacke, Caleri, James" },
