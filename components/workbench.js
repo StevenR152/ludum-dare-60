@@ -12,6 +12,9 @@ Crafty.c("Workbench", {
         this.parts = [];
         this.modelSpots = [];
         this.wedging = false;
+        // Wedging is a hold, which only starts from a press begun at the bench (Fox.arrive).
+        this.startsOnlyInReach = true;
+        this.arrivalHint = "Hold on the bench to wedge the clay";
         this.bind("MouseDown", this.startWedge);
         // A real release says the wedging stopped; the cursor merely leaving the bench stops it quietly.
         this.bind("MouseUp", function () { this.stopWedge(true); });
@@ -46,6 +49,7 @@ Crafty.c("Workbench", {
             .css({lineHeight: h + "px", textAlign: "center"});
         spot.model = model;
         spot.reachVia = bench; // click-to-move walks to the bench, not the model spot
+        spot.actsOnArrival = true; // taking a model is one click, so a tap from afar fetches it (Fox.arrive)
         spot.home = true;
         spot.bind("MouseDown", function () { bench.takeModel(spot); });
         this.parts.push(spot);

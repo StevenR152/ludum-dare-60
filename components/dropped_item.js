@@ -18,6 +18,8 @@ Crafty.c("DroppedItem", {
         this.armed = false;
         // True for the sandbox's test table: walking on it never damages the pot.
         this.immune = false;
+        // Picking it up is one click, so a tap from afar walks the fox over and takes it (Fox.arrive).
+        this.actsOnArrival = true;
         this.checkHits("Fox");
         this.bind("HitOn", this.onHitOn);
         this.bind("HitOff", this.onHitOff);
@@ -138,8 +140,10 @@ Crafty.c("DroppedItem", {
         return "the " + (item.type === "model" ? item.shape + " model" : item.type);
     },
 
+    // In reach is `overlapping`, or the fox touching it right now: overlapping comes from a collision HitOn
+    // that can land a frame after the fox arrives, and a pickup on arrival must not lose that race.
     onClick: function() {
-        if (!this.overlapping) {
+        if (!this.overlapping && !(this.fox && this.fox.touches(this))) {
             showStatus("I can't reach that from here");
         } else if (this.fox.pickUp(this.item)) {
             showStatus("Picked up " + this.itemName());

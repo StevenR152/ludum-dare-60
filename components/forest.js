@@ -8,6 +8,9 @@ Crafty.c("Forest", {
     init: function() {
         this.requires("2D, DOM, Mouse, Delay, Collision, DebugHitbox");
         this.chopping = false;
+        // Chopping is a hold, which only starts from a press begun at the tree (Fox.arrive).
+        this.startsOnlyInReach = true;
+        this.arrivalHint = "Hold on a tree to chop a log";
         this.bind("MouseDown", this.startChop);
         // A real release says the chop stopped; the cursor merely leaving the tree stops it quietly.
         this.bind("MouseUp", function () { this.stopChop(true); });
