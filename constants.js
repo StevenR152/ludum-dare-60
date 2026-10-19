@@ -45,10 +45,10 @@ var DEBUG_MASK_ALPHA = 0.5;
 // Fox movement and inventory; each 1000 g of clay carried takes 20% off the base speed.
 var FOX_SPEED = 250;
 // The fox's touch area is its sprite box shrunk by this many px on every side (the art has empty margins).
-var FOX_HITBOX_INSET = 40;
+var FOX_HITBOX_INSET = 25;
 // The fox's feet, relative to its 160x102 sprite box: the strip of the art (its paws sit around y 79) that
 // is stopped by the out-of-bounds masks. Nothing else about the fox collides.
-var FOX_FEET_BOX = {x: 30, y: 62, w: 100, h: 17};
+var FOX_FEET_BOX = {x: 35, y: 62, w: 90, h: 15};
 var FOX_SLOWDOWN_PER_KG = 0.2;
 var FOX_INVENTORY_CAPACITY = 2;
 // Dropped items: drawn DROPPED_ITEM_SCALE times their HUD size; each one the fox overlaps multiplies its
