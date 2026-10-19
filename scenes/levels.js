@@ -210,9 +210,9 @@ function showGoalPanel(level) {
     var head = level.story ? ["<b>" + level.name + "</b>", level.story, "<i>" + level.tip + "</i>"] :
         ["<b>Goal</b>", level.description];
     var wrapped = head.reduce(function (n, line) { return n + Math.ceil(line.length / 55); }, 0);
-    level.card.forEach(function (row) {
-        head.push("<span style='display:inline-block;width:12px;height:12px;border:1px solid #222;background:" +
-            row.color + "'></span> " + row.text);
+    var card = level.card.map(function (row) {
+        return "<span style='display:inline-block;width:12px;height:12px;border:1px solid #222;background:" +
+            row.color + "'></span> " + row.text;
     });
     var h = 16 + (wrapped + level.card.length + level.steps.length) * 22;
     Crafty.e("2D, HUD, Color")
