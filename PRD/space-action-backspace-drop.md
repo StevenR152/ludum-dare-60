@@ -1,43 +1,40 @@
-# PRD: SPACE to act, D to drop
-**Goal** — SPACE does what a click does on whatever the fox is touching; D drops the selected item.
+# PRD: SPACE to act, BACKSPACE to drop, tap inventory on phones
+**Goal** — SPACE does what a click does on whatever the fox is touching; BACKSPACE drops the selected item; on phones, tapping the fox's inventory slots selects and drops.
 
 **Context**
-- Today SPACE = drop (`Fox.onKeyDown` → `dropSelected`); actions are `MouseDown` handlers on entities, each checking `fox.touches(this)`. Hold actions (dig, wedge, chop) use `MouseDown`/`MouseUp`.
-- `Fourway` binds WASD as well as arrows, so D already walks right. Phone tap is mapped to SPACE (`main.js`, `mobile/`).
+- Was: SPACE = drop (`Fox.onKeyDown`); actions are `MouseDown` handlers on entities that check `fox.touches(this)`; hold actions (dig, wedge, chop) use `MouseDown`/`MouseUp`.
+- Decided: D stays a walking key (WASD kept), so drop is BACKSPACE. Phone tap on empty ground = SPACE (act). Phones had no way to drop or cycle slots; swipe-down was tried and replaced (a steering flick could drop by accident).
+- The fox's pack is drawn by `InventoryHud` (`components/inventory_hud.js`): HUD-layer grey squares, not clickable today. The same component draws the owl's row.
 
-**Scope** — Fox picks the touched world entity and fires its `MouseDown` on SPACE down and `MouseUp` on SPACE up; D drops; walking becomes arrows only. Clicking is unchanged.
-**Out of scope** — HUD/menu buttons, new interactions, `E` select, any phone drop gesture (see Open questions).
-
-**Flow**
-1. Fox stands on the kiln/shelf/clay/owl/etc. and taps SPACE: same result as clicking it.
-2. Fox stands on clay, bench or tree and holds SPACE: dig/wedge/chop runs; releasing early cancels, as with the mouse.
-3. Fox presses D: the selected item goes back to the station or onto the ground, as SPACE did.
+**Scope** — Done: `Fox` fires `MouseDown`/`MouseUp` on the nearest touched world `Mouse` entity on SPACE down/up; BACKSPACE drops. To do: make the fox's HUD slots tappable; remove the swipe-down gesture. Clicking in the world unchanged.
+**Out of scope** — Owl's row, menu buttons, new interactions, walking keys.
 
 **Requirements**
-1. SPACE down triggers `MouseDown` on the one touched `Mouse` entity (excluding HUD) whose centre is nearest the fox's centre, ties to higher z; SPACE up triggers `MouseUp` on that same entity.
-2. With nothing touched, SPACE does nothing (no drop, no message).
-3. Auto-repeat of a held SPACE fires once.
-4. D calls `dropSelected` ("Nothing to drop" when empty).
-5. D no longer walks the fox; arrow keys move it (WASD per the open question); E unchanged.
-6. Mouse and touch clicks behave exactly as before.
+1. (Done) SPACE down triggers `MouseDown` on the touched non-HUD `Mouse` entity whose centre is nearest the fox's (tie: higher z); SPACE up triggers `MouseUp` on it. Nothing touched: nothing happens. Auto-repeat fires once.
+2. (Done) BACKSPACE calls `dropSelected` ("Nothing to drop" when empty).
+3. Pressing a filled slot in the fox's HUD row: if it is not the selected slot, select it; if it is selected, call `dropSelected`. Empty slots do nothing. Works with mouse and touch, and the tap does not also send SPACE (touches on `Mouse` entities are left to Crafty).
+4. The owl's HUD row is not tappable.
+5. No swipe gesture is configured (remove `swipe: {down: "BACKSPACE"}` from `main.js`).
+6. World clicks behave as before.
 
 **Acceptance criteria**
-- [ ] SPACE at kiln, owl, torch, both shelves (slot and elsewhere), scales, glaze buckets, bench models, dropped item each acts like a click.
-- [ ] Holding SPACE digs clay, wedges, chops; releasing early stops with the same message.
-- [ ] Holding SPACE on an item then walking off cancels cleanly (no stuck dig/wedge sound).
-- [ ] SPACE away from everything: nothing happens.
-- [ ] D drops to ground, returns models to bench / clay to its node; empty pack shows "Nothing to drop".
-- [ ] D does not move the fox; arrows still do.
-- [ ] Mouse clicks still work everywhere.
+- [x] SPACE at the kiln acts like a click; on a dropped item picks it up.
+- [x] Holding SPACE on clay digs; early release cancels; a full hold digs.
+- [x] SPACE away from everything: no message, no state change.
+- [x] BACKSPACE returns clay to its node / drops a model; empty pack: "Nothing to drop".
+- [x] With 2 items, tapping the unselected slot selects it (white outline moves); tapping it again drops it and the other becomes selected.
+- [x] Tapping an empty slot or the owl's slots does nothing.
+- [x] A slot tap does not also act on the world (no SPACE pulse).
+- [x] No swipe is configured, so a downward flick no longer drops.
+- [x] Slot press works with a real mouse press (touch layer treats the slot as UI, so no SPACE); `?touch=1` not exercised.
+- [ ] Not device-tested: real phone; the 40 px slots may be small for thumbs.
 
-**Constraints** — `components/fox.js` (+ comments in `dropped_item.js`, README wording); Crafty 0.9.0; no new files.
-**Open questions**
-- Walking: drop WASD entirely (recommended; `multiway` on arrows only) or keep W/A/S?
-- Phone tap currently = SPACE = drop. After this it becomes "act", so phones lose drop. Leave as is, or add a gesture (e.g. swipe down = D) in a follow-up?
+**Constraints** — `components/inventory_hud.js` (tap handling), `scenes/game.js` or wherever the fox row is built (to enable it for the fox only), `main.js`, README (phone wording), `itch-description.html` if needed; Crafty 0.9.0; no new files.
+**Open questions** — None. Decided: a single carried item counts as selected, so one tap on it drops it at once.
 
 **Tasks**
-- [ ] `fox.js`: replace `fourway` with arrows-only `multiway`
-- [ ] `fox.js`: SPACE KeyDown/KeyUp → nearest touched entity's `MouseDown`/`MouseUp`; ignore repeats
-- [ ] `fox.js`: D → `dropSelected`; fix header comments
-- [ ] README + `dropped_item.js` comment: SPACE/D wording
-- [ ] Verify every acceptance item in-app
+- [x] `fox.js`: SPACE act / BACKSPACE drop
+- [x] README, itch description, `dropped_item.js` wording for SPACE/BACKSPACE
+- [x] `inventory_hud.js`: opt-in tappable slots (`MouseDown`) for the fox row; select or drop per Requirement 3
+- [x] `main.js`: remove the swipe config; update mobile wording in README and `mobile` comments
+- [x] Verify in browser (mouse and triggered presses; no real touch)

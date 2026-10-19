@@ -172,6 +172,20 @@ Crafty.c("Fox", {
         this.actionId = null;
     },
 
+    // A press on one of the fox's HUD slots (the phone way to choose and drop): an unselected item becomes
+    // the selected one, the selected one is dropped. Empty slots do nothing.
+    pressSlot: function(index) {
+        if (!this.inventory.items[index]) {
+            return;
+        }
+        if (index === this.inventory.selected) {
+            this.dropSelected();
+        } else {
+            this.inventory.selected = index;
+            this.inventory.changed();
+        }
+    },
+
     selectNext: function() {
         if (this.inventory.items.length === 0) {
             showStatus("Nothing to choose, you're carrying nothing");

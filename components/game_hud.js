@@ -18,7 +18,9 @@ Crafty.c("GameHud", {
             .css({borderRadius: "8px"}));
         this.parts.push(Crafty.e("MuteButton").attr({x: 20, y: 20}));
         this.parts.push(Crafty.e("GameTimer").attr({x: 125, y: 20}));
-        this.addRow("Fox", [fox.inventory], 60);
+        this.addRow("Fox", [fox.inventory], 60).onSlotPress(function (inventory, index) {
+            fox.pressSlot(index);
+        });
         var y = 110;
         if (owl) {
             this.addRow("Master", [owl.inventory], y);
@@ -32,7 +34,9 @@ Crafty.c("GameHud", {
     },
 
     addRow: function(label, inventories, y) {
-        this.rows.push(Crafty.e("InventoryHud").attr({x: 20, y: y}).show(label, inventories));
+        var row = Crafty.e("InventoryHud").attr({x: 20, y: y}).show(label, inventories);
+        this.rows.push(row);
+        return row;
     },
 
     enable: function(on) {
