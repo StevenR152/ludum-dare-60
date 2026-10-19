@@ -1,6 +1,7 @@
 // One HUD row: a label, then a grey square per slot of each inventory given. An item in a slot is
 // drawn centred in it in its own colour or picture and shape (ITEM_SHAPES: clay square, pot a little wider than tall).
-// The selected slot of an inventory with more than one item is outlined in white. A drying pot has a
+// The selected slot of an inventory with more than one item is outlined in white (options.outlined(inventory, index)
+// decides instead, if given; options.watch lists more inventories whose changes redraw the row). A drying pot has a
 // DryBar under its slot; a pot a red badge per firing (paintItem), wedged clay a border (markBorder).
 // Redraws whenever one of its inventories changes, and as pots dry ("PotsDried").
 //   Crafty.e("InventoryHud").attr({x: 20, y: 60}).show("Fox", [player.inventory]);
@@ -10,10 +11,16 @@ Crafty.c("InventoryHud", {
     init: function() {
         this.requires("2D");
         this.inventories = [];
+        this.options = {};
         this.parts = [];
         this.shown = true;
         this.bind("InventoryChanged", function (changed) {
-            if (this.inventories.indexOf(changed) >= 0) {
+            if (this.inventories.indexOf(changed) >= 0 || (this.options.watch || []).indexOf(changed) >= 0) {
+                this.refresh();
+            }
+        });
+        this.bind("KilnStateChanged", function () {
+            if (this.slots) {
                 this.refresh();
             }
         });
@@ -24,8 +31,9 @@ Crafty.c("InventoryHud", {
     },
 
     // Call after positioning with attr.
-    show: function(label, inventories) {
+    show: function(label, inventories, options) {
         this.inventories = inventories;
+        this.options = options || {};
         this.parts.push(Crafty.e("2D, HUD, Text")
             .attr({x: this.x, y: this.y, w: INVENTORY_HUD_LABEL_W, h: 40, z: 1000})
             .text(label)
@@ -70,7 +78,8 @@ Crafty.c("InventoryHud", {
     refresh: function() {
         this.slots.forEach(function (slot) {
             var item = slot.inventory.items[slot.index];
-            var outlined = item && slot.inventory.items.length > 1 && slot.index === slot.inventory.selected;
+            var outlined = this.options.outlined ? !!item && this.options.outlined(slot.inventory, slot.index)
+                : item && slot.inventory.items.length > 1 && slot.index === slot.inventory.selected;
             slot.box.color('#DDD');
             slot.itemBox.visible = this.shown && !!item;
             if (item) {

@@ -146,7 +146,7 @@ var KILN_CAPACITY = 4;
 // Wood: logs the kiln holds, logs per fire level (1 log low, 2 mid, 3 high), how long the fox chops one, colours.
 var KILN_WOOD_CAPACITY = 3;
 var KILN_FIRE_LEVELS = ["low", "mid", "high"];
-var LOG_CHOP_MS = 1000;
+var LOG_CHOP_MS = 2000;
 var LOG_COLOR = "#6B4423";
 var TORCH_COLOR = "#F28C28";
 
