@@ -43,14 +43,18 @@ function levelWorld(own) {
 
 var LEVELS = [
     {
-        name: "Kiln Creations",
+        name: "The First Firing",
         description: "Fire three pots twice each, the right way, to fill the orders.",
-        steps: [step("Chop logs at the forest", "LogChopped"), step("Set the fire level with logs", "KilnLit"),
-            potFired("Fire the pots (bisque)", "cooled"), potFired("Fire them again", "glazeCooled")],
+        story: "Morning light spills through the cabin window. The last apprentice helped Master Owl create a cup, " +
+            "a bowl and a vase before leaving, but none has been fired. Help the Master fill these three orders.",
+        tip: "\u201cFire it twice, apprentice. The first fire hardens the clay. The second melts it together into " +
+            "something strong enough to last. Each clay has its own temper:\u201d",
+        steps: [step("Chop logs in the forest", "LogChopped"), step("Build the fire to the right heat", "KilnLit"),
+            potFired("Fire the pots once to harden them", "cooled"), potFired("Fire them again", "glazeCooled")],
         card: [
-            {color: CLAY_TYPES.black.color, text: "Black clay: low fire, 1 log"},
-            {color: CLAY_TYPES.red.color, text: "Red clay: mid fire, 2 logs"},
-            {color: CLAY_TYPES.white.color, text: "White clay: high fire, 3 logs"}
+            {color: CLAY_TYPES.black.color, text: "Black clay: a gentle fire, 1 log"},
+            {color: CLAY_TYPES.red.color, text: "Red clay: a steady fire, 2 logs"},
+            {color: CLAY_TYPES.white.color, text: "White clay: a roaring fire, 3 logs"}
         ],
         orders: [["Cup", "white", []], ["Bowl", "red", []], ["Vase", "black", []]],
         world: {
@@ -202,13 +206,15 @@ function levelUnlocked(index) {
 // and the remaining step checkboxes, which tick as the player does each step. The text entity listens for the steps' events, so
 // its bindings go with the scene.
 function showGoalPanel(level) {
-    var head = ["<b>Goal</b>", level.description];
-    // The fire card sits after the first step (chopping logs), so the checklist starts with it.
-    var card = level.card.map(function (row) {
-        return "<span style='display:inline-block;width:12px;height:12px;border:1px solid #222;background:" +
-            row.color + "'></span> " + row.text;
+    // A level with a story shows it (and the Master's tip) in place of the one-line description; the long lines wrap.
+    var head = level.story ? ["<b>" + level.name + "</b>", level.story, "<i>" + level.tip + "</i>"] :
+        ["<b>Goal</b>", level.description];
+    var wrapped = head.reduce(function (n, line) { return n + Math.ceil(line.length / 55); }, 0);
+    level.card.forEach(function (row) {
+        head.push("<span style='display:inline-block;width:12px;height:12px;border:1px solid #222;background:" +
+            row.color + "'></span> " + row.text);
     });
-    var h = 16 + (head.length + card.length + level.steps.length) * 22;
+    var h = 16 + (wrapped + level.card.length + level.steps.length) * 22;
     Crafty.e("2D, HUD, Color")
         .attr({x: 10, y: 225, w: 430, h: h, z: 999})
         .color("rgba(255, 255, 255, 0.8)")
