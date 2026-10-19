@@ -27,11 +27,11 @@ var CLAY_TYPES = {
     // patch is the sprite of the clay patch drawn on the outside map while the clay can be dug, and
     // patchContent its opaque part (x, y, w, h in the 5763x2458 image pixels): the dig zone is cut from it.
     red:   { type: "clay", name: "red",   letter: "A", color: '#E06450', fireLevel: "mid",
-             patch: "patchRed", patchContent: [452, 1634, 1684, 668] },
+             patch: "patchRed", patchUrl: "assets/images/patch_ClayA_red.png", patchContent: [452, 1634, 1684, 668] },
     black: { type: "clay", name: "black", letter: "B", color: '#2B2522', fireLevel: "low",
-             patch: "patchBlack", patchContent: [2260, 1644, 1036, 402] },
+             patch: "patchBlack", patchUrl: "assets/images/patch_ClayB_black.png", patchContent: [2260, 1644, 1036, 402] },
     white: { type: "clay", name: "white", letter: "C", color: '#F5F0DC', fireLevel: "high",
-             patch: "patchWhite", patchContent: [1558, 1354, 658, 286] },
+             patch: "patchWhite", patchUrl: "assets/images/patch_ClayC_white.png", patchContent: [1558, 1354, 658, 286] },
 };
 // Firing levels, lowest first (the kiln burns 1, 2 or 3 logs for them). A pot fired at any other
 // level than its clay's cracks when it cools.

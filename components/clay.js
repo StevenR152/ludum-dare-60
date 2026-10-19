@@ -27,14 +27,54 @@ Crafty.c("Clay", {
         var sy = OUTSIDE_MAP_BOX.h / OUTSIDE_MAP_PX.h;
         var c = type.patchContent;
         var art = {x: patch.x + c[0] * sx, y: patch.y + c[1] * sy, w: c[2] * sx, h: c[3] * sy};
-        this.attr({x: art.x + art.w * 0.1, y: art.y + art.h * 0.35, w: art.w * 0.8, h: art.h * 0.65});
+        this.attr({x: art.x, y: art.y, w: art.w, h: art.h});
+        this.loadMask(type.patchUrl, c, art);
         this.bind("Remove", function () { patch.destroy(); });
         return this;
     },
 
+    // Reads the opaque part of the patch picture into one flag per world px of the box (alpha >= COLLISION_ALPHA),
+    // so a press on transparent art inside the box is ignored. The picture is only read, never changed.
+    loadMask: function(url, content, art) {
+        var image = url ? Crafty.asset(url) : null;
+        if (!image) {
+            console.error("Clay patch picture not loaded: " + url + " (the whole box can be pressed)");
+            return;
+        }
+        var cols = Math.max(1, Math.round(art.w));
+        var rows = Math.max(1, Math.round(art.h));
+        var canvas = document.createElement("canvas");
+        canvas.width = cols;
+        canvas.height = rows;
+        var context = canvas.getContext("2d");
+        context.drawImage(image, content[0], content[1], content[2], content[3], 0, 0, cols, rows);
+        var rgba = context.getImageData(0, 0, cols, rows).data;
+        var solid = new Uint8Array(cols * rows);
+        for (var i = 0; i < solid.length; i++) {
+            solid[i] = rgba[i * 4 + 3] >= COLLISION_ALPHA ? 1 : 0;
+        }
+        this.mask = {cols: cols, rows: rows, solid: solid};
+    },
+
+    // True if the world point is on visible clay (or no mask or point is known).
+    isClayAt: function(wx, wy) {
+        if (!this.mask || wx === undefined || wy === undefined) {
+            return true;
+        }
+        var col = Math.floor((wx - this.x) * this.mask.cols / this.w);
+        var row = Math.floor((wy - this.y) * this.mask.rows / this.h);
+        if (col < 0 || row < 0 || col >= this.mask.cols || row >= this.mask.rows) {
+            return false;
+        }
+        return this.mask.solid[row * this.mask.cols + col] === 1;
+    },
+
         //can only dig if pile not dug - ?could we run out of clay in future
     // Only the fox standing on the pile can dig it.
-    startDig: function() {
+    startDig: function(e) {
+        if (!this.isClayAt(e && e.realX, e && e.realY)) {
+            return;
+        }
         if (this.dug) {
             showStatus("Give the land a break, you can't harvest clay within 20 seconds of a first harvest");
             return;
