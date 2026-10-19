@@ -6,6 +6,8 @@ var GAME_SCREEN_HEIGHT = 768;
 // gameAssets audio key played on the Start, Game and End scenes.
 var MUSIC_TRACK = "bgMusic";
 var MUSIC_VOLUME = 0.25;
+// Sound starts muted while we develop. TODO: set to false (music on by default) when we launch.
+var START_MUTED = true;
 
 // Shown along the bottom of the Start scene.
 var CREDITS = [

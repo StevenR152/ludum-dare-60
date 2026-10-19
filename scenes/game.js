@@ -66,7 +66,7 @@ Crafty.defineScene("Game", function() {
     // The torch lights the kiln. The fox stands on it, e.g. at (1526, 555), and clicks.
     var torch = Crafty.e("2D, DOM, Color, Mouse, DebugHitbox")
         .attr({x: 1526, y: 555, w: 40, h: 60})
-        .color(TORCH_COLOR);
+        .color(TORCH_COLOR, 0); // invisible: the kiln picture shows the fire, the torch only takes the click
     torch.bind("MouseDown", function () {
         if (player.touches(this)) {
             kiln.light();

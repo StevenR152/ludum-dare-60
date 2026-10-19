@@ -5,6 +5,9 @@ Crafty.c("AudioController", {
         this.requires("Persist");
         this.music = null;
         this.musicVolume = MUSIC_VOLUME;
+        if (START_MUTED) {
+            Crafty.audio.mute();
+        }
         // Browsers block audio until the player interacts with the page,
         // so requested music waits for the first click or key press.
         this.unlocked = false;
