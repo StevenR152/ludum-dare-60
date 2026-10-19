@@ -60,7 +60,7 @@ var FIRE_LEVELS = ["low", "mid", "high", "scorching"];
 // Debug: outline the fox's and the doors' collision boxes in red, and show the out-of-bounds masks
 // (COLLISION_AREAS) over the HUD, under the outlines. The overlay is every blocked pixel in solid red drawn at
 // exactly DEBUG_MASK_ALPHA, whatever opacity the mask PNGs were painted at.
-var DEBUG_HITBOXES = true;
+var DEBUG_HITBOXES = false;
 var DEBUG_MASK_ALPHA = 0.5;
 // Debug: the door arrival spots (DOOR_DESTINATIONS) are outlined and labelled in this colour instead of red.
 var DEBUG_DESTINATION_COLOR = "lime";
