@@ -332,7 +332,9 @@ Crafty.c("Fox", {
             var station = target.reachVia || target;
             if (!this.touches(station)) {
                 // Aim at the spot clicked on the station, not its middle (which can sit out of bounds).
-                this.walk = {entity: station, event: e, x: e.realX, y: e.realY};
+                // `target` is what was actually clicked, which can be a part of the station (a model on
+                // the bench), so arrive() can act on that rather than the station as a whole.
+                this.walk = {entity: station, target: target, event: e, x: e.realX, y: e.realY};
                 statusGate.defer = true;
             }
             return;
@@ -357,8 +359,10 @@ Crafty.c("Fox", {
     handleRelease: function() {
         this.pressHeld = false;
         this.dragging = false;
-        // Let go before arriving: a tap, so its out-of-reach line is said now.
-        statusGate.releaseDeferred(true);
+        // Let go before arriving: a tap. If the fox is still on its way to the station, drop the "I can't reach
+        // that" line the press left behind, since it is about to reach it and arrive() will say what happens;
+        // otherwise (the walk already ended at a wall) the line is true, so say it.
+        statusGate.releaseDeferred(!(this.walk && this.walk.entity));
         if (this.armed) {
             var station = this.armed;
             this.armed = null;
@@ -445,9 +449,30 @@ Crafty.c("Fox", {
 
     // Reached a station. A press still held now runs the station's press handler (no out-of-reach line);
     // otherwise the fox just stands there and the next press interacts.
+    // Three kinds of thing can be walked to:
+    // - one that `actsOnArrival` (a dropped item, a model on the bench): picking it up is a single click, so
+    //   a tap from across the room is enough and the fox takes it when it gets there, held or not;
+    // - one that `startsOnlyInReach` (clay, trees, the workbench): its action is a hold, which only starts
+    //   from a press begun while the fox is already there, so arriving never starts a dig, chop or wedge and
+    //   the fox just says how to use it;
+    // - anything else (kiln, owl, shelves...) acts if the press is still held on arrival, as before.
     arrive: function() {
         var walk = this.walk;
+        var station = walk.entity;
+        var clicked = walk.target || station;
         this.cancelWalk();
+        if (clicked.actsOnArrival) {
+            statusGate.releaseDeferred(false);
+            clicked.trigger("MouseDown", walk.event);
+            return;
+        }
+        if (station.startsOnlyInReach) {
+            statusGate.releaseDeferred(false);
+            if (station.arrivalHint) {
+                showStatus(station.arrivalHint);
+            }
+            return;
+        }
         if (this.pressHeld) {
             statusGate.releaseDeferred(false);
             this.armed = walk.entity;

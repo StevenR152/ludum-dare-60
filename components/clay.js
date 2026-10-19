@@ -7,6 +7,9 @@ Crafty.c("Clay", {
         this.clayType = null;
         this.dug = false;
         this.digging = false;
+        // Digging is a hold, which only starts from a press begun on the patch (Fox.arrive).
+        this.startsOnlyInReach = true;
+        this.arrivalHint = "Hold on the clay to dig it";
         this.bind("MouseDown", this.startDig);
         // A real release says the dig stopped; the cursor merely leaving the patch stops it quietly.
         this.bind("MouseUp", function () { this.stopDig(true); });
