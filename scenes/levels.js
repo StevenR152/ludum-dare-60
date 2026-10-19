@@ -11,7 +11,18 @@
 // Per level: name, a one-line description and checklist steps for the Goal panel (each ticks the first time its
 // game event happens, see step()), the fixed orders as [shape, clay key, glaze], and `world`, the buildWorld config. A level's world only holds what its
 // goal needs.
+//
+// The story fields are all optional and all safe to leave as "": `story` replaces the one-line `description` at the
+// top of the Goal panel, `tip` adds the Master's italic line under it, `finish` is what he says once the last order
+// is delivered, and each `masterTips` entry is a line he speaks aloud, once, the first time its event happens.
+// An empty or missing field is left out as if it were not there, so the slots can be filled in one at a time.
 var STAGE_PAUSE_MS = 1500;
+
+// Prose that is written later: the text when there is any, else null when the field is missing, empty or only
+// spaces, so an unwritten slot behaves exactly like one that was never added.
+function written(text) {
+    return typeof text === "string" && text.trim() !== "" ? text : null;
+}
 
 // A Goal step: ticks the first time the global Crafty event `on` fires (and `when(payload)`, if given, is true).
 function step(text, on, when) {
@@ -119,7 +130,12 @@ var LEVELS = [
         name: "Villagers' Orders",
         description: "Two cups, one white and one red. Mind each clay's fire level.",
         story: "Barnaby's cup was so admired that two more villagers have ordered one. ",
+        tip: "",
         finish: "\u201cTwo cups, two happy villagers. Well crafted, apprentice.\u201d",
+        // Said when the fire is first lit: this is the first level with two clays, so each wants its own heat.
+        masterTips: [
+            {on: "KilnLit", text: ""}
+        ],
         steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
             potFired("Fire it (2 log red, 3 white)", "cooled"),
             potFired("Fire it again", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
@@ -133,6 +149,13 @@ var LEVELS = [
     {
         name: "Bowls and Cups",
         description: "Two bowls and two cups, all in black clay.",
+        story: "",
+        tip: "",
+        finish: "",
+        // Said at the first weighing: this is the first level with two shapes, which want different weights.
+        masterTips: [
+            {on: "PotAdvanced", when: function (e) { return e.to === "weighed"; }, text: ""}
+        ],
         steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
             potFired("Fire it (black clay: 1 log)", "cooled"),
             potFired("Fire it again", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
@@ -147,6 +170,13 @@ var LEVELS = [
     {
         name: "Glazing",
         description: "Two vases and a cup, each with one glaze. A pot takes only one dip.",
+        story: "",
+        tip: "",
+        finish: "",
+        // Said at the first dip: this is the level that introduces glazing.
+        masterTips: [
+            {on: "PotGlazed", text: ""}
+        ],
         steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
             potFired("Bisque fire (1 log black, 2 red, 3 white)", "cooled"), step("Dip it in a glaze", "PotGlazed"),
             potFired("Glaze fire", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
@@ -161,6 +191,13 @@ var LEVELS = [
     {
         name: "Mixed Orders",
         description: "Four glazed pots of different shapes and clays. One dip each.",
+        story: "",
+        tip: "",
+        finish: "",
+        // Said at the first delivery: this is the level where pots must be matched to the right open order.
+        masterTips: [
+            {on: "OrderDelivered", text: ""}
+        ],
         steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
             potFired("Bisque fire (1 log black, 2 red, 3 white)", "cooled"), step("Dip it in a glaze", "PotGlazed"),
             potFired("Glaze fire", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
@@ -176,6 +213,13 @@ var LEVELS = [
     {
         name: "Double Dips",
         description: "Five pots, each dipped in both glazes. The order of the dips matters.",
+        story: "",
+        tip: "",
+        finish: "",
+        // Said at the first dip: this is the level where the order of the two dips changes the result.
+        masterTips: [
+            {on: "PotGlazed", text: ""}
+        ],
         steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
             potFired("Bisque fire (1 log black, 2 red, 3 white)", "cooled"), step("Dip it in a glaze", "PotGlazed"),
             potFired("Glaze fire", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
@@ -248,12 +292,14 @@ function levelUnlocked(index) {
 // and the remaining step checkboxes, which tick as the player does each step. The text entity listens for the steps' events, so
 // its bindings go with the scene.
 function showGoalPanel(level, top) {
-    // A level with a story shows it in place of the one-line description, followed by the Master's tip when it has
-    // one (it is optional, so a level with a story but no tip simply leaves that line out); the long lines wrap.
-    var head = level.story ? ["<b>" + level.name + "</b>", level.story] :
+    // A level whose story is written shows it in place of the one-line description, followed by the Master's tip
+    // when that is written too; an unwritten story or tip simply leaves its line out. The long lines wrap.
+    var story = written(level.story);
+    var tip = written(level.tip);
+    var head = story ? ["<b>" + level.name + "</b>", story] :
         ["<b>Goal</b>", level.description];
-    if (level.story && level.tip) {
-        head.push("<i>" + level.tip + "</i>");
+    if (story && tip) {
+        head.push("<i>" + tip + "</i>");
     }
     var wrapLines = function (line) { return Math.ceil(line.length / 43); };
     var wrapped = head.concat(level.steps.map(function (s) { return "☐ " + s.text; })).concat(level.card.map(function (row) { return row.text; }))
@@ -345,8 +391,12 @@ Crafty.defineScene("Game", function(options) {
         showGoalPanel(level, world.hud.bottom + 15);
     }
     showLevelButtons(index, mode);
-    // Each of the level's Master tips is said once, the first time its event happens.
+    // Each of the level's Master tips is said once, the first time its event happens. A slot whose text is not
+    // written yet is skipped entirely, so it waits for its line instead of speaking an empty one.
     (level.masterTips || []).forEach(function (tip) {
+        if (!written(tip.text)) {
+            return;
+        }
         var said = false;
         world.player.bind(tip.on, function (payload) {
             if (!said && (!tip.when || tip.when(payload))) {
@@ -370,7 +420,7 @@ Crafty.defineScene("Game", function(options) {
         finished = true;
         markLevelDone(index);
         track("level_complete", {level: index + 1, seconds: gameState.seconds});
-        showStatus(level.finish || "Level " + (index + 1) + " complete!");
+        showStatus(written(level.finish) || "Level " + (index + 1) + " complete!");
         Crafty.e("Delay").delay(function () { Crafty.scene("LevelComplete", index); }, STAGE_PAUSE_MS, 0);
     });
 });
