@@ -99,7 +99,9 @@ var LEVELS = [
             step("Dry the pot", "PotDry"), potFired("First firing: harden the pot (black clay: 1 log)", "cooled"),
             potFired("Second firing: make it strong", "glazeCooled"),
             step("Put the cup on the completed shelf for Barnaby", "OrderDelivered")],
-        card: [],
+        card: [
+            {color: CLAY_TYPES.black.color, text: "Black clay: a gentle fire, 1 log"}
+        ],
         orders: [["Cup", "black", []]],
         world: {
             inside: true,
@@ -134,7 +136,11 @@ var LEVELS = [
         steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
             potFired("Fire it (black clay: 1 log)", "cooled"),
             potFired("Fire it again", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
-        card: [],
+        card: [
+            {color: CLAY_TYPES.black.color, text: "Black clay: a gentle fire, 1 log"},
+            {color: CLAY_TYPES.red.color, text: "Red clay: a steady fire, 2 logs"},
+            {color: CLAY_TYPES.white.color, text: "White clay: a roaring fire, 3 logs"}
+        ],
         orders: [["Bowl", "black", []], ["Bowl", "black", []], ["Cup", "black", []], ["Cup", "black", []]],
         world: levelWorld({glaze: false, clays: ["black"], models: ["Bowl", "Cup"]})
     },
@@ -144,7 +150,11 @@ var LEVELS = [
         steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
             potFired("Bisque fire (1 log black, 2 red, 3 white)", "cooled"), step("Dip it in a glaze", "PotGlazed"),
             potFired("Glaze fire", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
-        card: [],
+        card: [
+            {color: CLAY_TYPES.black.color, text: "Black clay: a gentle fire, 1 log"},
+            {color: CLAY_TYPES.red.color, text: "Red clay: a steady fire, 2 logs"},
+            {color: CLAY_TYPES.white.color, text: "White clay: a roaring fire, 3 logs"}
+        ],
         orders: [["Vase", "red", ["Glaze A"]], ["Vase", "black", ["Glaze B"]], ["Cup", "white", ["Glaze A"]]],
         world: levelWorld({glaze: true, clays: ["black", "red", "white"], models: ["Cup", "Vase"], maxGlazeDips: 1})
     },
@@ -154,7 +164,11 @@ var LEVELS = [
         steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
             potFired("Bisque fire (1 log black, 2 red, 3 white)", "cooled"), step("Dip it in a glaze", "PotGlazed"),
             potFired("Glaze fire", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
-        card: [],
+        card: [
+            {color: CLAY_TYPES.black.color, text: "Black clay: a gentle fire, 1 log"},
+            {color: CLAY_TYPES.red.color, text: "Red clay: a steady fire, 2 logs"},
+            {color: CLAY_TYPES.white.color, text: "White clay: a roaring fire, 3 logs"}
+        ],
         orders: [["Bowl", "white", ["Glaze A"]], ["Vase", "red", ["Glaze B"]], ["Cup", "black", ["Glaze A"]],
             ["Cup", "red", ["Glaze B"]]],
         world: levelWorld({glaze: true, clays: ["black", "red", "white"], models: ORDER_SHAPES, maxGlazeDips: 1})
@@ -165,7 +179,11 @@ var LEVELS = [
         steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
             potFired("Bisque fire (1 log black, 2 red, 3 white)", "cooled"), step("Dip it in a glaze", "PotGlazed"),
             potFired("Glaze fire", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
-        card: [],
+        card: [
+            {color: CLAY_TYPES.black.color, text: "Black clay: a gentle fire, 1 log"},
+            {color: CLAY_TYPES.red.color, text: "Red clay: a steady fire, 2 logs"},
+            {color: CLAY_TYPES.white.color, text: "White clay: a roaring fire, 3 logs"}
+        ],
         orders: [["Bowl", "white", ["Glaze A", "Glaze B"]], ["Vase", "red", ["Glaze B", "Glaze A"]],
             ["Cup", "black", ["Glaze A", "Glaze B"]], ["Bowl", "red", ["Glaze B", "Glaze A"]],
             ["Vase", "white", ["Glaze A", "Glaze B"]]],

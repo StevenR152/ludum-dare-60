@@ -1,10 +1,10 @@
 var START_STORY =
     "In a cosy cabin at the edge of the wood, Master Potter Owl keeps the last kiln in the valley. " +
     "His eyes have grown dim with the years, but his hands still remember every curve of the wheel.<br><br>" +
-    "You are his new apprentice. Villagers send orders to the Master and each must be made just as asked." +
-    "Fetch the clay, glaze and gather the firewood" +
-    "one careful step at a time, and carry the finished pots to the waiting customers. " +
-    "Together you can keep this centuries-old craft glowing.";
+    "You are his new apprentice. Villagers send orders to the Master and each must be made just as asked. " +
+    "Fetch the clay, glaze and gather the firewood, " +
+    "one careful step at a time, and display the pots for customers to collect. " +
+    "Together you can keep this centuries-old craft alive.";
 
 Crafty.defineScene("Start", function() {
     Crafty.background("#DDD");
