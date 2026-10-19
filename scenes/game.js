@@ -135,9 +135,18 @@ function buildWorld(config) {
             showStatus("I shouldn't reach into the kiln while it's burning");
             return;
         }
+        // Wood: the selected log, or any log in the pack when what is selected is no use to the kiln, so
+        // carrying clay in the other slot doesn't stop you stoking it. Something the kiln can fire still
+        // wins, so a log never jumps ahead of a pot you meant to put in. Wood may go in while it cools.
+        var logIndex = -1;
         if (held && held.type === "log") {
-            // Wood may go in while the kiln cools; a selected log always goes to the wood, never collects.
-            showStatus(transferItem(player.inventory, this.woodInventory) ? "Wood loaded into the kiln" : "The kiln is full of wood");
+            logIndex = player.inventory.items.indexOf(held);
+        } else if (held && !this.passFor(held)) {
+            logIndex = player.inventory.find(function (item) { return item.type === "log"; });
+        }
+        if (logIndex >= 0) {
+            showStatus(transferItem(player.inventory, this.woodInventory, logIndex)
+                ? "Wood loaded into the kiln" : "The kiln is full of wood");
             return;
         }
         if (this.state === "cooling") {
@@ -158,8 +167,9 @@ function buildWorld(config) {
                     ? "Took the pot out of the kiln"
                     : "You can't carry the pot: your pack is full or holds clay");
             }
-        } else if (!held && out) {
-            // Not lit yet: empty hands take back the pot, else a log, one per click.
+        } else if ((!held || !this.passFor(held)) && out) {
+            // Not lit yet: empty hands, or hands holding something the kiln can't fire, take back the pot,
+            // else a log, one per click.
             showStatus(transferItem(out.inventory, player.inventory, out.index)
                 ? "Took the " + (out.inventory === this.inventory ? "pot" : "log") + " out of the kiln"
                 : "You can't carry that");
