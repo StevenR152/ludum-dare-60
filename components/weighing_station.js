@@ -195,6 +195,7 @@ Crafty.c("WeighingStation", {
         } else {
             this.pile.changed();
         }
+        Crafty.trigger("ClayWeighed");
         showStatus("Weighed out " + grams + " g of " + piece.clay.name + " clay, wedge it at the workbench");
         return true;
     }

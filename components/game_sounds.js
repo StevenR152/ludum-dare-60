@@ -25,7 +25,25 @@ Crafty.c("GameSounds", {
         });
         this.bind("OrderDelivered", function () { audioController.playSfx("orderDelivered"); });
         this.bind("OrderExpired", function () { audioController.playSfx("orderFailed"); });
-        this.bind("KilnLit", function () { audioController.playSfx("kilnLit"); });
+        this.bind("KilnLit", function () {
+            audioController.playSfx("kilnLit");
+            audioController.loopSfx("fireLoop");
+        });
+        // The fire dies down as the kiln starts cooling a pot, either firing.
+        this.bind("PotAdvanced", function (e) {
+            if (e.to === "cooling" || e.to === "glazeCooling") {
+                audioController.stopSfx("fireLoop");
+            }
+        });
+        this.bind("ClayDug", function () { audioController.playSfx("digClay"); });
+        this.bind("ClayWeighed", function () { audioController.playSfx("weighScale"); });
+        this.bind("LogChopped", function () { audioController.playSfx("chopLog"); });
+        this.bind("DoorUsed", function () { audioController.playSfx("door"); });
+        // Loops outlive the scene, so end them with it.
+        this.bind("Remove", function () {
+            audioController.stopSfx("kickWheel");
+            audioController.stopSfx("fireLoop");
+        });
         this.bind("PotCracked", function () { audioController.playSfx("potCrack"); });
         this.bind("PotDestroyed", function () { audioController.playSfx("potCrack"); });
         this.bind("Stumbled", function () { audioController.playSfx("stumble"); });
@@ -48,6 +66,9 @@ Crafty.c("GameSounds", {
     },
 
     onItemMoved: function(move) {
+        if (move.item.type === "log" && move.to === this.kiln.woodInventory) {
+            audioController.playSfx("dropLog");
+        }
         if (move.item.type !== "pot") {
             return;
         }

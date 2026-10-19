@@ -285,6 +285,7 @@ function buildWorld(config) {
             return;
         }
         player.teleportTo(this.arrival.x, this.arrival.y);
+        Crafty.trigger("DoorUsed");
         showStatus(this.line);
         // The sprite faces right unflipped, left when flipped on X.
         if (this.arrival.facing === "right") {

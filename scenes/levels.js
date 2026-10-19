@@ -11,16 +11,32 @@
 //   Crafty.scene("Game")                                  // Play: level 1 onwards
 //   Crafty.scene("Game", {stage: 1, mode: "single"})      // level 2 alone
 //
-// Per level: name, a one-line description and checklist steps for the Goal panel (static, never ticked), the
-// fixed orders as [shape, clay key, glaze], and `world`, the buildWorld config. A level's world only holds what its
+// Per level: name, a one-line description and checklist steps for the Goal panel (each ticks the first time its
+// game event happens, see step()), the fixed orders as [shape, clay key, glaze], and `world`, the buildWorld config. A level's world only holds what its
 // goal needs.
 var STAGE_PAUSE_MS = 1500;
+
+// A Goal step: ticks the first time the global Crafty event `on` fires (and `when(payload)`, if given, is true).
+function step(text, on, when) {
+    return {text: text, on: on, when: when};
+}
+
+// Ticks when a pot reaches `state` ("PotAdvanced", see Pottery.advance).
+function potReaches(text, state) {
+    return step(text, "PotAdvanced", function (e) { return e.to === state; });
+}
+
+// Ticks when a pot comes out of a firing uncracked: a cracked pot doesn't count as fired.
+function potFired(text, state) {
+    return step(text, "PotAdvanced", function (e) { return e.to === state && !e.pot.pot.cracked; });
+}
 
 var LEVELS = [
     {
         name: "Kiln Creations",
         description: "Fire three pots twice each, the right way, to fill the orders.",
-        steps: ["Chop logs at the forest", "Set the fire level with logs", "Fire the pots (bisque)", "Fire them again"],
+        steps: [step("Chop logs at the forest", "LogChopped"), step("Set the fire level with logs", "KilnLit"),
+            potFired("Fire the pots (bisque)", "cooled"), potFired("Fire them again", "glazeCooled")],
         card: [
             {color: CLAY_TYPES.black.color, text: "Black clay: low fire, 1 log"},
             {color: CLAY_TYPES.red.color, text: "Red clay: mid fire, 2 logs"},
@@ -46,8 +62,10 @@ var LEVELS = [
     {
         name: "Pottery Craft",
         description: "Make one cup from digging the clay to the completed shelf.",
-        steps: ["Dig 1 kilo of black clay", "Weigh off 200 g", "Wedge it", "Give clay and the Cup model to the owl",
-            "Dry the pot", "Fire it (black clay: 1 log)", "Fire it again", "Put it on the completed shelf"],
+        steps: [step("Dig 1 kilo of black clay", "ClayDug"), potReaches("Weigh off 200 g", "weighed"),
+            potReaches("Wedge it", "wedged"), step("Give clay and the Cup model to the owl", "PotterWorking"),
+            step("Dry the pot", "PotDry"), potFired("Fire it (black clay: 1 log)", "cooled"),
+            potFired("Fire it again", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
         card: [],
         orders: [["Cup", "black", []]],
         world: {
@@ -65,8 +83,9 @@ var LEVELS = [
     {
         name: "First Orders",
         description: "Four cups, each with one glaze. A pot takes only one dip.",
-        steps: ["Dig, weigh, wedge and give it to the owl", "Dry the pot", "Bisque fire (1 log black, 2 red, 3 white)",
-            "Dip it in a glaze", "Glaze fire", "Put it on the completed shelf"],
+        steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
+            potFired("Bisque fire (1 log black, 2 red, 3 white)", "cooled"), step("Dip it in a glaze", "PotGlazed"),
+            potFired("Glaze fire", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
         card: [],
         orders: [["Cup", "white", ["Glaze A"]], ["Cup", "red", ["Glaze B"]], ["Cup", "black", ["Glaze B"]],
             ["Cup", "red", ["Glaze A"]]],
@@ -109,24 +128,37 @@ function levelUnlocked(index) {
 }
 
 // The Goal box (HUD, under the inventory panel): title, description, the level's fire card if it has one, and
-// the unticked step checkboxes.
+// the step checkboxes, which tick as the player does each step. The text entity listens for the steps' events, so
+// its bindings go with the scene.
 function showGoalPanel(level) {
-    var lines = ["<b>Goal</b>", level.description];
+    var head = ["<b>Goal</b>", level.description];
     level.card.forEach(function (row) {
-        lines.push("<span style='display:inline-block;width:12px;height:12px;border:1px solid #222;background:" +
+        head.push("<span style='display:inline-block;width:12px;height:12px;border:1px solid #222;background:" +
             row.color + "'></span> " + row.text);
     });
-    level.steps.forEach(function (step) { lines.push("☐ " + step); });
-    var h = 16 + lines.length * 22;
+    var h = 16 + (head.length + level.steps.length) * 22;
     Crafty.e("2D, HUD, Color")
         .attr({x: 10, y: 225, w: 430, h: h, z: 999})
         .color("rgba(255, 255, 255, 0.8)")
         .css({borderRadius: "8px"});
-    Crafty.e("2D, HUD, Text")
+    var text = Crafty.e("2D, HUD, Text")
         .attr({x: 20, y: 233, w: 410, h: h - 8, z: 1000})
-        .text(lines.join("<br>"))
         .textFont({size: "15px"}).textColor("#222").unselectable()
         .css({lineHeight: "22px"});
+    var ticked = level.steps.map(function () { return false; });
+    var draw = function () {
+        var lines = head.concat(level.steps.map(function (s, i) { return (ticked[i] ? "☑ " : "☐ ") + s.text; }));
+        text.text(lines.join("<br>"));
+    };
+    level.steps.forEach(function (s, i) {
+        text.bind(s.on, function (payload) {
+            if (!ticked[i] && (!s.when || s.when(payload))) {
+                ticked[i] = true;
+                draw();
+            }
+        });
+    });
+    draw();
 }
 
 // Restart and Menu beside the inventory panel. Restart rebuilds this level in the same mode; Menu leaves for the
