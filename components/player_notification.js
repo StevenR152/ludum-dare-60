@@ -14,8 +14,8 @@ Crafty.c("PlayerNotification", {
     init: function() {
         this.requires("2D, DOM, Text, Delay, Tween");
         this.attr({w: 400, h: 40, z: 2000, alpha: 0});
-        this.textAlign("center").textColor('#222').unselectable();
-        this.css({ textShadow: '0 0 4px #FFF' });
+        this.textAlign("center").textColor(HUD_TEXT_COLOR).css({fontFamily: MENU_FONT}).unselectable();
+        this.css({ textShadow: '0 0 4px #FAF2E2, 0 0 8px #FAF2E2' });
         this.textFont({ size: "12px", weight: "bold" });
         this.bind("StatusText", this.show);
     },

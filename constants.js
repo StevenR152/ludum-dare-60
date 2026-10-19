@@ -10,6 +10,22 @@ var GAME_MUSIC_VOLUME = 0.05;
 // Sound starts muted while we develop. TODO: set to false (music on by default) when we launch.
 var START_MUTED = true;
 
+// The menu screens (Loading, Start, Missions, Level complete) share one look: firelight in a dark
+// workshop, so the warm art and the clay colours sit on something other than flat grey. MENU_FONT is
+// Alegreya, served from assets/fonts (see assets/fonts/fonts.css), with web-safe serifs behind it.
+var MENU_FONT = "'Alegreya', Georgia, 'Times New Roman', serif";
+var MENU_BACKGROUND = "radial-gradient(ellipse at 50% 58%, #5A3A1E 0%, #2B2522 52%, #17130F 100%)";
+var MENU_TEXT_COLOR = "#E3CDA8";
+var MENU_DIM_TEXT_COLOR = "rgba(227, 205, 168, 0.60)";
+// Buttons are thrown clay: warm brown, lighter under the cursor, and nearly out of the firelight when a
+// mission is still locked.
+var MENU_BUTTON_COLOR = "#7A4A2B";
+var MENU_BUTTON_HOVER_COLOR = "#9C5F35";
+var MENU_BUTTON_LOCKED_COLOR = "rgba(72, 58, 47, 0.55)";
+// The name on the title screen. The game had none and showed "Ludum Dare #60"; this is what the README and
+// the design doc call it, so it is one line to change if the team settles on something else.
+var GAME_TITLE = "Blind Master's Kiln";
+
 // Shown along the bottom of the Start scene.
 var CREDITS = [
     { role: "Game Dev", name: "Steve, Crystal, Jacke, Caleri, James" },
@@ -147,6 +163,15 @@ var INSIDE_DOOR_COLOR = "#8B5A2B";
 // The log picture in inventory slots: its opaque part of the 2268x2180 wood image.
 var LOG_IMAGE = {url: "assets/images/wood.png", w: 2268, h: 2180, crop: [826, 858, 556, 374]};
 
+// The fired badge drawn on a pot after its first and second firing, bottom left of whatever box shows it (HUD
+// slots, shelves, the kiln, dropped pots), so a fired pot reads at a glance: "1x" or "2x" and a flame. `crop` is the
+// opaque part of each 2268x1177 picture; FIRE_BADGE_SHARE is the badge's width as a share of its box.
+var FIRE_BADGES = {
+    1: {url: "assets/images/fire1x.png", w: 2268, h: 1177, crop: [266, 371, 606, 331]},
+    2: {url: "assets/images/fire2x.png", w: 2268, h: 1177, crop: [213, 371, 659, 331]}
+};
+var FIRE_BADGE_SHARE = 0.62;
+
 // The clay cube pictures (4836x2268 each) by clay letter, cropped to their opaque part.
 var CLAY_IMAGES = {
     A: {url: "assets/images/clay_cube_A_red.png", w: 4836, h: 2268, crop: [1965, 909, 909, 755]},
@@ -157,7 +182,14 @@ var CLAY_IMAGES = {
 // The HUD's left panels (inventory and Goal): wide enough for a label and 5 slots. Inventory slots wrap onto a new line at its edge.
 var HUD_PANEL_X = 10;
 var HUD_PANEL_W = 330;
-var HUD_PANEL_COLOR = "rgba(255, 255, 255, 0.92)";
+// The in-game HUD (inventory, Goal box, order tickets) in the same warm family as the menus, but light, so it reads
+// over the bright game art: parchment panels, dark brown text in MENU_FONT, tan empty slots. Kept to colour, font and
+// a soft edge only, since proper HUD art is on its way.
+var HUD_PANEL_COLOR = "rgba(250, 242, 226, 0.94)";
+var HUD_PANEL_STYLE = {borderRadius: "10px", boxShadow: "0 3px 12px rgba(40, 26, 16, 0.28)",
+    border: "1px solid rgba(122, 74, 43, 0.28)", boxSizing: "border-box"};
+var HUD_TEXT_COLOR = "#3B2A1D";
+var HUD_SLOT_COLOR = "#E4D3B4";
 
 // Inventory sizes of the owl (everything he holds: clay, models, pots to trim and pots to collect) and
 // the kiln. The fox's is FOX_INVENTORY_CAPACITY.
@@ -204,9 +236,9 @@ var ORDER_POINTS_EARLY = 50;
 var ORDER_POINTS_LATE = 30;
 var ORDER_PENALTIES = { Cup: 10, Vase: 20, Bowl: 25 };
 // Card colours: delivered, missed, and still open.
-var ORDER_DELIVERED_COLOR = "#7CD992";
-var ORDER_EXPIRED_COLOR = "#E57373";
-var ORDER_OPEN_COLOR = "rgba(255, 255, 255, 0.85)";
+var ORDER_DELIVERED_COLOR = "#A9D18E";
+var ORDER_EXPIRED_COLOR = "#E39A86";
+var ORDER_OPEN_COLOR = "rgba(250, 242, 226, 0.92)";
 // Glazing station: two buckets, Glaze A red/orange, Glaze B blue (bucket art); square colours show on order cards.
 var GLAZE_BUCKET_COLORS = { "Glaze A": "#F47B30", "Glaze B": "#7FB2E5" };
 // Sprite names of the bucket art (assets.js): A is red/orange, B is blue.

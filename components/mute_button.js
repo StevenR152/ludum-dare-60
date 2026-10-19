@@ -5,7 +5,7 @@ Crafty.c("MuteButton", {
     init: function() {
         this.requires("2D, HUD, Mouse, Text");
         this.attr({w: 90, h: 30, z: 1000});
-        this.textFont({ size: '16px', weight: 'bold' }).textColor('#222').unselectable();
+        this.textFont({ size: '16px', weight: 'bold' }).textColor(HUD_TEXT_COLOR).css({fontFamily: MENU_FONT}).unselectable();
         this.css({ cursor: 'pointer' });
         this.onIcon = null;
         this.offIcon = null;

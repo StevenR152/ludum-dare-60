@@ -1,5 +1,5 @@
 Crafty.defineScene("End", function() {
-    Crafty.background("#DDD");
+    Crafty.background(MENU_BACKGROUND);
     audioController.playMusic(MUSIC_TRACK);
 
     Crafty.e("2D, DOM, Text")
@@ -7,7 +7,7 @@ Crafty.defineScene("End", function() {
         .text("Time: " + formatTime(gameState.seconds))
         .textAlign("center")
         .textFont({ size: '36px', weight: 'bold' })
-        .textColor('#222')
+        .textColor(MENU_TEXT_COLOR)
         .unselectable();
 
     Crafty.e("UIButton")
@@ -23,5 +23,5 @@ Crafty.defineScene("End", function() {
         .attr({x: GAME_SCREEN_WIDTH / 2 - 80, y: GAME_SCREEN_HEIGHT / 2 + 70})
         .onClick(function () { Crafty.scene("Start"); });
 
-    Crafty.e("MuteButton").attr({x: 20, y: 20});
+    menuMuteButton();
 });
