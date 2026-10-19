@@ -6,7 +6,7 @@
 // the selected item back at the Workbench or Clay node the fox stands at if that takes it, else drops it on the
 // ground. A moving fox carrying something may also stumble and
 // drop a random item on the ground; the more it is slowed, the likelier.
-//   var player = Crafty.e("Fox").attr({x: 512, y: 706});
+//   var player = Crafty.e("Fox").attr({x: 542, y: 656});
 Crafty.c("Fox", {
     init: function() {
         this.requires("2D, DOM, fox, Fourway, Collision, Keyboard");

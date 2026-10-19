@@ -140,6 +140,11 @@ var CLAY_IMAGES = {
     C: {url: "assets/images/clay_cube_C_white.png", w: 4836, h: 2268, crop: [2015, 909, 805, 711]}
 };
 
+// The HUD's left panels (inventory and Goal): wide enough for a label and 5 slots. Inventory slots wrap onto a new line at its edge.
+var HUD_PANEL_X = 10;
+var HUD_PANEL_W = 330;
+var HUD_PANEL_COLOR = "rgba(255, 255, 255, 0.92)";
+
 // Inventory sizes of the owl (everything he holds: clay, models, pots to trim and pots to collect) and
 // the kiln. The fox's is FOX_INVENTORY_CAPACITY.
 var OWL_CAPACITY = 5;

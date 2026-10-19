@@ -2,6 +2,7 @@
 // Fox / Master / Kiln inventory rows. It owns them all, so one call shows or hides the lot.
 //   var hud = Crafty.e("GameHud").build(player, owl, kiln);   // owl may be null: no Master row
 //   hud.enable(false);   // hide and disable the whole HUD; hud.enable(true) brings it back
+// hud.bottom is the panel's lower edge, for stacking the Goal panel under it.
 // The timer keeps counting while the HUD is hidden.
 Crafty.c("GameHud", {
     init: function() {
@@ -12,28 +13,31 @@ Crafty.c("GameHud", {
 
     // Call once the fox, owl and kiln exist.
     build: function(fox, owl, kiln) {
-        this.parts.push(Crafty.e("2D, HUD, Color")
-            .attr({x: 10, y: 10, w: 430, h: owl ? 200 : 150, z: 999})
-            .color("rgba(255, 255, 255, 0.8)")
-            .css({borderRadius: "8px"}));
+        var panel = Crafty.e("2D, HUD, Color")
+            .attr({x: HUD_PANEL_X, y: 10, w: HUD_PANEL_W, h: 0, z: 999})
+            .color(HUD_PANEL_COLOR)
+            .css({borderRadius: "8px"});
+        this.parts.push(panel);
         this.parts.push(Crafty.e("MuteButton").attr({x: 20, y: 20}));
         this.parts.push(Crafty.e("GameTimer").attr({x: 125, y: 20}));
         // The fox's selected slot is always outlined; the kiln's only where a click would take an item out.
         this.addRow("Fox", [fox.inventory], 60, {outlined: function (inventory, index) { return index === inventory.selected; }}).onSlotPress(function (inventory, index) {
             fox.pressSlot(index);
         });
-        var y = 110;
+        // Rows stack 10px apart; a row with wrapped slots is taller.
+        var y = 60 + this.rows[0].h + 10;
         if (owl) {
-            this.addRow("Master", [owl.inventory], y);
-            y += 50;
+            y += this.addRow("Master", [owl.inventory], y).h + 10;
         }
-        this.addRow("Kiln", [kiln.inventory, kiln.woodInventory], y, {
+        var kilnRow = this.addRow("Kiln", [kiln.inventory, kiln.woodInventory], y, {
             watch: [fox.inventory],
             outlined: function (inventory, index) {
                 var target = kiln.takeTarget(fox);
                 return !!target && target.inventory === inventory && target.index === index;
             }
         });
+        panel.h = y + kilnRow.h + 10 - panel.y;
+        this.bottom = panel.y + panel.h;
         this.bind("Remove", function () {
             this.parts.concat(this.rows).forEach(function (part) { part.destroy(); });
         });

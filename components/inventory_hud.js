@@ -40,19 +40,27 @@ Crafty.c("InventoryHud", {
             .textFont({size: '16px', weight: 'bold'}).textColor('#222').unselectable()
             .css({lineHeight: '40px'}));
         this.slots = [];
-        var x = this.x + INVENTORY_HUD_LABEL_W;
+        // Slots run along the row and wrap onto a new line, under the first slot, where the panel runs out.
+        var firstX = this.x + INVENTORY_HUD_LABEL_W;
+        var x = firstX;
+        var y = this.y;
         inventories.forEach(function (inventory) {
             for (var i = 0; i < inventory.capacity; i++) {
-                var slot = Crafty.e("2D, HUD, Color").attr({x: x, y: this.y, w: 40, h: 40, z: 1000});
+                if (x + 40 > HUD_PANEL_X + HUD_PANEL_W - 10) {
+                    x = firstX;
+                    y += 50;
+                }
+                var slot = Crafty.e("2D, HUD, Color").attr({x: x, y: y, w: 40, h: 40, z: 1000});
                 this.parts.push(slot);
                 var itemBox = Crafty.e("2D, HUD, Color").attr({z: 1001, visible: false});
                 this.parts.push(itemBox);
-                var bar = new DryBar("HUD").place(x + 2, this.y + 34, 36, 1002);
+                var bar = new DryBar("HUD").place(x + 2, y + 34, 36, 1002);
                 this.parts.push(bar);
                 this.slots.push({box: slot, itemBox: itemBox, bar: bar, inventory: inventory, index: i});
                 x += 50;
             }
         }, this);
+        this.h = y + 40 - this.y;
         return this.refresh();
     },
 

@@ -35,7 +35,7 @@ function buildWorld(config) {
     }
 
     // The fox starts on the ground, left of the middle of the map.
-    var player = Crafty.e("Fox").attr({x: 512, y: 706});
+    var player = Crafty.e("Fox").attr({x: 542, y: 656});
     if (player.feetBlocked(player.x, player.y)) {
         console.warn("The fox starts out of bounds: move its start or repaint the collision mask");
     }
