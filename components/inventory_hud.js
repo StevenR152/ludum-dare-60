@@ -48,6 +48,18 @@ Crafty.c("InventoryHud", {
         return this.refresh();
     },
 
+    // Makes the slots pressable (mouse or touch): handler(inventory, index) runs on press, for any slot.
+    onSlotPress: function(handler) {
+        this.slots.forEach(function (slot) {
+            slot.box.addComponent("Mouse").bind("MouseDown", function () {
+                if (slot.box.visible) {
+                    handler(slot.inventory, slot.index);
+                }
+            });
+        });
+        return this;
+    },
+
     // Hides or shows the whole row; items only show while it is shown.
     enable: function(on) {
         this.shown = on;
