@@ -157,16 +157,17 @@ function levelUnlocked(index) {
     return UNLOCK_ALL_LEVELS || index <= levelsDone();
 }
 
-// The Goal box (HUD, under the inventory panel): title, description, the level's fire card if it has one, and
-// the step checkboxes, which tick as the player does each step. The text entity listens for the steps' events, so
+// The Goal box (HUD, under the inventory panel): title, description, the first step, the level's fire card if it has one,
+// and the remaining step checkboxes, which tick as the player does each step. The text entity listens for the steps' events, so
 // its bindings go with the scene.
 function showGoalPanel(level) {
     var head = ["<b>Goal</b>", level.description];
-    level.card.forEach(function (row) {
-        head.push("<span style='display:inline-block;width:12px;height:12px;border:1px solid #222;background:" +
-            row.color + "'></span> " + row.text);
+    // The fire card sits after the first step (chopping logs), so the checklist starts with it.
+    var card = level.card.map(function (row) {
+        return "<span style='display:inline-block;width:12px;height:12px;border:1px solid #222;background:" +
+            row.color + "'></span> " + row.text;
     });
-    var h = 16 + (head.length + level.steps.length) * 22;
+    var h = 16 + (head.length + card.length + level.steps.length) * 22;
     Crafty.e("2D, HUD, Color")
         .attr({x: 10, y: 225, w: 430, h: h, z: 999})
         .color("rgba(255, 255, 255, 0.8)")
@@ -177,7 +178,8 @@ function showGoalPanel(level) {
         .css({lineHeight: "22px"});
     var ticked = level.steps.map(function () { return false; });
     var draw = function () {
-        var lines = head.concat(level.steps.map(function (s, i) { return (ticked[i] ? "☑ " : "☐ ") + s.text; }));
+        var steps = level.steps.map(function (s, i) { return (ticked[i] ? "☑ " : "☐ ") + s.text; });
+        var lines = head.concat(steps.slice(0, 1), card, steps.slice(1));
         text.text(lines.join("<br>"));
     };
     level.steps.forEach(function (s, i) {
