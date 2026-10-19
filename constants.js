@@ -129,6 +129,13 @@ var DOOR_ART_BOX = {x: 975, y: 415, w: 85, h: 110};
 // The log picture in inventory slots: its opaque part of the 2268x2180 wood image.
 var LOG_IMAGE = {url: "assets/images/wood.png", w: 2268, h: 2180, crop: [826, 858, 556, 374]};
 
+// The clay cube pictures (4836x2268 each) by clay letter, cropped to their opaque part.
+var CLAY_IMAGES = {
+    A: {url: "assets/images/clay_cube_A_red.png", w: 4836, h: 2268, crop: [1965, 909, 909, 755]},
+    B: {url: "assets/images/clay_cube_B_black.png", w: 4836, h: 2268, crop: [1990, 994, 769, 628]},
+    C: {url: "assets/images/clay_cube_C_white.png", w: 4836, h: 2268, crop: [2015, 909, 805, 711]}
+};
+
 // Inventory sizes of the owl (everything he holds: clay, models, pots to trim and pots to collect) and
 // the kiln. The fox's is FOX_INVENTORY_CAPACITY.
 var OWL_CAPACITY = 5;
@@ -141,9 +148,9 @@ var LOG_CHOP_MS = 1000;
 var LOG_COLOR = "#6B4423";
 var TORCH_COLOR = "#F28C28";
 
-// How an item looks inside an inventory HUD slot (a 40x40 grey square): clay a square, pots thinner.
+// How an item looks inside an inventory HUD slot (a 40x40 grey square): clay a cube picture, pots thinner.
 var ITEM_SHAPES = {
-    clay: {w: 28, h: 28},
+    clay: {w: 34, h: 28},
     pot: {w: 34, h: 30},
     model: {w: 26, h: 16},
     log: {w: 36, h: 24}
