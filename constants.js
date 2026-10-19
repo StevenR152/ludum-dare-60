@@ -10,8 +10,24 @@ var MUSIC_TRACK = "bgMusic";
 var MUSIC_VOLUME = 0.2;
 // Quieter in the Game scene, where it layers under the ambient loop (AMBIENT_VOLUME) instead of playing alone.
 var GAME_MUSIC_VOLUME = 0.05;
-// Sound starts muted while we develop. TODO: set to false (music on by default) when we launch.
-var START_MUTED = true;
+// Sound starts on. Set true to start muted (handy while developing); players can still toggle it either way.
+var START_MUTED = false;
+
+// The menu screens (Loading, Start, Missions, Level complete) share one look: firelight in a dark
+// workshop, so the warm art and the clay colours sit on something other than flat grey. MENU_FONT is
+// Alegreya, served from assets/fonts (see assets/fonts/fonts.css), with web-safe serifs behind it.
+var MENU_FONT = "'Alegreya', Georgia, 'Times New Roman', serif";
+var MENU_BACKGROUND = "radial-gradient(ellipse at 50% 58%, #5A3A1E 0%, #2B2522 52%, #17130F 100%)";
+var MENU_TEXT_COLOR = "#E3CDA8";
+var MENU_DIM_TEXT_COLOR = "rgba(227, 205, 168, 0.60)";
+// Buttons are thrown clay: warm brown, lighter under the cursor, and nearly out of the firelight when a
+// mission is still locked.
+var MENU_BUTTON_COLOR = "#7A4A2B";
+var MENU_BUTTON_HOVER_COLOR = "#9C5F35";
+var MENU_BUTTON_LOCKED_COLOR = "rgba(72, 58, 47, 0.55)";
+// The name on the title screen. The game had none and showed "Ludum Dare #60"; this is what the README and
+// the design doc call it, so it is one line to change if the team settles on something else.
+var GAME_TITLE = "Blind Master's Kiln";
 
 // Shown along the bottom of the Start scene.
 var CREDITS = [
@@ -152,6 +168,15 @@ var INSIDE_DOOR_COLOR = "#8B5A2B";
 // The log picture in inventory slots: its opaque part of the 2268x2180 wood image.
 var LOG_IMAGE = {url: "assets/images/wood.png", w: 2268, h: 2180, crop: [826, 858, 556, 374]};
 
+// The fired badge drawn on a pot after its first and second firing, bottom left of whatever box shows it (HUD
+// slots, shelves, the kiln, dropped pots), so a fired pot reads at a glance: "1x" or "2x" and a flame. `crop` is the
+// opaque part of each 2268x1177 picture; FIRE_BADGE_SHARE is the badge's width as a share of its box.
+var FIRE_BADGES = {
+    1: {url: "assets/images/fire1x.png", w: 2268, h: 1177, crop: [266, 371, 606, 331]},
+    2: {url: "assets/images/fire2x.png", w: 2268, h: 1177, crop: [213, 371, 659, 331]}
+};
+var FIRE_BADGE_SHARE = 0.62;
+
 // The clay cube pictures (4836x2268 each) by clay letter, cropped to their opaque part.
 var CLAY_IMAGES = {
     A: {url: "assets/images/clay_cube_A_red.png", w: 4836, h: 2268, crop: [1965, 909, 909, 755]},
@@ -162,7 +187,14 @@ var CLAY_IMAGES = {
 // The HUD's left panels (inventory and Goal): wide enough for a label and 5 slots. Inventory slots wrap onto a new line at its edge.
 var HUD_PANEL_X = 10;
 var HUD_PANEL_W = 330;
-var HUD_PANEL_COLOR = "rgba(255, 255, 255, 0.92)";
+// The in-game HUD (inventory, Goal box, order tickets) in the same warm family as the menus, but light, so it reads
+// over the bright game art: parchment panels, dark brown text in MENU_FONT, tan empty slots. Kept to colour, font and
+// a soft edge only, since proper HUD art is on its way.
+var HUD_PANEL_COLOR = "rgba(250, 242, 226, 0.94)";
+var HUD_PANEL_STYLE = {borderRadius: "10px", boxShadow: "0 3px 12px rgba(40, 26, 16, 0.28)",
+    border: "1px solid rgba(122, 74, 43, 0.28)", boxSizing: "border-box"};
+var HUD_TEXT_COLOR = "#3B2A1D";
+var HUD_SLOT_COLOR = "#E4D3B4";
 
 // Inventory sizes of the owl (everything he holds: clay, models, pots to trim and pots to collect) and
 // the kiln. The fox's is FOX_INVENTORY_CAPACITY.
@@ -209,9 +241,9 @@ var ORDER_POINTS_EARLY = 50;
 var ORDER_POINTS_LATE = 30;
 var ORDER_PENALTIES = { Cup: 10, Vase: 20, Bowl: 25 };
 // Card colours: delivered, missed, and still open.
-var ORDER_DELIVERED_COLOR = "#7CD992";
-var ORDER_EXPIRED_COLOR = "#E57373";
-var ORDER_OPEN_COLOR = "rgba(255, 255, 255, 0.85)";
+var ORDER_DELIVERED_COLOR = "#A9D18E";
+var ORDER_EXPIRED_COLOR = "#E39A86";
+var ORDER_OPEN_COLOR = "rgba(250, 242, 226, 0.92)";
 // Glazing station: two buckets, Glaze A red/orange, Glaze B blue (bucket art); square colours show on order cards.
 var GLAZE_BUCKET_COLORS = { "Glaze A": "#F47B30", "Glaze B": "#7FB2E5" };
 // Sprite names of the bucket art (assets.js): A is red/orange, B is blue.
@@ -249,8 +281,9 @@ var WEIGH_STEP_GRAMS = 50;
 var MODEL_COLOR = "#8A8F98";
 // Glaze: dips per pot, at most one per bucket.
 var MAX_GLAZE_DIPS = 2;
-// Levels: true opens every level on the level select (set true while we develop); false unlocks them in order.
-var UNLOCK_ALL_LEVELS = true;
+// Levels: false unlocks them in order as each is completed (the release setting); true opens every level on the
+// level select, for testing.
+var UNLOCK_ALL_LEVELS = false;
 // Dev mode: true adds a "Sandbox" button to the Start menu that loads SANDBOX_LEVEL (scenes/levels.js), with every
 // station, clay, model and glaze on, to try any combination. Keep false for releases.
 var DEV_MODE = false;
@@ -271,8 +304,13 @@ var DRY_BAR_COLOR = "#555";
 // Completed shelf: places for pots waiting for an order, and how many delivered orders end the game (until levels).
 var COMPLETED_CAPACITY = 3;
 var ORDERS_TO_WIN = 3;
-// Zone square colours of the inside stations.
-var WEIGHING_STATION_COLOR = "#800080";
+// Zone square colours of the inside stations. The weighing station is a dark wooden tray (it was a placeholder
+// magenta); its empty pile spaces are faint cream outlines.
+var WEIGHING_STATION_COLOR = "rgba(92, 60, 38, 0.86)";
+var WEIGHING_EMPTY_PILE_COLOR = "rgba(250, 242, 226, 0.14)";
+// Where the weighing panel opens, in screen px: right of the HUD's inventory panel, below Restart and Menu.
+var WEIGH_PANEL_X = HUD_PANEL_X + HUD_PANEL_W + 10;
+var WEIGH_PANEL_Y = 58;
 // Extra pixels the workbench zone (where the fox counts as at the bench) extends below the bench.
 var WORKBENCH_REACH = 50;
 var WORKBENCH_COLOR = "rgba(139, 90, 43, 0.45)";
@@ -298,3 +336,8 @@ var TIMER_BAR_COOL_COLOR = "#7FB2E5";
 var AMBIENT_VOLUME = 0.1; // its own level, apart from the music
 var WEDGE_SOUNDS = {white: "wedgeBlue", red: "wedgeRed", black: "wedgeBrown"};
 var WET_POT_SOUND_SUFFIX = {white: "Blue", red: "Red", black: "Brown"};
+// A crack sounds like the size of the pot: a cup is a small pot, bowls and vases (500 g) big ones. A pot broken
+// for good (DESTROY_DAMAGE) always gets the big one.
+var CRACK_SOUNDS = {Cup: "potCrackSmall", Bowl: "potCrack", Vase: "potCrack"};
+// The fox's yelp when it trips, kept well under the sound of whatever it dropped.
+var STUMBLE_YELP_VOLUME = 0.3;

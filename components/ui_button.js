@@ -20,10 +20,20 @@ Crafty.c("ButtonBase", {
     init: function() {
         this.requires("2D, Mouse, Text");
         this.attr({w: 160, h: 48, z: 1000});
-        this.textAlign("center").textFont({ size: '20px', weight: 'bold' }).textColor('#EEE').unselectable();
-        this.css({ cursor: 'pointer', 'line-height': '48px', 'background-color': '#444', 'border-radius': '6px' });
+        this.textAlign("center").textFont({ size: '21px', weight: '600' }).textColor(MENU_TEXT_COLOR).unselectable();
+        this.css({
+            cursor: 'pointer', 'line-height': '48px', 'background-color': MENU_BUTTON_COLOR,
+            'border-radius': '8px', 'font-family': MENU_FONT, 'letter-spacing': '0.5px',
+            'border-bottom': '2px solid rgba(0, 0, 0, 0.30)',
+            'box-shadow': '0 3px 10px rgba(0, 0, 0, 0.35)',
+            'text-shadow': '0 1px 2px rgba(0, 0, 0, 0.45)',
+            transition: 'background-color 120ms ease'
+        });
         this.normalSprite = null;
         this.hoverSprite = null;
+        // A locked button is shown but does nothing: it keeps its place in the list so the player can see
+        // what is still to come (see LevelSelect).
+        this.isLocked = false;
         // The sound played on click; set to "uiSelect" or "uiBack" for those buttons.
         this.clickSound = "uiConfirm";
         this.bind("MouseOver", function () { audioController.playSfx("uiHover"); this.setHover(true); });
@@ -54,9 +64,21 @@ Crafty.c("ButtonBase", {
                 this.showSprite(hovering ? this.hoverSprite : this.normalSprite,
                                 hovering ? this.normalSprite : this.hoverSprite);
             }
-        } else {
-            this.css({ 'background-color': hovering ? '#666' : '#444' });
+        } else if (!this.isLocked) {
+            this.css({ 'background-color': hovering ? MENU_BUTTON_HOVER_COLOR : MENU_BUTTON_COLOR });
         }
+    },
+
+    // Dims the button and stops it reacting: no hover colour, no hover sound, no pointer.
+    locked: function() {
+        this.isLocked = true;
+        this.css({
+            'background-color': MENU_BUTTON_LOCKED_COLOR, cursor: 'default',
+            'box-shadow': 'none', 'border-bottom': '2px solid rgba(0, 0, 0, 0.18)'
+        });
+        this.textColor(MENU_DIM_TEXT_COLOR);
+        this.unbind("MouseOver");
+        return this;
     },
 
     // Swapping sprite components resets size, so keep the button's size.

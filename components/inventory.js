@@ -125,10 +125,34 @@ function fitPicture(box, picture) {
 function firings(item) {
     return item.before("cooled") ? 0 : item.before("glazeCooled") ? 1 : 2;
 }
-var FIRING_BADGE = "radial-gradient(circle closest-side, #D32F2F 0 65%, #FFF 68% 85%, transparent 88%)";
+// The fired badge for a pot (FIRE_BADGES: "1x" or "2x" and a flame) as background layers sitting in the bottom
+// left of `box`, FIRE_BADGE_SHARE of its width. Null for a pot that hasn't been fired yet.
+function fireBadgeLayer(box, item) {
+    var badge = FIRE_BADGES[firings(item)];
+    if (!badge) {
+        return null;
+    }
+    var crop = badge.crop;
+    var w = Math.max(16, box.w * FIRE_BADGE_SHARE);
+    var scale = w / crop[2];
+    var h = crop[3] * scale;
+    // Tucked into the corner with a little margin, so it sits on the edge of the pot rather than its middle.
+    var x = 1;
+    var y = box.h - h - 1;
+    // Behind it, a soft cream chip a little bigger than the icon: the flame is orange-red and the "1x" dark red,
+    // so on its own it disappears into red clay and sinks into black, and the chip gives it the same light ground
+    // on every pot. A radial gradient fades its edge rather than drawing a hard box.
+    var pad = Math.max(2, h * 0.28);
+    return {
+        layers: ["url(" + badge.url + ")", FIRE_BADGE_BACKING],
+        sizes: [badge.w * scale + "px " + badge.h * scale + "px", (w + pad * 2) + "px " + (h + pad * 2) + "px"],
+        positions: [(x - crop[0] * scale) + "px " + (y - crop[1] * scale) + "px", (x - pad) + "px " + (y - pad) + "px"]
+    };
+}
+var FIRE_BADGE_BACKING = "radial-gradient(ellipse closest-side, rgba(255, 247, 230, 0.95) 62%, rgba(255, 247, 230, 0) 100%)";
 
-// Paints an item into its box: pots as their picture (cropped to the pot and fitted in the box, with a red badge
-// per firing, except with noBadges (customer orders), and a black cross over it if cracked), logs and clay as their picture, everything else as a colour. Call with every box that shows an item (or no item,
+// Paints an item into its box: pots as their picture (cropped to the pot and fitted in the box, with a fired badge
+// once fired, except with noBadges (customer orders), and a black cross over it if cracked), logs and clay as their picture, everything else as a colour. Call with every box that shows an item (or no item,
 // to clear it): HUD slots, shelf slots, the kiln's, the owl's and dropped items.
 function paintItem(box, item, noBadges) {
     var line = function (corner) {
@@ -139,14 +163,13 @@ function paintItem(box, item, noBadges) {
     var sizes = [];
     var positions = [];
     var isPot = !!item && item.type === "pot";
-    if (isPot && !noBadges) {
-        // On top of everything: a red badge bottom left per firing, so fired pots read at a glance.
-        var d = Math.max(6, Math.round(Math.min(box.w, box.h) * 0.32));
-        for (var i = 0; i < firings(item); i++) {
-            layers.push(FIRING_BADGE);
-            sizes.push(d + "px " + d + "px");
-            positions.push(i * (d + 1) + "px " + (box.h - d) + "px");
-        }
+    var badge = isPot && !noBadges ? fireBadgeLayer(box, item) : null;
+    if (badge) {
+        // On top of everything: "1x" or "2x" and a flame on its cream chip, bottom left, so fired pots read at a
+        // glance whatever the clay. The icon goes first, so it draws above its chip.
+        Array.prototype.push.apply(layers, badge.layers);
+        Array.prototype.push.apply(sizes, badge.sizes);
+        Array.prototype.push.apply(positions, badge.positions);
     }
     var isLog = !!item && item.type === "log";
     var isClay = !!item && item.type === "clay";

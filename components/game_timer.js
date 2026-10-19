@@ -10,7 +10,7 @@ Crafty.c("GameTimer", {
     init: function() {
         this.requires("2D, HUD, Text, Delay");
         this.attr({w: 80, h: 30, z: 1000});
-        this.textFont({ size: '18px', weight: 'bold' }).textColor('#222').unselectable();
+        this.textFont({ size: '18px', weight: 'bold' }).textColor(HUD_TEXT_COLOR).css({fontFamily: MENU_FONT}).unselectable();
         this.text(formatTime(gameState.seconds));
         this.delay(this.tick, 1000, -1);
     },
