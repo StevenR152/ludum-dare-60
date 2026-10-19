@@ -159,6 +159,14 @@ Crafty.c("Kiln", {
 
     finishPot: function() {
         this.inventory.items.forEach(function (pot, i) { pot.advance(this.passes[i].done); }, this);
+        // A pot the fire damaged past DESTROY_DAMAGE is gone.
+        var shattered = this.inventory.items.filter(function (pot) { return pot.pot && pot.pot.damage >= DESTROY_DAMAGE; });
+        if (shattered.length > 0) {
+            shattered.forEach(function (pot) { this.inventory.items.splice(this.inventory.items.indexOf(pot), 1); }, this);
+            this.inventory.selected = 0;
+            showStatus(shattered.length > 1 ? "The pots shattered in the fire" : "The pot shattered in the fire");
+            shattered.forEach(function (pot) { Crafty.trigger("PotDestroyed", pot); });
+        }
         this.finished = this.inventory.items.slice();
         this.setState(this.inventory.items.length > 0 ? "ready" : "empty"); // fired empty: nothing to collect
         this.showPots();

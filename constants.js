@@ -52,9 +52,10 @@ var CLAY_TYPES = {
     white: { type: "clay", name: "white", letter: "C", color: '#F5F0DC', fireLevel: "high",
              patch: "patchWhite", patchUrl: "assets/images/patch_ClayC_white.png", patchContent: [1558, 1354, 658, 286] },
 };
-// Firing levels, lowest first (the kiln burns 1, 2 or 3 logs for them). A pot fired at any other
-// level than its clay's cracks when it cools.
-var FIRE_LEVELS = ["low", "mid", "high"];
+// Firing levels, lowest first (the kiln burns 1, 2, 3 or 4 logs for them). A pot fired at any other level than
+// its clay's cracks when it cools, and takes one damage per level it is off ("scorching" is no clay's level, so
+// 4 logs always hurt: 1 damage against a "high" clay, 3, enough to destroy the pot, against a "low" one).
+var FIRE_LEVELS = ["low", "mid", "high", "scorching"];
 
 // Debug: outline the fox's and the doors' collision boxes in red, and show the out-of-bounds masks
 // (COLLISION_AREAS) over the HUD, under the outlines. The overlay is every blocked pixel in solid red drawn at
@@ -198,16 +199,16 @@ var HUD_SLOT_COLOR = "#E4D3B4";
 
 // Inventory sizes of the owl (everything he holds: clay, models, pots to trim and pots to collect) and
 // the kiln. The fox's is FOX_INVENTORY_CAPACITY.
-var OWL_CAPACITY = 5;
+var OWL_CAPACITY = 4;
 // The master's spinning circle (kick wheel), inside: the clay or pot he is working on, and a finished pot he is
 // holding alone, is drawn fitted and centred in this box. World px, x, y top-left. Move and resize it to
 // line up with the wheel in the inside art.
 var POTTER_WHEEL = {x: -1400, y: 400, w: 80, h: 60};
 var KILN_CAPACITY = 4;
 
-// Wood: logs the kiln holds, logs per fire level (1 log low, 2 mid, 3 high), how long the fox chops one, colours.
-var KILN_WOOD_CAPACITY = 3;
-var KILN_FIRE_LEVELS = ["low", "mid", "high"];
+// Wood: logs the kiln holds, logs per fire level (1 log low, 2 mid, 3 high, 4 scorching), how long the fox chops one, colours.
+var KILN_WOOD_CAPACITY = 4;
+var KILN_FIRE_LEVELS = FIRE_LEVELS;
 var LOG_CHOP_MS = 2000;
 var LOG_COLOR = "#6B4423";
 var TORCH_COLOR = "#F28C28";

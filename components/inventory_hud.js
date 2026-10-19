@@ -1,6 +1,6 @@
 // One HUD row: a label, then a grey square per slot of each inventory given. An item in a slot is
 // drawn centred in it in its own colour or picture and shape (ITEM_SHAPES: clay square, pot a little wider than tall).
-// The selected slot of an inventory with more than one item is outlined in white (options.outlined(inventory, index)
+// With options.lineBreaks each inventory after the first starts a new line. The selected slot of an inventory with more than one item is outlined in white (options.outlined(inventory, index)
 // decides instead, if given; options.watch lists more inventories whose changes redraw the row). A drying pot has a
 // DryBar under its slot; a fired pot its "1x"/"2x" fire badge (paintItem), wedged clay a border (markBorder).
 // Redraws whenever one of its inventories changes, and as pots dry ("PotsDried").
@@ -52,7 +52,12 @@ Crafty.c("InventoryHud", {
         var firstX = this.x + INVENTORY_HUD_LABEL_W;
         var x = firstX;
         var y = this.y;
-        inventories.forEach(function (inventory) {
+        inventories.forEach(function (inventory, n) {
+            // options.lineBreaks: each inventory after the first starts on a new line (the kiln: pots, then wood).
+            if (n > 0 && this.options.lineBreaks) {
+                x = firstX;
+                y += 50;
+            }
             for (var i = 0; i < inventory.capacity; i++) {
                 if (x + 40 > HUD_PANEL_X + HUD_PANEL_W - 10) {
                     x = firstX;

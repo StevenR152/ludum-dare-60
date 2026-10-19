@@ -140,12 +140,17 @@ Pottery.prototype = {
             this.pot.fired = true;
             // No level set counts as a mismatch. Pots don't dry in the kiln, so this is the dryness it went in
             // with; anything short of bone dry cracks. A pot cracked before firing stays cracked.
+            // The wrong fire also damages it: one per level too hot or too cold (a pot with no level takes one).
             var wasCracked = this.pot.cracked;
-            this.pot.cracked = wasCracked || this.pot.fireLevel !== this.clay.fireLevel || this.pot.dryness < 1;
+            var levelsOff = this.pot.fireLevel
+                ? Math.abs(FIRE_LEVELS.indexOf(this.pot.fireLevel) - FIRE_LEVELS.indexOf(this.clay.fireLevel))
+                : DAMAGE_PER_BREAK;
+            this.pot.damage = (this.pot.damage || 0) + levelsOff;
+            this.pot.cracked = wasCracked || levelsOff > 0 || this.pot.dryness < 1;
             if (this.pot.cracked && !wasCracked) {
                 var reasons = [];
                 if (this.pot.fireLevel !== this.clay.fireLevel) {
-                    reasons.push("fired at " + (this.pot.fireLevel || "no level") + ", " + this.clay.name + " clay needs " + this.clay.fireLevel);
+                    reasons.push("fired at " + (this.pot.fireLevel || "no level") + ", " + this.clay.name + " clay needs " + this.clay.fireLevel + " (" + levelsOff + " damage)");
                 }
                 if (this.pot.dryness < 1) {
                     reasons.push("not bone dry (dryness " + Math.round(this.pot.dryness * 100) + "%)");

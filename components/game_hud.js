@@ -29,7 +29,9 @@ Crafty.c("GameHud", {
         if (owl) {
             y += this.addRow("Master", [owl.inventory], y).h + 10;
         }
+        // The kiln's pots on one line and its wood on the next.
         var kilnRow = this.addRow("Kiln", [kiln.inventory, kiln.woodInventory], y, {
+            lineBreaks: true,
             watch: [fox.inventory],
             outlined: function (inventory, index) {
                 var target = kiln.takeTarget(fox);
