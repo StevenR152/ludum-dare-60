@@ -40,7 +40,7 @@ Crafty.defineScene("Game", function() {
 
     // The master potter, inside the house. He keeps throwing pots while his hands are free.
     var owl = Crafty.e("2D, DOM, owl, Mouse, Potter")
-        .attr({x: -1660, y: 362, w: 160, h: 152});
+        .attr({x: -1660, y: 327, w: 160, h: 152});
 
     // Clicking the owl the fox is touching takes his oldest finished pot, if the fox can carry it;
     // otherwise it hands him a pot to trim, or wedged clay and a model (see Potter.receiveFrom).
@@ -65,7 +65,7 @@ Crafty.defineScene("Game", function() {
 
     // The torch lights the kiln. The fox stands on it, e.g. at (1526, 555), and clicks.
     var torch = Crafty.e("2D, DOM, Color, Mouse, DebugHitbox")
-        .attr({x: 1526, y: 555, w: 40, h: 60})
+        .attr({x: 1520, y: 549, w: 52, h: 72}) // the 40x60 torch grown 6 px each side to be easier to reach
         .color(TORCH_COLOR, 0); // invisible: the kiln picture shows the fire, the torch only takes the click
     torch.bind("MouseDown", function () {
         if (player.touches(this)) {
@@ -124,7 +124,7 @@ Crafty.defineScene("Game", function() {
     Crafty.e("GlazeStation").station([{x: -1445 + 35 + 50, y: 247 + 50}, {x: -1340 + 35 + 25, y: 277 + 40}], player);
 
     // Inside stations. The workbench is wedged on by holding and its models clicked (see
-    // Workbench); the shelves are clicked while the fox touches them. The third completed pot ends the
+    // Workbench); the shelves are clicked while the fox touches them. The third delivered order ends the
     // game, after a pause to see it.
     Crafty.e("Workbench").place(-1850, 242, 260, 50);
 
@@ -134,10 +134,19 @@ Crafty.defineScene("Game", function() {
     var completedShelf = Crafty.e("CompletedShelf").place(-2180, 405, 183, 43);
     // Unfired pots dry fastest on the drying shelf, slower in the fox's pack and the owl's hands, not in the kiln.
     Crafty.e("PotDrier").dry(dryingShelf.inventory, [player.inventory, owl.inventory]);
-    // Clicking a pot on the drying shelf takes that pot; clicking the shelf elsewhere puts one on.
+    // Clicking any slot square puts the fox's drying pot on (if there is room); otherwise a filled slot gives its
+    // pot up. Clicking the shelf elsewhere also puts one on.
     dryingShelf.bind("SlotClicked", function (index) {
-        if (player.touches(this)) {
+        if (!player.touches(this)) {
+            return;
+        }
+        var held = player.inventory.selectedItem();
+        if (isDrying(held) && this.inventory.canAdd(held)) {
+            this.useWith(player);
+        } else if (this.inventory.items[index]) {
             this.takeAt(player, index);
+        } else {
+            this.useWith(player);
         }
     });
     [dryingShelf, completedShelf].forEach(function (shelf) {

@@ -1,7 +1,7 @@
 // The drying shelf: DRY_SLOTS places for unfired pots, where they dry fastest (see PotDrier). Pots can
 // be taken off at any dryness: wet, leather hard (ready for the owl to trim) or bone dry (ready for the
 // kiln). Each slot shows a DryBar and the pot's stage under it. Clicking a pot's box triggers
-// "SlotClicked" with its index, so the fox can take that one.
+// "SlotClicked" with its index, so the fox can take that one or, on any slot square, put a pot on.
 //   var shelf = Crafty.e("DryingShelf").place(INSIDE_X + 1500, 330, 280, 160);
 //   shelf.useWith(fox);      // puts the fox's selected pot on, or takes the driest one off
 //   shelf.takeAt(fox, 1);    // takes the pot in slot 1
@@ -13,22 +13,12 @@ Crafty.c("DryingShelf", {
         });
         this.bars = [];
         this.labels = [];
-        this.bind("InventoryChanged", function (changed) {
-            if (changed === this.inventory) {
-                this.drawBars();
-            }
-        });
+        this.bind("SlotsDrawn", this.drawBars);
         this.bind("PotsDried", this.drawBars);
         this.bind("Remove", function () {
             this.bars.forEach(function (bar) { bar.destroy(); });
             this.labels.forEach(function (label) { label.destroy(); });
         });
-    },
-
-    place: function(x, y, w, h) {
-        this.attr({x: x, y: y, w: w, h: h});
-        this.drawSlots();
-        return this.drawBars();
     },
 
     // Under each slot box (see Shelf.drawSlots): the bar, then "wet", "LH" or "dry".

@@ -90,6 +90,8 @@ var FOREST_TREES = [
 ];
 // Kiln art (idle and lit, both 2268x1177) and the outside door art (2056x2268).
 var KILN_ART_CONTENT = [376, 358, 782, 546];
+// Fired pots appear this far from the middle of the kiln zone (left and down, clear of the torch).
+var KILN_OUTPUT_OFFSET = {x: -20, y: 20};
 var KILN_ART_BOX = {x: 1395, y: 478, w: 260, h: 181};
 var DOOR_ART_CONTENT = [630, 634, 856, 1102];
 var DOOR_ART_BOX = {x: 975, y: 415, w: 85, h: 110};
@@ -131,8 +133,19 @@ var ORDER_SPEEDS = {
     Fast:   { deadlineMs: 3 * 60 * 1000 }
 };
 
+// Scoring: points for a delivered order (early = delivered in the first half of its time), and the penalty
+// for a missed one, by shape.
+var ORDER_POINTS_EARLY = 50;
+var ORDER_POINTS_LATE = 30;
+var ORDER_PENALTIES = { Cup: 10, Vase: 20, Bowl: 25 };
+// Card colours: delivered, missed, and still open.
+var ORDER_DELIVERED_COLOR = "#7CD992";
+var ORDER_EXPIRED_COLOR = "#E57373";
+var ORDER_OPEN_COLOR = "rgba(255, 255, 255, 0.85)";
 // Glazing station: two buckets, orange (glaze 1) and pink (glaze 2), also on order cards.
 var GLAZE_BUCKET_COLORS = { "Glaze A": "#F47B30", "Glaze B": "#EBA6DC" };
+// The same buckets in words, for the order tickets.
+var GLAZE_BUCKET_NAMES = { "Glaze A": "Orange", "Glaze B": "Pink" };
 var GLAZE_NUMBERS = { "Glaze A": 1, "Glaze B": 2 };
 // Pot pictures (assets/images/pots/<file>_...): each shape's file prefix and the box [x, y, w, h] around the pot
 // in its 2268x2082 image, which the pictures are cropped to (the images themselves are never edited).
@@ -178,10 +191,13 @@ var DRY_BAR_COLOR = "#555";
 // Border of a pot's box: trimmed and not.
 var TRIMMED_BORDER_COLOR = "#2E7D32";
 var UNTRIMMED_BORDER_COLOR = "#E67E22";
-// Completed shelf: how many finished pots end the game.
+// Completed shelf: places for pots waiting for an order, and how many delivered orders end the game (until levels).
 var COMPLETED_CAPACITY = 3;
+var ORDERS_TO_WIN = 3;
 // Zone square colours of the inside stations.
 var WEIGHING_STATION_COLOR = "#800080";
+// Extra pixels the workbench zone (where the fox counts as at the bench) extends below the bench.
+var WORKBENCH_REACH = 50;
 var WORKBENCH_COLOR = "rgba(139, 90, 43, 0.45)";
 // Shelf slot boxes: how far below the shelf box's top they sit.
 var SHELF_SLOT_TOP = 2;

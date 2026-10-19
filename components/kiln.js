@@ -120,15 +120,16 @@ Crafty.c("Kiln", {
         this.showPots();
     },
 
-    // One box per pot waiting, in a row centred on the square (placed now: the kiln's position is set after init).
+    // One box per pot waiting, in a row centred on the square, then moved KILN_OUTPUT_OFFSET so the pots clear the
+    // torch's click zone (placed now: the kiln's position is set after init).
     showPots: function() {
         var count = this.inventory.items.length;
         var gap = 10;
         this.potBoxes.forEach(function (box, i) {
             var rowW = count * box.w + (count - 1) * gap;
             box.attr({
-                x: this.x + (this.w - rowW) / 2 + i * (box.w + gap),
-                y: this.y + (this.h - box.h) / 2,
+                x: this.x + (this.w - rowW) / 2 + i * (box.w + gap) + KILN_OUTPUT_OFFSET.x,
+                y: this.y + (this.h - box.h) / 2 + KILN_OUTPUT_OFFSET.y,
                 z: this.z + 1,
                 visible: i < count
             });

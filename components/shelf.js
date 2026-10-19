@@ -40,6 +40,8 @@ Crafty.c("Shelf", {
             paintItem(this.slotBoxes[i], item);
             markBorder(this.slotBoxes[i], item);
         }
+        // For shelves that decorate the slots (the drying shelf's bars and click handlers).
+        this.trigger("SlotsDrawn");
     },
 
     // Slot boxes appear once the shelf has been placed; call after attr().

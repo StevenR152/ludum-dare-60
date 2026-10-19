@@ -6,6 +6,7 @@
 //   leaving it a putdown, by stage and clay; a pot into the kiln plays the kiln sound instead.
 // - "PotterWorking" / "PotterDone": the kick wheel loops while the owl works, then his pot's putdown sound.
 // - "PotGlazed": first dip vs later dips. "PotCracked": one crack sound for every cracked pot ("PotDestroyed" too).
+// - "OrderDelivered" / "OrderExpired": the success sound / the failed sound.
 // - "Stumbled": the fox tripped and dropped something.
 // A dipped pot is still bisque ware until it leaves the glaze firing.
 Crafty.c("GameSounds", {
@@ -21,6 +22,8 @@ Crafty.c("GameSounds", {
             audioController.stopSfx("kickWheel");
             audioController.playSfx(this.potSound("putdown", pot));
         });
+        this.bind("OrderDelivered", function () { audioController.playSfx("orderDelivered"); });
+        this.bind("OrderExpired", function () { audioController.playSfx("orderFailed"); });
         this.bind("PotCracked", function () { audioController.playSfx("potCrack"); });
         this.bind("PotDestroyed", function () { audioController.playSfx("potCrack"); });
         this.bind("Stumbled", function () { audioController.playSfx("stumble"); });
