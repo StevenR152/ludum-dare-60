@@ -27,6 +27,25 @@ function makePot(clayKey, shape) {
     return pottery;
 }
 
+// makePot taken on to a later stage, for testing: "wet" (just thrown, untrimmed), "boneDry" (as makePot), "cooled"
+// (bisque fired at the right level), "glazed" (one dip) or "glazeCooled" (finished).
+function makePotAtStage(clayKey, shape, stage) {
+    var pottery = makePot(clayKey, shape);
+    if (stage === "wet") {
+        pottery.pot.dryness = 0;
+        pottery.pot.trimmed = false;
+    } else if (stage !== "boneDry") {
+        pottery.setFireLevel(pottery.clay.fireLevel);
+        ["firing", "cooling", "cooled"].forEach(function (to) { pottery.advance(to); });
+        if (stage !== "cooled") {
+            pottery.pot.glaze.push("Glaze A");
+            ["glazed", "glazeFiring", "glazeCooling", "glazeCooled"].slice(0, stage === "glazed" ? 1 : 4)
+                .forEach(function (to) { pottery.advance(to); });
+        }
+    }
+    return pottery;
+}
+
 Pottery.prototype = {
     get type() {
         return this.pot ? "pot" : "clay";
@@ -86,6 +105,9 @@ Pottery.prototype = {
             return false;
         }
         this.pot.dryness = Math.min(1, this.pot.dryness + ms / ((DRY_BASE_MS + this.pot.weight * DRY_MS_PER_GRAM) * slowdown));
+        if (this.pot.dryness >= 1) {
+            Crafty.trigger("PotDry", this);
+        }
         return true;
     },
 
@@ -134,6 +156,7 @@ Pottery.prototype = {
         } else if (to === "shelved") {
             this.pot.completed = true;
         }
+        Crafty.trigger("PotAdvanced", {pot: this, to: to});
         return true;
     }
 };

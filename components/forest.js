@@ -40,6 +40,7 @@ Crafty.c("Forest", {
         var fox = this.touchingFox();
         if (fox && fox.pickUp({type: "log"})) {
             showStatus("Chopped a log");
+            Crafty.trigger("LogChopped");
         }
     }
 });

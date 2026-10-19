@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
   	<title>Ludum Dare #60</title>
     <!-- Google Analytics (GA4): replace G-XXXXXXXXXX and uncomment to enable track() events.
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
@@ -14,97 +15,21 @@
     -->
   </head>
   <body>
-    <h2 class="touch-hide"> Ludum Dare #60 </h2>
-
-    <div id="wrapper">
-        <div id="game"></div>
-
-        <div id="instructions" class="touch-hide">
-            <p>
-                You're a young fox helping an old owl master potter who can't see anymore.
-                He still throws the pots on his kick wheel. You do everything else: dig the clay,
-                glaze it, fire it in the kiln. Take your time, it's a chill game with a few tense moments.
-            </p>
-
-            <h3>Controls</h3>
-            <ul>
-                <li><b>Arrow keys</b>: walk the fox around, inside and outside</li>
-                <li><b>Mouse click</b> on the ground: walk there. On a far station (door, owl, kiln): walk to it; click again to use it</li>
-                <li><b>Mouse click</b>: work the thing you're standing at (door, owl, kiln)</li>
-                <li><b>Hold the mouse button</b> on a clay patch: dig</li>
-                <li><b>E</b>: pick which clay in your backpack is selected</li>
-                <li><b>Space</b>: drop the selected item where you stand. Click it to pick it up again; walking into a dropped pot can crack it</li>
-                <li><b>Touch screens</b>: touch and hold to walk toward your finger, tap to drop</li>
-            </ul>
-            <p>
-                Things only work while the fox is touching them, so walk up first.
-                You carry up to 2 clays in your backpack (each one slows you down) and one thing in your hands.
-            </p>
-
-            <h3>How to play</h3>
-            <p>Make a pot from start to finish:</p>
-            <ol class="steps">
-                <li><b>Dig clay.</b> Stand on a clay patch outside and hold the mouse button for 2 seconds.
-                    The patch greys out and comes back after a while.</li>
-                <li><b>Weigh the clay.</b> Go through the door and click the purple weighing station with a dug kilo selected, then click it again to weigh off the grams the order needs.</li>
-                <li><b>Wedge the clay.</b> Stand on the workbench with the weighed clay selected and hold the mouse button for 3 seconds.
-                    The clay gets a white outline once it's wedged. Then click a model on the bench to carry it.</li>
-                <li><b>Deliver the clay.</b> Click the owl while touching him. He only takes wedged clay with a model.
-                    He takes it when he's idle and throws a pot on his kick wheel (about 8 seconds).</li>
-                <li><b>Collect the pot.</b> When his pot is ready, click him with empty hands to carry it.</li>
-                <li><b>Dry the pot.</b> Click the drying shelf with the pot selected to put it on (3 places). It dries for 15 seconds and turns paler;
-                    click the shelf again to take a dried pot. The kiln won't take a wet pot.</li>
-                <li><b>Gather wood.</b> <span class="soon">Coming soon</span>
-                    The wood kiln needs fuel before it will fire.</li>
-                <li><b>Fire the pot (bisque).</b> Outside, click the kiln with the pot in your hands.
-                    It fires for 10 seconds, cools for 10 more, then click it with empty hands to collect the fired pot.</li>
-                <li><b>Dip in glaze.</b> <span class="soon">Coming soon</span>
-                    Pick the glaze bucket that matches the master's order and dip the pot for the right length of time.</li>
-                <li><b>Fire again.</b> <span class="soon">Coming soon</span>
-                    A second firing melts the glaze into its final colour.</li>
-                <li><b>Complete the order.</b> Click the completed shelf with a fired pot to put it on. Three completed pots end the game.
-                    <span class="soon">Coming soon</span> Matching each pot to the master's order, with glaze.</li>
-            </ol>
-
-            <h3>Also coming soon</h3>
-            <ul>
-                <li><span class="soon">Coming soon</span> The master's order book, with the clay, amount and colour for each pot</li>
-                <li><span class="soon">Coming soon</span> Timer bars on actions: finish in time, or hold for just the right length</li>
-                <li><span class="soon">Coming soon</span> Cracked, ugly or shattered pots when you mess up</li>
-                <li><span class="soon">Coming soon</span> The master sneezes and scares you, and rough ground makes you drop things</li>
-                <li><span class="soon">Coming soon</span> More clays, glazes, drying hacks and firing several pots at once</li>
-            </ul>
-        </div>
-    </div>
-	<style>
-      h2 {
-        text-align: center;
-        margin: 20px;
+    <div id="game"></div>
+    <style>
+      /* The page is only the game: it fills the window (or itch.io iframe) and camera.js fits and
+         scales the stage into it, so the dark page colour letterboxes the leftover space. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: #222;
       }
-	    body {
-	        background-color: #EEE;
-	        width: 2304px; margin: 0px auto;
-	    }
-        #instructions {
-            width: 95%;
-            margin: 20px auto;
-            padding: 5px 5px 20px;
-        }
-        #instructions .steps li {
-            margin-bottom: 6px;
-        }
-        .soon {
-            background: #C9A227;
-            color: #fff;
-            border-radius: 3px;
-            padding: 1px 6px;
-            font-size: 0.8em;
-            font-weight: bold;
-            white-space: nowrap;
-        }
-	    #wrapper {
-	        box-shadow: 0px 4px 16px rgba(0, 0, 0, .12);
-	    }
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
     </style>
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crafty/0.9.0/crafty-min.js"></script>

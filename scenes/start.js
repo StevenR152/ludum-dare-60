@@ -10,7 +10,8 @@ Crafty.defineScene("Start", function() {
         .textColor('#222')
         .unselectable();
 
-    // Play is the continuous run through all the stages; Levels picks one to play alone (scenes/levels.js).
+    // Play is the continuous run through all the stages; Levels picks one to play alone (scenes/levels.js); Sandbox
+// (DEV_MODE only) is the whole game at once for testing.
     Crafty.e("UIButton")
         .label("Play")
         .attr({x: GAME_SCREEN_WIDTH / 2 - 80, y: GAME_SCREEN_HEIGHT / 2})
@@ -23,6 +24,15 @@ Crafty.defineScene("Start", function() {
         .onClick(function () {
             Crafty.scene("LevelSelect");
         });
+
+    if (DEV_MODE) {
+        Crafty.e("UIButton")
+            .label("Sandbox")
+            .attr({x: GAME_SCREEN_WIDTH / 2 - 80, y: GAME_SCREEN_HEIGHT / 2 + 140})
+            .onClick(function () {
+                Crafty.scene("Game", {mode: "sandbox"});
+            });
+    }
 
     Crafty.e("MuteButton").attr({x: 20, y: 20});
 

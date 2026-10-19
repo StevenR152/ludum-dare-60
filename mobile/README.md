@@ -43,7 +43,7 @@ Key names are [`Crafty.keys`](http://craftyjs.com/api/Crafty-keys.html) names, s
 | `holdSides: {left, right}` | Holds the key while a finger is down on that half of the screen | off |
 | `holdToward: {entity, keys, deadZone}` | Holds the keys pointing from the entity's centre to the first finger down, in 8 directions, until the finger lifts or the entity is within `deadZone` px | arrow keys, 10 px |
 | `scenes: ["Game"]` | Scenes gestures run on; `null` for every scene | `["Game"]` |
-| `fitPage: true` | Fits the page to the phone (below) | `true` |
+| `fitPage: true` | Locks the page for touch (below) | `true` |
 
 Each finger is tracked on its own, so gestures combine: hold to move with one thumb and tap with the other. Only the first finger down steers hold-toward.
 
@@ -73,10 +73,10 @@ Touches that start on a `Mouse` entity (menus, mute buttons) or on a link or for
 
 With `fitPage` on, a touch screen gets:
 
-- **Zoom by viewport, not CSS.** The page's `<meta name="viewport">` width is set to `max(game width, game height × screen aspect)` and recomputed on rotation, so the whole stage is visible: full width in portrait, full height in landscape. CSS transforms would put taps in the wrong place, because Crafty doesn't account for them.
+- **Scaling is the game's job.** TouchControls doesn't zoom the page. Fit the stage with `Crafty.viewport.scale` and a resize handler (LD60: `fitScreenToWindow` in `camera.js`), with `<meta name="viewport" content="width=device-width, initial-scale=1">` in the page. A viewport meta rewrite would be ignored inside iframes such as itch.io's, and CSS transforms would put taps in the wrong place, because Crafty doesn't account for them. On resize TouchControls re-measures the stage and resizes the touch rings.
 - **No scrolling or zooming:** `touch-action: none`, no text selection or long-press menu.
 - **Safe areas:** no `viewport-fit=cover`, so the browser keeps the page clear of notches and home bars itself.
-- **Whole page as touch area**, including the space below the game in portrait.
+- **Whole page as touch area**, including the letterboxed space around the game.
 
 ## Tests and demo
 
