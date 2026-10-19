@@ -146,7 +146,7 @@ Crafty.c("OrderPanel", {
         // The finished pot: its shape and clay, glazed (after the glaze firing, the last dip shows) or fired bare.
         card.swatch = Crafty.e("2D, HUD, Color")
             .attr({x: x + 4, y: y + 8, w: 38, h: 34, z: 1001});
-        paintItem(card.swatch, orderPot(order));
+        paintItem(card.swatch, orderPot(order), true);
         card.label = Crafty.e("2D, HUD, Text")
             .attr({x: x + 48, y: y + 6, w: ORDER_CARD_W - 56, h: 36, z: 1001})
             .text(order.clay.name.charAt(0).toUpperCase() + order.clay.name.slice(1) + " " + order.shape + " (" + order.grams + "g)")
