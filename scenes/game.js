@@ -70,16 +70,18 @@ function buildWorld(config) {
         owl = Crafty.e("2D, DOM, owl, Mouse, Potter")
             .attr({x: -1660, y: 327, w: 160, h: 152});
 
-        // Clicking the owl the fox is touching takes his oldest finished pot, if the fox can carry it;
-        // otherwise it hands him a pot to trim, or wedged clay and a model (see Potter.receiveFrom).
+        // Clicking the owl the fox is touching takes his oldest finished pot while the fox has a free slot; with a full
+        // pack it gives him what he can work on instead (a pot to trim, or wedged clay and a model, see
+        // Potter.receiveFrom) and says why if he can't take anything.
         owl.bind("MouseDown", function () {
             if (!player.touches(this)) {
                 return;
             }
-            if (!this.hasFinishedPot()) {
-                showStatus(this.receiveFrom(player));
-            } else if (!this.takePot(player)) {
-                showStatus("You can't carry the pot: your pack is full");
+            var packFull = player.inventory.items.length >= player.inventory.capacity;
+            if (this.hasFinishedPot() && !packFull) {
+                this.takePot(player);
+            } else {
+                showStatus(this.receiveFrom(player).status);
             }
         });
     }

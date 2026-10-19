@@ -35,59 +35,76 @@ Crafty.c("Potter", {
         return this.inventory.items.length + count <= this.inventory.capacity;
     },
 
-    // Gives him the fox's selected untrimmed pot to trim, or else its weighed clay and model together.
-    // Returns a status to show.
+    // Why he can't trim this pot, or null if he can.
+    potProblem: function(pot) {
+        if (pot.pot.cracked) {
+            return "Hmm, this pot is cracked, the master can't trim it";
+        }
+        if (pot.pot.trimmed) {
+            return "Hmm, this pot is already trimmed";
+        }
+        if (!isDrying(pot)) {
+            return "Hmm, only an unfired pot can be trimmed";
+        }
+        return null;
+    },
+
+    // Takes from the fox what he can work on: a pot to trim (the selected one if he can trim it, else any other in the
+    // pack), or else its wedged clay and model together. Returns {gave, status}: whether anything moved, and the
+    // line to show (in the fox's voice).
     receiveFrom: function(fox) {
         var pack = fox.inventory;
         var held = pack.selectedItem();
+        var pots = pack.items.filter(function (item) { return item.type === "pot"; });
         if (held && held.type === "pot") {
-            return this.receivePot(pack, held);
+            pots.splice(pots.indexOf(held), 1);
+            pots.unshift(held);
+        }
+        var trimmable = pots.find(function (pot) { return !this.potProblem(pot); }, this);
+        if (trimmable) {
+            return this.receivePot(pack, trimmable);
+        }
+        if (held && held.type === "pot") {
+            return {gave: false, status: this.potProblem(held)};
         }
         var clayIndex = pack.find(function (item) { return item.state === "wedged"; });
         var modelIndex = pack.find(function (item) { return item.type === "model"; });
         if (clayIndex < 0 && modelIndex < 0) {
-            return pack.items.some(function (item) { return item.type === "clay"; })
-                ? "Weigh the clay at the weighing station, then wedge it at the workbench"
-                : "The master needs wedged clay and a model to make pots, or a dried pot to trim";
+            return {gave: false, status: pots.length > 0 ? this.potProblem(pots[0])
+                : pack.items.some(function (item) { return item.type === "clay"; })
+                    ? "Hmm, I should weigh the clay at the weighing station, then wedge it at the workbench"
+                    : "Hmm, I need wedged clay and a model for the master to make pots, or a dried pot to trim"};
         }
         if (modelIndex < 0) {
-            return "Bring a model from the workbench too";
+            return {gave: false, status: "Hmm, I need to bring a model from the workbench too"};
         }
         if (clayIndex < 0) {
-            return "Bring wedged clay too";
+            return {gave: false, status: "Hmm, I need to bring wedged clay too"};
         }
         var clay = pack.items[clayIndex];
         var model = pack.items[modelIndex];
         var needed = ORDER_CLAY_GRAMS[model.shape];
         if (clay.clay.weight !== needed) {
-            return "That's " + clay.clay.weight + " g, a " + model.shape + " needs " + needed + " g";
+            return {gave: false, status: "Hmm, this is " + clay.clay.weight + " g, but I need to give " + needed + " g"};
         }
         if (!this.roomFor(2)) {
-            return "The master's hands are full, come back when he's done";
+            return {gave: false, status: "Hmm, the master's hands are full, I'll come back when he's done"};
         }
         // The job first, so the clay arriving doesn't count as a finished pot.
         this.jobs.push({kind: "throw", items: [clay, model]});
         transferItem(pack, this.inventory, modelIndex);
         transferItem(pack, this.inventory, pack.items.indexOf(clay));
-        return "Gave the master " + needed + " g of " + clay.clay.name + " clay for a " + model.shape;
+        return {gave: true, status: "I gave the master " + needed + " g of " + clay.clay.name + " clay for a " + model.shape};
     },
 
+    // Hands him this pot (one he can trim) to trim.
     receivePot: function(pack, pot) {
-        if (pot.pot.cracked) {
-            return "This pot is cracked, the master can't trim it";
-        }
-        if (pot.pot.trimmed) {
-            return "This pot is already trimmed";
-        }
-        if (!isDrying(pot)) {
-            return "Only an unfired pot can be trimmed";
-        }
         if (!this.roomFor(1)) {
-            return "The master's hands are full, come back when he's done";
+            return {gave: false, status: "Hmm, the master's hands are full, I'll come back when he's done"};
         }
         this.jobs.push({kind: "trim", items: [pot]});
-        transferItem(pack, this.inventory);
-        return "Gave the master the pot to trim";
+        transferItem(pack, this.inventory, pack.items.indexOf(pot));
+        return {gave: true, status: "I gave the master the pot to trim"};
     },
 
     // The oldest finished pot to the fox, or false.
