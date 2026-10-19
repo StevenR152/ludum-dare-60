@@ -104,7 +104,7 @@ var COLLISION_SNAP_RADIUS = 400;
 // Pick spots clear of the masks and of both door zones, or the fox walks straight back through.
 // Optional facing: "right" or "left" forces which way the fox looks on arrival; leave it out to keep its facing.
 var DOOR_DESTINATIONS = {
-    outside: {x: 960, y: 545},
+    outside: {x: 950, y: 575},
     inside: {x: -2500, y: 350, facing: "right"}
 };
 // How opaque a clay patch's picture stays while it is dug and replenishing.
@@ -132,7 +132,7 @@ var DOOR_ART_CONTENT = [630, 634, 856, 1102];
 // Each house door's trigger zone (top-left x, y and size). The outside one is exactly the door picture.
 var DOOR_BOXES = {
     outside: {x: 975, y: 415, w: 85, h: 110},
-    inside: {x: -2626, y: 265, w: 75, h: 125}
+    inside: {x: -2626, y: 265, w: 85, h: 110}
 };
 var DOOR_ART_BOX = DOOR_BOXES.outside;
 // The inside door's colour (drawn fully transparent; it only shows in the debug outline).
