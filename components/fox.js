@@ -44,6 +44,10 @@ Crafty.c("Fox", {
         // Click to move (see enableClickToMove): walk is null, {x, y} (a ground point) or {entity} (a station).
         this.walk = null;
         this.walkSpeed = FOX_SPEED;
+        // How close the walk got last frame, and how many frames in a row it has failed to improve on that
+        // (see walkStep): sliding along a wall it cannot get round has to give up some time.
+        this.lastWalkDistance = Infinity;
+        this.walkStalled = 0;
         this.pressHeld = false;
         this.dragging = false;
         this.armed = null;
@@ -363,6 +367,8 @@ Crafty.c("Fox", {
     },
 
     cancelWalk: function() {
+        this.lastWalkDistance = Infinity;
+        this.walkStalled = 0;
         this.walk = null;
         this.dragging = false;
     },
@@ -406,8 +412,26 @@ Crafty.c("Fox", {
         }
         var newX = this.x + dx;
         var newY = this.y + dy;
-        // A wall ends the walk at once (no sliding). A fox already out of bounds moves freely.
+        // A step into a wall slides along it, keeping whichever axis is still clear, so the fox rounds a
+        // tree or a corner instead of stopping dead in front of it. This is what the arrow keys already do
+        // (keepInBounds); click-to-move used to give up here instead, which is why it caught on everything.
+        // A fox already out of bounds moves freely.
         if (!this.feetBlocked(this.x, this.y) && this.feetBlocked(newX, newY)) {
+            if (!this.feetBlocked(newX, this.y)) {
+                newY = this.y;
+            } else if (!this.feetBlocked(this.x, newY)) {
+                newX = this.x;
+            } else {
+                this.cancelWalk(); // boxed in on both axes: nothing to slide along
+                return;
+            }
+        }
+        // Sliding can run the fox along something it will never get round, so give up once it has not got
+        // meaningfully closer for WALK_STUCK_FRAMES frames in a row, rather than scrape along for ever.
+        if (distance < this.lastWalkDistance - WALK_PROGRESS_EPSILON) {
+            this.lastWalkDistance = distance;
+            this.walkStalled = 0;
+        } else if (++this.walkStalled >= WALK_STUCK_FRAMES) {
             this.cancelWalk();
             return;
         }
