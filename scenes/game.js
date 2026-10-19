@@ -14,19 +14,26 @@ Crafty.defineScene("Game", function() {
         .attr(OUTSIDE_MAP_BOX).attr({z: OUTSIDE_MAP_Z});
 
 
+    // Out-of-bounds masks (COLLISION_AREAS): read before the fox exists, since it checks them on every step.
+    collisionMap.load();
+    if (DEBUG_HITBOXES) {
+        collisionMap.showDebug();
+    }
+
     // The fox starts on the ground, left of the middle of the map.
     var player = Crafty.e("Fox").attr({x: 512, y: 706});
+    if (player.feetBlocked(player.x, player.y)) {
+        console.warn("The fox starts out of bounds: move its start or repaint the collision mask");
+    }
 
     // Inside sits left of Outside. The gap is wider than the screen, so the camera never shows both.
-    var INSIDE_X = -2000 - 1200;
-
     // House interior art at a quarter of its 8364x2246 source size, keeping its aspect ratio.
     Crafty.e("2D, DOM, backgroundInside")
-        .attr({x: INSIDE_X, y: 0, w: 8364 / 4, h: 2246 / 4, z: -1});
+        .attr(INSIDE_MAP_BOX).attr({z: -1});
 
     // The same art with only the foreground items the fox walks behind, drawn over him (below the HUD).
     Crafty.e("2D, DOM, overlayInside")
-        .attr({x: INSIDE_X, y: 0, w: 8364 / 4, h: 2246 / 4, z: 50});
+        .attr(INSIDE_MAP_BOX).attr({z: 50});
 
 
     // Debug aid for laying out the scene: log world coordinates of any click.
@@ -165,17 +172,29 @@ Crafty.defineScene("Game", function() {
     var insideDoor = Crafty.e("2D, DOM, Color, DebugHitbox")
         .attr({x: -2626, y: 268, w: 54, h: 112})
         .color('#8B5A2B', 0);
-    outsideDoor.partner = insideDoor;
-    insideDoor.partner = outsideDoor;
+    // Where each door leads: the spot in DOOR_DESTINATIONS for the area beyond it.
+    outsideDoor.arrival = DOOR_DESTINATIONS.inside;
+    insideDoor.arrival = DOOR_DESTINATIONS.outside;
 
-    // Walking into a door puts the fox just below its partner, centred and clear of it (so no ping-pong).
+    // A destination must be in bounds and clear of both doors, or the fox is stuck or walks straight back.
+    [{name: "outside", spot: DOOR_DESTINATIONS.outside}, {name: "inside", spot: DOOR_DESTINATIONS.inside}].forEach(function (d) {
+        if (player.feetBlocked(d.spot.x, d.spot.y)) {
+            console.warn("DOOR_DESTINATIONS." + d.name + " is out of bounds: pick a clear spot");
+        }
+        [outsideDoor, insideDoor].forEach(function (door) {
+            var inset = FOX_HITBOX_INSET;
+            if (door.intersect(d.spot.x + inset, d.spot.y + inset, player.w - 2 * inset, player.h - 2 * inset)) {
+                console.warn("DOOR_DESTINATIONS." + d.name + " touches a door: the fox would go straight back");
+            }
+        });
+    });
+
+    // Walking into a door puts the fox at its configured destination (so no ping-pong).
     function useDoor() {
         if (!player.touches(this)) {
             return;
         }
-        var door = this.partner;
-        player.x = door.x + (door.w - player.w) / 2;
-        player.y = door.y + door.h + 20;
+        player.teleportTo(this.arrival.x, this.arrival.y);
     }
     outsideDoor.bind("EnterFrame", useDoor);
     insideDoor.bind("EnterFrame", useDoor);

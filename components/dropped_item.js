@@ -5,6 +5,7 @@
 //   fox standing on a fresh drop doesn't count: it has to leave and come back. At BREAK_DAMAGE the pot
 //   cracks, at DESTROY_DAMAGE it is gone. Clay, logs and models never take damage.
 // - Click it while overlapping to pick it up again (Fox.pickUp).
+// - It never lies out of bounds: a drop against a wall snaps to the closest clear spot (see collisionMap).
 // Unfired pots keep drying at the off-shelf rate (see PotDrier).
 //   Crafty.e("DroppedItem").dropFrom(fox, item);
 Crafty.c("DroppedItem", {
@@ -42,7 +43,20 @@ Crafty.c("DroppedItem", {
         var h = shape.h * DROPPED_ITEM_SCALE;
         this.fox = fox;
         this.item = item;
-        this.attr({x: fox.x + (fox.w - w) / 2, y: fox.y + fox.h - h - 6, w: w, h: h, z: DROPPED_ITEM_Z});
+        var x = fox.x + (fox.w - w) / 2;
+        var y = fox.y + fox.h - h - 6;
+        // Out of bounds (the fox is against a wall): the closest clear spot, else the middle of the fox's feet.
+        if (collisionMap.isBoxBlocked(x, y, w, h)) {
+            var spot = collisionMap.nearestFree(x, y, w, h);
+            if (spot) {
+                x = spot.x;
+                y = spot.y;
+            } else {
+                x = fox.x + FOX_FEET_BOX.x + (FOX_FEET_BOX.w - w) / 2;
+                y = fox.y + FOX_FEET_BOX.y + FOX_FEET_BOX.h - h;
+            }
+        }
+        this.attr({x: x, y: y, w: w, h: h, z: DROPPED_ITEM_Z});
         this.overlapping = true;
         this.armed = false;
         this.redraw();

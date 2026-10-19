@@ -11,6 +11,13 @@ TouchControls.init({
 // Entities with the "HUD" component stay fixed on screen while the camera moves.
 Crafty.createLayer("HUD", "DOM", {xResponse: 0, yResponse: 0, scaleResponse: 0, z: 50});
 
+// Debug overlays (DEBUG_HITBOXES): the collision masks sit above the HUD (50) and the red outlines above
+// the masks, both following the camera like the world.
+if (DEBUG_HITBOXES) {
+    Crafty.createLayer("DebugMaskLayer", "DOM", {z: 60});
+    Crafty.createLayer("DebugOutlineLayer", "DOM", {z: 70});
+}
+
 var audioController = Crafty.e("AudioController");
 
 Crafty.scene("Loading");

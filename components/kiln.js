@@ -101,6 +101,7 @@ Crafty.c("Kiln", {
         this.woodInventory.selected = 0;
         this.woodInventory.changed();
         showStatus("The kiln is lit: " + this.fireLevel + " fire");
+        Crafty.trigger("KilnLit");
         this.inventory.items.forEach(function (pot, i) {
             if (this.passes[i] === KILN_PASSES.bisque) {
                 pot.setFireLevel(this.fireLevel);
