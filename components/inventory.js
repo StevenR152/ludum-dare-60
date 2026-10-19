@@ -107,7 +107,7 @@ function potSprite(item) {
 }
 
 // Paints an item into its box: pots as their picture (cropped to the pot and fitted in the box, with a black
-// cross over it if cracked), everything else as a colour. Call with every box that shows an item (or no item,
+// cross over it if cracked), logs as their picture, everything else as a colour. Call with every box that shows an item (or no item,
 // to clear it): HUD slots, shelf slots, the kiln's, the owl's and dropped items.
 function paintItem(box, item) {
     var line = function (corner) {
@@ -118,16 +118,17 @@ function paintItem(box, item) {
     var sizes = [];
     var positions = [];
     var isPot = !!item && item.type === "pot";
+    var isLog = !!item && item.type === "log";
     if (isPot && item.pot.cracked) {
         layers.push(line("top right"), line("bottom right"));
         sizes.push("100% 100%", "100% 100%");
         positions.push("0 0", "0 0");
     }
-    if (isPot) {
-        var crop = POT_SPRITES[item.pot.shape].crop;
+    if (isPot || isLog) {
+        var crop = isPot ? POT_SPRITES[item.pot.shape].crop : LOG_IMAGE.crop;
         var scale = Math.min(box.w / crop[2], box.h / crop[3]);
-        layers.push("url(" + potSprite(item) + ")");
-        sizes.push(POT_IMAGE_W * scale + "px " + POT_IMAGE_H * scale + "px");
+        layers.push("url(" + (isPot ? potSprite(item) : LOG_IMAGE.url) + ")");
+        sizes.push((isPot ? POT_IMAGE_W : LOG_IMAGE.w) * scale + "px " + (isPot ? POT_IMAGE_H : LOG_IMAGE.h) * scale + "px");
         positions.push((box.w - crop[2] * scale) / 2 - crop[0] * scale + "px " +
             ((box.h - crop[3] * scale) / 2 - crop[1] * scale) + "px");
         box.color("#FFF", 0);

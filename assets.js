@@ -59,11 +59,11 @@ var gameAssets = {
         // Placeholder until a stumble sound is recorded.
         "stumble": ["assets/sounds/Sounds/putdown pot 1.wav"]
     },
-    "images": potImagePaths(),
+    "images": potImagePaths().concat(LOG_IMAGE.url),
     "sprites": {
         "assets/images/background_outside_map.png": {
-            "tile": 4000,
-            "tileh": 2160,
+            "tile": 5763,
+            "tileh": 2458,
             "map": {"backgroundOutside": [0, 0]}
         },
         "assets/images/background_inside.png": {
@@ -81,6 +81,16 @@ var gameAssets = {
             "tileh": 540,
             "map": {"fox": [0, 0]}
         },
+        // Full-size clay patches share the map's canvas (see OUTSIDE_MAP_BOX).
+        "assets/images/patch_ClayA_red.png": {"tile": 5763, "tileh": 2458, "map": {"patchRed": [0, 0]}},
+        "assets/images/patch_ClayB_black.png": {"tile": 5763, "tileh": 2458, "map": {"patchBlack": [0, 0]}},
+        "assets/images/patch_ClayC_white.png": {"tile": 5763, "tileh": 2458, "map": {"patchWhite": [0, 0]}},
+        "assets/images/trees_1_square.png": {"tile": 2268, "tileh": 2180, "map": {"tree1": [0, 0]}},
+        "assets/images/trees_2_square.png": {"tile": 2268, "tileh": 2180, "map": {"tree2": [0, 0]}},
+        "assets/images/trees_square.png": {"tile": 2268, "tileh": 2180, "map": {"treePair": [0, 0]}},
+        "assets/images/kiln_base.png": {"tile": 2268, "tileh": 1177, "map": {"kilnBase": [0, 0]}},
+        "assets/images/kiln_firing.png": {"tile": 2268, "tileh": 1177, "map": {"kilnFiring": [0, 0]}},
+        "assets/images/door_outside.png": {"tile": 2056, "tileh": 2268, "map": {"doorOutside": [0, 0]}},
         "assets/images/owl.png": {
             "tile": 1602,
             "tileh": 1519,
