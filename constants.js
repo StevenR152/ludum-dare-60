@@ -45,6 +45,13 @@ var DEBUG_MASK_ALPHA = 0.5;
 // Debug: the door arrival spots (DOOR_DESTINATIONS) are outlined and labelled in this colour instead of red.
 var DEBUG_DESTINATION_COLOR = "lime";
 
+// Click to move: a step into a wall slides along it, keeping whichever axis is still clear, the way the
+// arrow keys do (Fox.keepInBounds). Sliding can run the fox along something it will never get round, like
+// the inside of a corner, so the walk is given up once it has failed to get at least WALK_PROGRESS_EPSILON
+// px closer to its target for WALK_STUCK_FRAMES frames in a row (about half a second at 60 fps).
+var WALK_STUCK_FRAMES = 30;
+var WALK_PROGRESS_EPSILON = 0.5;
+
 // Fox movement and inventory; each 1000 g of clay carried takes 20% off the base speed.
 var FOX_SPEED = 250;
 // The fox's touch area is its sprite box shrunk by this many px on every side (the art has empty margins).
