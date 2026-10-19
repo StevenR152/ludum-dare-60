@@ -249,7 +249,7 @@ function buildWorld(config) {
 
     // Glazing station, Inside left of the door: click a bucket to dip the selected pot.
     if (config.glaze) {
-        Crafty.e("GlazeStation").station([{x: -1445 + 35 + 50, y: 247 + 50}, {x: -1340 + 35 + 25, y: 277 + 40}], player);
+        Crafty.e("GlazeStation").station([{x: -1298, y: 322}, {x: -1366, y: 306}], player);
     }
 
     // Inside stations. The workbench is wedged on by holding and its models clicked (see

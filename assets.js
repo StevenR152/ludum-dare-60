@@ -91,6 +91,9 @@ var gameAssets = {
             "tileh": 2246,
             "map": {"overlayInside": [0, 0]}
         },
+        // Glaze buckets: each drawn in place on a canvas the size of the inside map (see INSIDE_MAP_BOX).
+        "assets/images/glazeA_bucket.png": {"tile": 8364, "tileh": 2246, "map": {"glazeABucket": [0, 0]}},
+        "assets/images/glazeB_bucket.png": {"tile": 8364, "tileh": 2246, "map": {"glazeBBucket": [0, 0]}},
         "assets/images/fox.png": {
             "tile": 845,
             "tileh": 540,
