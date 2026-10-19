@@ -14,7 +14,7 @@ Crafty.c("Forest", {
         var art = Crafty.e("2D, DOM, " + tree.sprite);
         var w = tree.content[2] * TREE_SCALE;
         var h = tree.content[3] * TREE_SCALE;
-        fitArt(art, tree.content, {x: this.x + (this.w - w) / 2, y: this.y + this.h - h, w: w, h: h});
+        fitArt(art, tree.content, {x: this.x + (this.w - w) / 2 + tree.dx, y: this.y + this.h - h + tree.dy, w: w, h: h});
         this.bind("Remove", function () { art.destroy(); });
         return this;
     },

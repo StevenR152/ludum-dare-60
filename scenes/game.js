@@ -14,8 +14,8 @@ Crafty.defineScene("Game", function() {
         .attr(OUTSIDE_MAP_BOX).attr({z: OUTSIDE_MAP_Z});
 
 
-    // The fox starts on the ground, bottom-middle of the map.
-    var player = Crafty.e("Fox").attr({x: 920, y: 820});
+    // The fox starts on the ground, left of the middle of the map.
+    var player = Crafty.e("Fox").attr({x: 512, y: 706});
 
     // Inside sits left of Outside. The gap is wider than the screen, so the camera never shows both.
     var INSIDE_X = -2000 - 1200;
@@ -55,17 +55,17 @@ Crafty.defineScene("Game", function() {
         }
     });
 
-    // The kiln, Outside. Its square stops short of the torch beside it (1850, 615).
+    // The kiln, Outside. The torch sits on top of the fire in its picture.
     var kiln = Crafty.e("Kiln, Mouse")
-        .attr({x: 1605, y: 527, w: 240, h: 232})
+        .attr(KILN_ART_BOX)
         .placeArt();
 
     // Ambient loops and sound effects, driven by game events (see GameSounds).
     Crafty.e("GameSounds").listen(player, kiln);
 
-    // The torch lights the kiln. The fox stands on it, e.g. at (1850, 615), and clicks.
+    // The torch lights the kiln. The fox stands on it, e.g. at (1526, 555), and clicks.
     var torch = Crafty.e("2D, DOM, Color, Mouse, DebugHitbox")
-        .attr({x: 1850, y: 615, w: 40, h: 60})
+        .attr({x: 1526, y: 555, w: 40, h: 60})
         .color(TORCH_COLOR);
     torch.bind("MouseDown", function () {
         if (player.touches(this)) {
@@ -151,23 +151,16 @@ Crafty.defineScene("Game", function() {
         this.delay(function () { player.trigger("GameOver"); }, 1500, 0);
     });
 
-    // Each clay node sits on its patch in the map art (the white one at its right end, clear of the forest).
-    var clayOne = Crafty.e("Clay")
-        .attr({x: 815, y: 670, w: 80, h: 80})
-        .clay(CLAY_TYPES.black);
+    // Each clay node's dig zone is cut from its patch's art (see Clay.clay). The white patch is moved from
+    // the forest to the bottom right, near the kiln (its middle ends up around 1329, 817).
+    var clayOne = Crafty.e("Clay").clay(CLAY_TYPES.black);
+    var clayTwo = Crafty.e("Clay").clay(CLAY_TYPES.red);
+    var clayThree = Crafty.e("Clay").clay(CLAY_TYPES.white, {x: 860, y: 259});
 
-    var clayTwo = Crafty.e("Clay")
-        .attr({x: 171, y: 725, w: 80, h: 80})
-        .clay(CLAY_TYPES.red);
-
-    var clayThree = Crafty.e("Clay")
-        .attr({x: 531, y: 535, w: 80, h: 80})
-        .clay(CLAY_TYPES.white);
-
-    // House doors, one per area, each leading to its partner. Invisible trigger zones, extended 60px up and
-    // down so the fox can hit them easily.
+    // House doors, one per area, each leading to its partner. Invisible trigger zones; the outside one is
+    // exactly the door picture.
     var outsideDoor = Crafty.e("2D, DebugHitbox")
-        .attr({x: 1120, y: 467, w: 60, h: 230});
+        .attr(DOOR_ART_BOX);
     fitArt(Crafty.e("2D, DOM, doorOutside"), DOOR_ART_CONTENT, DOOR_ART_BOX);
     var insideDoor = Crafty.e("2D, DOM, Color, DebugHitbox")
         .attr({x: -2626, y: 268, w: 54, h: 112})
