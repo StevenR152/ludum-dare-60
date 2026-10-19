@@ -14,7 +14,7 @@ Crafty.defineScene("Start", function() {
         .label("Play")
         .attr({x: GAME_SCREEN_WIDTH / 2 - 80, y: GAME_SCREEN_HEIGHT / 2})
         .onClick(function () {
-            Crafty.scene("LevelSelect");
+            Crafty.scene("Game");
         });
 
     Crafty.e("MuteButton").attr({x: 20, y: 20});

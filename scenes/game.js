@@ -1,7 +1,8 @@
 //inside, door, gap, door, outside
 
-// What buildWorld puts in a scene. The Game scene uses FULL_WORLD; each level switches parts off and sets its own
-// rules (scenes/levels.js), so anything its goal does not need is simply not built.
+// What buildWorld puts in a scene: each stage (scenes/levels.js) switches parts off and sets its own rules, so anything
+// its goal does not need is simply not built.
+//   start:             where the fox starts {x, y} (default: left of the middle, Outside)
 //   inside:            the house (doors, inside map and mask, owl, workbench, weighing station, shelves)
 //   glaze:             the glaze station (needs inside)
 //   clays:             CLAY_TYPES keys that get a patch to dig outside
@@ -12,21 +13,9 @@
 //   prePlaced:         pots lying on the ground at the start: [{clay, shape, x, y}] (x, y the pot's middle)
 //   kilnDelivers:      a glaze-fired pot taken out of the kiln fills its order straight away (no completed shelf)
 //   kilnHint:          explain the fire levels the first time the fox uses the kiln
-var FULL_WORLD = {
-    inside: true,
-    glaze: true,
-    clays: ["black", "red", "white"],
-    models: ORDER_SHAPES,
-    maxGlazeDips: MAX_GLAZE_DIPS,
-    potsBreakOnGround: true,
-    orders: null,
-    prePlaced: [],
-    kilnDelivers: false,
-    kilnHint: false
-};
 
-// Builds the HUD and world of one scene from a config like FULL_WORLD. Returns the parts a scene wires up
-// further: {player, kiln, hud, completedShelf (null without the house)}.
+// Builds the HUD and world of one scene from a config like a LEVELS[i].world (scenes/levels.js). Returns the parts
+// a scene wires up further: {player, kiln, hud, completedShelf (null without the house)}.
 function buildWorld(config) {
     Crafty.background("#EEE");
     worldRules = {maxGlazeDips: config.maxGlazeDips, potsBreakOnGround: config.potsBreakOnGround};
@@ -49,7 +38,7 @@ function buildWorld(config) {
     }
 
     // The fox starts on the ground, left of the middle of the map.
-    var player = Crafty.e("Fox").attr({x: 512, y: 706});
+    var player = Crafty.e("Fox").attr(config.start || {x: 512, y: 706});
     if (player.feetBlocked(player.x, player.y)) {
         console.warn("The fox starts out of bounds: move its start or repaint the collision mask");
     }
@@ -276,17 +265,3 @@ function buildWorld(config) {
 
     return {player: player, kiln: kiln, hud: hud, completedShelf: completedShelf};
 }
-
-// The endless game: random timed orders, and the third delivered order ends it after a pause to see it.
-Crafty.defineScene("Game", function() {
-    resetGameState();
-    var world = buildWorld(FULL_WORLD);
-    world.completedShelf.bind("OrdersComplete", function () {
-        this.delay(function () { world.player.trigger("GameOver"); }, 1500, 0);
-    });
-    // Bound on an entity so the handler is removed with the scene.
-    world.player.bind("GameOver", function () {
-        track("game_complete", {seconds: gameState.seconds});
-        Crafty.scene("End");
-    });
-});
