@@ -268,6 +268,17 @@ var WORKBENCH_COLOR = "rgba(139, 90, 43, 0.45)";
 var SHELF_SLOT_TOP = 2;
 var SHELF_COLOR = "rgba(90, 120, 160, 0.35)";
 
+// Timer bars (components/timer_bar.js): the bar that fills above whoever is doing a timed action, the fox
+// while it digs, chops or wedges, the owl while he throws or trims, and the kiln while it fires and cools.
+// TIMER_BAR_OFFSET_Y is measured from the top of that entity's box, so it is negative to sit above it;
+// it clears the status text, which starts at the box's top (see PlayerNotification.follow).
+var TIMER_BAR_W = 56;
+var TIMER_BAR_H = 7;
+var TIMER_BAR_Z = 2000;
+var TIMER_BAR_OFFSET_Y = -14;
+var TIMER_BAR_TRACK_COLOR = "#2B2522";
+var TIMER_BAR_FILL_COLOR = "#F28C28";
+
 // Sound names (see gameAssets.audio). GameSounds picks pot sounds by stage and, for wet pots, by clay.
 var AMBIENT_VOLUME = 0.1; // its own level, apart from the music
 var WEDGE_SOUNDS = {white: "wedgeBlue", red: "wedgeRed", black: "wedgeBrown"};
