@@ -103,7 +103,7 @@ var COLLISION_SNAP_RADIUS = 400;
 // Pick spots clear of the masks and of both door zones, or the fox walks straight back through.
 // Optional facing: "right" or "left" forces which way the fox looks on arrival; leave it out to keep its facing.
 var DOOR_DESTINATIONS = {
-    outside: {x: 957.5, y: 545},
+    outside: {x: 960, y: 545},
     inside: {x: -2500, y: 350, facing: "right"}
 };
 // How opaque a clay patch's picture stays while it is dug and replenishing.
