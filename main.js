@@ -12,13 +12,18 @@ TouchControls.init({
 Crafty.createLayer("HUD", "DOM", {xResponse: 0, yResponse: 0, scaleResponse: 1, z: 50});
 
 // The HUD scales with the screen (camera.js) but stays pinned to the stage's top-left corner. Crafty scales a layer
-// about the screen centre, so this replaces its position/scale update (an internal hook of Crafty 0.9).
-Crafty.s("HUD")._setViewport = function () {
-    var style = this._div.style;
-    style.transform = style[Crafty.support.prefix + "Transform"] = "scale(" + Crafty.viewport._scale + ")";
-    style.left = "0px";
-    style.top = "0px";
-    style.zIndex = this.options.z;
+// about the screen centre, so the HUD layer reports a fixed top-left view of the whole screen instead
+// (an internal hook of Crafty 0.9; it places the HUD and maps mouse clicks onto it).
+Crafty.s("HUD")._viewportRect = function (useCached) {
+    var rect = this._cachedViewportRect;
+    if (!useCached) {
+        rect._scale = Crafty.viewport._scale;
+        rect._w = GAME_SCREEN_WIDTH;
+        rect._h = GAME_SCREEN_HEIGHT;
+        rect._x = 0;
+        rect._y = 0;
+    }
+    return rect;
 };
 
 // Debug overlays (DEBUG_HITBOXES): the collision masks sit above the HUD (50) and the red outlines above
