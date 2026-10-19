@@ -21,7 +21,7 @@ Crafty.c("GameHud", {
         this.parts.push(Crafty.e("MuteButton").attr({x: 20, y: 20}));
         this.parts.push(Crafty.e("GameTimer").attr({x: 125, y: 20}));
         // The fox's selected slot is always outlined; the kiln's only where a click would take an item out.
-        this.addRow("Fox", [fox.inventory], 60, {outlined: function (inventory, index) { return index === inventory.selected; }}).onSlotPress(function (inventory, index) {
+        this.addRow("Fox", [fox.inventory], 60, {hintFlash: true, outlined: function (inventory, index) { return index === inventory.selected; }}).onSlotPress(function (inventory, index) {
             fox.pressSlot(index);
         });
         // Rows stack 10px apart; a row with wrapped slots is taller.

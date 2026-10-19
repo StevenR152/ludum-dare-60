@@ -430,7 +430,18 @@ Crafty.c("Fox", {
         if (this.inventory.add(item)) {
             return true;
         }
-        showStatus("Backpack full, you can't put more in");
+        this.packFull();
         return false;
+    },
+
+    // The pack-full message. The first one of a run suggests dropping something and flashes the selected
+    // slot (see PlayerNotification and InventoryHud.flashSelected); later ones are the plain line.
+    packFull: function() {
+        if (gameState.packHintShown) {
+            showStatus("Backpack full, you can't put more in");
+            return;
+        }
+        gameState.packHintShown = true;
+        showStatus({text: "My backpack is full, I could drop something that I'm holding (interact in the top left)", packHint: true});
     }
 });

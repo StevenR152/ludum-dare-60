@@ -48,7 +48,7 @@ Crafty.c("Forest", {
         Crafty.trigger("LogChopped");
         if (!fox.inventory.canAdd({type: "log"})) {
             this.cancelChop();
-            showStatus("Backpack full, you can't put more in");
+            fox.packFull();
         }
     }
 });

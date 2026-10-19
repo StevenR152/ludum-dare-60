@@ -9,6 +9,7 @@ function resetGameState() {
         seconds: 0,
         orders: [], // customer orders, see components/orders.js
         score: 0, // delivered orders add, missed orders subtract; may go negative
+        packHintShown: false, // the first "pack full" message of a run suggests dropping something (fox.js packFull)
     };
 }
 

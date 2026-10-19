@@ -7,6 +7,8 @@
 //   Crafty.e("InventoryHud").attr({x: 20, y: 60}).show("Fox", [player.inventory]);
 //   Crafty.e("InventoryHud").attr({x: 20, y: 105}).show("Master", [owl.inventory]);
 var INVENTORY_HUD_LABEL_W = 70;
+var PACK_HINT_COLOR = "#FFC107";
+var PACK_HINT_CYCLE_S = 0.6;
 Crafty.c("InventoryHud", {
     init: function() {
         this.requires("2D");
@@ -25,7 +27,13 @@ Crafty.c("InventoryHud", {
             }
         });
         this.bind("PotsDried", this.refresh);
+        this.bind("PackFullHint", function (ms) {
+            if (this.options.hintFlash) {
+                this.flashSelected(ms);
+            }
+        });
         this.bind("Remove", function () {
+            this.stopFlash();
             this.parts.forEach(function (part) { part.destroy(); });
         });
     },
@@ -76,14 +84,46 @@ Crafty.c("InventoryHud", {
         return this;
     },
 
+    // Pulses a golden border on the selected slot (it follows the selection) for ms, to say a press there drops it.
+    // Ends early once the pack is no longer full, or when the row is hidden. Only rows made with options.hintFlash listen.
+    flashSelected: function(ms) {
+        if (!document.getElementById("packHintStyle")) {
+            var style = document.createElement("style");
+            style.id = "packHintStyle";
+            style.textContent = "@keyframes packHintPulse {0%, 100% {box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);} 50% {box-shadow: 0 0 10px 4px " + PACK_HINT_COLOR + ";}}";
+            document.head.appendChild(style);
+        }
+        this.stopFlash();
+        this.flashing = true;
+        this.flashTimer = setTimeout(this.stopFlash.bind(this), ms);
+        return this.refresh();
+    },
+
+    stopFlash: function() {
+        clearTimeout(this.flashTimer);
+        if (this.flashing) {
+            this.flashing = false;
+            if (this.slots) {
+                this.refresh();
+            }
+        }
+    },
+
     // Hides or shows the whole row; items only show while it is shown.
     enable: function(on) {
         this.shown = on;
+        if (!on) {
+            this.stopFlash();
+        }
         this.parts.forEach(function (part) { part.visible = on; });
         return this.refresh();
     },
 
     refresh: function() {
+        if (this.flashing && !this.inventories.every(function (inventory) { return inventory.items.length >= inventory.capacity; })) {
+            this.flashing = false;
+            clearTimeout(this.flashTimer);
+        }
         this.slots.forEach(function (slot) {
             var item = slot.inventory.items[slot.index];
             var outlined = this.options.outlined ? !!item && this.options.outlined(slot.inventory, slot.index)
@@ -98,7 +138,9 @@ Crafty.c("InventoryHud", {
             paintItem(slot.itemBox, item);
             slot.bar.show(item, this.shown);
             markBorder(slot.itemBox, item);
-            slot.box.css({boxSizing: 'border-box', border: outlined ? '3px solid #FFF' : '3px solid #222'});
+            var hinted = this.flashing && !!item && slot.index === slot.inventory.selected;
+            slot.box.css({boxSizing: 'border-box', border: hinted ? '3px solid ' + PACK_HINT_COLOR : outlined ? '3px solid #FFF' : '3px solid #222',
+                animation: hinted ? 'packHintPulse ' + PACK_HINT_CYCLE_S + 's ease-in-out infinite' : 'none'});
         }, this);
         return this;
     }

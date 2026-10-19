@@ -33,7 +33,7 @@ var statusGate = {
 };
 
 function showStatus(message) {
-    console.log(message);
+    console.log(message.text || message);
     if (statusGate.open) {
         statusGate.lines.push(message);
         return;
