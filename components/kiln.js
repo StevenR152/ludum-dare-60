@@ -12,7 +12,7 @@ var KILN_PASSES = {
 
 Crafty.c("Kiln", {
     init: function() {
-        this.requires("2D, DOM, Color, Delay");
+        this.requires("2D, DOM, Color, Delay, DebugHitbox");
         var kiln = this;
         this.inventory = new Inventory(KILN_CAPACITY, {
             // Pots only go in while the kiln waits to be lit, never while it fires or while fired pots wait to be taken.

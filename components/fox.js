@@ -10,6 +10,14 @@ Crafty.c("Fox", {
     init: function() {
         this.requires("2D, DOM, fox, Fourway, Collision, Keyboard");
         this.attr({w: 160, h: 102});
+        // Touching uses the sprite box shrunk by FOX_HITBOX_INSET, not the transparent margins of the art.
+        var inset = FOX_HITBOX_INSET;
+        this.collision([inset, inset, this.w - inset, inset, this.w - inset, this.h - inset, inset, this.h - inset]);
+        if (DEBUG_HITBOXES) {
+            this.attach(Crafty.e("2D, DebugHitbox").attr({
+                x: this.x + inset, y: this.y + inset, w: this.w - 2 * inset, h: this.h - 2 * inset, z: 1000
+            }));
+        }
         this.fourway(FOX_SPEED);
         this.slowFraction = 0;
         this.inventory = new Inventory(FOX_INVENTORY_CAPACITY, {fits: function () { return true; }});
@@ -29,6 +37,12 @@ Crafty.c("Fox", {
                 this.unflip("X");
             }
         });
+    },
+
+    // True if the fox's touch area overlaps the entity's box.
+    touches: function(entity) {
+        var inset = FOX_HITBOX_INSET;
+        return entity.intersect(this.x + inset, this.y + inset, this.w - 2 * inset, this.h - 2 * inset);
     },
 
     // Clay weight slows additively; each overlapped dropped item multiplies on top. slowFraction is how
@@ -87,7 +101,7 @@ Crafty.c("Fox", {
         var taken = false;
         ["Workbench", "Clay"].forEach(function (name) {
             Crafty(name).each(function () {
-                if (!taken && this.intersect(fox.x, fox.y, fox.w, fox.h) && this.acceptDrop(item, fox)) {
+                if (!taken && fox.touches(this) && this.acceptDrop(item, fox)) {
                     taken = true;
                 }
             });

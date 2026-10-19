@@ -9,7 +9,7 @@
 //   Crafty.e("WeighingStation").place(-2730, 467, 280, 70);
 Crafty.c("WeighingStation", {
     init: function() {
-        this.requires("2D, DOM, Color, Mouse, Delay, Collision");
+        this.requires("2D, DOM, Color, Mouse, Delay, Collision, DebugHitbox");
         this.color(WEIGHING_STATION_COLOR);
         this.pile = new Inventory(Object.keys(CLAY_TYPES).length, {fits: function () { return true; }});
         this.parts = [];

@@ -9,7 +9,7 @@
 // Finished pots show as a box on him until the fox takes them (takePot).
 Crafty.c("Potter", {
     init: function() {
-        this.requires("2D, Delay");
+        this.requires("2D, Delay, DebugHitbox");
         this.jobs = [];
         this.working = null;
         this.inventory = new Inventory(OWL_CAPACITY, {

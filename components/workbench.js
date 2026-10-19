@@ -6,7 +6,7 @@
 //   Crafty.e("Workbench").place(-1850, 242, 260, 50);
 Crafty.c("Workbench", {
     init: function() {
-        this.requires("2D, DOM, Color, Mouse, Delay, Collision");
+        this.requires("2D, DOM, Color, Mouse, Delay, Collision, DebugHitbox");
         this.color(WORKBENCH_COLOR);
         this.parts = [];
         this.modelSpots = [];
@@ -33,7 +33,7 @@ Crafty.c("Workbench", {
 
     addModelSpot: function(model, x, y, w, h) {
         var bench = this;
-        var spot = Crafty.e("2D, DOM, Color, Text, Mouse")
+        var spot = Crafty.e("2D, DOM, Color, Text, Mouse, DebugHitbox")
             .attr({x: x, y: y, w: w, h: h, z: this.z + 1})
             .text(model.shape)
             .textFont({size: "12px", weight: "bold"}).textColor("#FFF").unselectable()

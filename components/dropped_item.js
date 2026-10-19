@@ -9,7 +9,7 @@
 //   Crafty.e("DroppedItem").dropFrom(fox, item);
 Crafty.c("DroppedItem", {
     init: function() {
-        this.requires("2D, DOM, Color, Mouse, Collision");
+        this.requires("2D, DOM, Color, Mouse, Collision, DebugHitbox");
         this.item = null;
         this.fox = null;
         // True while the fox overlaps it; armed once the fox has left, so the next touch rolls damage.
@@ -22,7 +22,7 @@ Crafty.c("DroppedItem", {
         // A fresh drop starts overlapped, but Collision only reports HitOff after it has seen a HitOn, so
         // a fox that leaves (or is teleported) first would never clear it. Check directly too.
         this.bind("UpdateFrame", function () {
-            if (this.overlapping && this.fox && !this.fox.intersect(this.x, this.y, this.w, this.h)) {
+            if (this.overlapping && this.fox && !this.fox.touches(this)) {
                 this.onHitOff();
             }
         });

@@ -3,7 +3,7 @@
 //   Crafty.e("Forest").attr({x: 5, y: 350, w: 525, h: 307});
 Crafty.c("Forest", {
     init: function() {
-        this.requires("2D, DOM, Color, Mouse, Delay, Collision");
+        this.requires("2D, DOM, Color, Mouse, Delay, Collision, DebugHitbox");
         this.color(FOREST_COLOR);
         this.bind("MouseDown", this.startChop);
         this.bind("MouseUp", this.cancelChop);

@@ -3,7 +3,7 @@
 //   Crafty.e("Clay").attr({x: 195, y: 775, w: 80, h: 80}).clay(CLAY_TYPES.black);
 Crafty.c("Clay", {
     init: function() {
-        this.requires("2D, DOM, Color, Mouse, Delay, Collision");
+        this.requires("2D, DOM, Color, Mouse, Delay, Collision, DebugHitbox");
         this.clayType = null;
         this.dug = false;
         this.bind("MouseDown", this.startDig);

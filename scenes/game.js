@@ -45,7 +45,7 @@ Crafty.defineScene("Game", function() {
     // Clicking the owl the fox is touching takes his oldest finished pot, if the fox can carry it;
     // otherwise it hands him a pot to trim, or wedged clay and a model (see Potter.receiveFrom).
     owl.bind("MouseDown", function () {
-        if (!this.intersect(player.x, player.y, player.w, player.h)) {
+        if (!player.touches(this)) {
             return;
         }
         if (!this.hasFinishedPot()) {
@@ -63,11 +63,11 @@ Crafty.defineScene("Game", function() {
     Crafty.e("GameSounds").listen(player, kiln);
 
     // The torch lights the kiln. The fox stands on it, e.g. at (1850, 615), and clicks.
-    var torch = Crafty.e("2D, DOM, Color, Mouse")
+    var torch = Crafty.e("2D, DOM, Color, Mouse, DebugHitbox")
         .attr({x: 1850, y: 615, w: 40, h: 60})
         .color(TORCH_COLOR);
     torch.bind("MouseDown", function () {
-        if (this.intersect(player.x, player.y, player.w, player.h)) {
+        if (player.touches(this)) {
             kiln.light();
         }
     });
@@ -81,7 +81,7 @@ Crafty.defineScene("Game", function() {
     // Clicking the kiln the fox is touching loads the selected logs or pot (unfired at any dryness, or
     // bisque-fired for its glaze firing), or collects a fired pot.
     kiln.bind("MouseDown", function () {
-        if (!this.intersect(player.x, player.y, player.w, player.h)) {
+        if (!player.touches(this)) {
             return;
         }
         var carried = player.inventory.selectedItem();
@@ -130,13 +130,13 @@ Crafty.defineScene("Game", function() {
     Crafty.e("PotDrier").dry(dryingShelf.inventory, [player.inventory, owl.inventory]);
     // Clicking a pot on the drying shelf takes that pot; clicking the shelf elsewhere puts one on.
     dryingShelf.bind("SlotClicked", function (index) {
-        if (this.intersect(player.x, player.y, player.w, player.h)) {
+        if (player.touches(this)) {
             this.takeAt(player, index);
         }
     });
     [dryingShelf, completedShelf].forEach(function (shelf) {
         shelf.bind("MouseDown", function () {
-            if (this.intersect(player.x, player.y, player.w, player.h)) {
+            if (player.touches(this)) {
                 this.useWith(player);
             }
         });
@@ -157,27 +157,28 @@ Crafty.defineScene("Game", function() {
         .attr({x: 865, y: 765, w: 80, h: 80})
         .clay(CLAY_TYPES.white);
 
-    // House doors, one per area, each leading to its partner. Taller and thinner than the clay squares.
-    var outsideDoor = Crafty.e("2D, DOM, Color, Mouse")
-        .attr({x: 1120, y: 527, w: 60, h: 110})
-        .color('#8B5A2B');
-    var insideDoor = Crafty.e("2D, DOM, Color, Mouse")
-        .attr({x: -2619, y: 225, w: 62, h: 185})
-        .color('#8B5A2B');
+    // House doors, one per area, each leading to its partner. Invisible trigger zones, extended 60px up and
+    // down so the fox can hit them easily.
+    var outsideDoor = Crafty.e("2D, DOM, Color, DebugHitbox")
+        .attr({x: 1120, y: 467, w: 60, h: 230})
+        .color('#8B5A2B', 0);
+    var insideDoor = Crafty.e("2D, DOM, Color, DebugHitbox")
+        .attr({x: -2626, y: 268, w: 54, h: 112})
+        .color('#8B5A2B', 0);
     outsideDoor.partner = insideDoor;
     insideDoor.partner = outsideDoor;
 
-    // Clicking a door the fox is standing at puts the fox just below its partner, centred and clear of it.
+    // Walking into a door puts the fox just below its partner, centred and clear of it (so no ping-pong).
     function useDoor() {
-        if (!this.intersect(player.x, player.y, player.w, player.h)) {
+        if (!player.touches(this)) {
             return;
         }
         var door = this.partner;
         player.x = door.x + (door.w - player.w) / 2;
         player.y = door.y + door.h + 20;
     }
-    outsideDoor.bind("MouseDown", useDoor);
-    insideDoor.bind("MouseDown", useDoor);
+    outsideDoor.bind("EnterFrame", useDoor);
+    insideDoor.bind("EnterFrame", useDoor);
 
     makeCameraTrackEntity(player, 0);
     TouchControls.follow(player);

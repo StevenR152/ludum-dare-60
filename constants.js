@@ -30,8 +30,13 @@ var CLAY_TYPES = {
 var FIRE_LEVELS = ["low", "mid", "high"];
 var CLAY_DUG_COLOR = '#BBB';
 
+// Debug: outline the fox's and the doors' collision boxes in red.
+var DEBUG_HITBOXES = true;
+
 // Fox movement and inventory; each 1000 g of clay carried takes 20% off the base speed.
 var FOX_SPEED = 250;
+// The fox's touch area is its sprite box shrunk by this many px on every side (the art has empty margins).
+var FOX_HITBOX_INSET = 40;
 var FOX_SLOWDOWN_PER_KG = 0.2;
 var FOX_INVENTORY_CAPACITY = 2;
 // Dropped items: drawn DROPPED_ITEM_SCALE times their HUD size; each one the fox overlaps multiplies its
