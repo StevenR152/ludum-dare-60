@@ -12,11 +12,13 @@
 //   prePlaced:         pots lying on the ground at the start: [{clay, shape, x, y}] (x, y the pot's middle)
 //   kilnDelivers:      a glaze-fired pot taken out of the kiln fills its order straight away (no completed shelf)
 //   kilnHint:          explain the fire levels the first time the fox uses the kiln
+//   doorGlowAfterMs:   ms after the level loads before the outside door glows, unless the fox has used a door by then
+//                      (needs inside; leave out for no glow)
 
 // Builds the HUD and world of one scene from a config like a LEVELS[i].world (scenes/levels.js). Returns the parts
 // a scene wires up further: {player, kiln, hud, completedShelf (null without the house)}.
 function buildWorld(config) {
-    Crafty.background("#EEE");
+    Crafty.background(GAME_BACKGROUND_COLOR);
     worldRules = {maxGlazeDips: config.maxGlazeDips, potsBreakOnGround: config.potsBreakOnGround};
 
     // HUD (the music button, timer and inventory bar are built together once the holders exist, below)
@@ -359,6 +361,31 @@ function buildWorld(config) {
     }
     outsideDoor.bind("EnterFrame", useDoor);
     insideDoor.bind("EnterFrame", useDoor);
+
+    // Hint: if the fox hasn't gone through a door after doorGlowAfterMs, the outside door gets a pulsing gold outline
+    // (the same gold as the full-pack hint). The first door use cancels the timer, or ends the glow, for good.
+    if (config.inside && config.doorGlowAfterMs) {
+        var glow = null;
+        var glowTimer = Crafty.e("Delay");
+        glowTimer.delay(function () {
+            if (!document.getElementById("doorGlowStyle")) {
+                var style = document.createElement("style");
+                style.id = "doorGlowStyle";
+                style.textContent = "@keyframes doorGlowPulse {0%, 100% {box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);} 50% {box-shadow: 0 0 12px 5px " + PACK_HINT_COLOR + ";}}";
+                document.head.appendChild(style);
+            }
+            glow = Crafty.e("2D, DOM")
+                .attr(DOOR_BOXES.outside).attr({z: OUTSIDE_ART_Z + 1})
+                .css({boxSizing: "border-box", border: "3px solid " + PACK_HINT_COLOR, pointerEvents: "none",
+                    animation: "doorGlowPulse 1.5s ease-in-out infinite"});
+        }, config.doorGlowAfterMs, 0);
+        player.one("DoorUsed", function () {
+            glowTimer.destroy();
+            if (glow) {
+                glow.destroy();
+            }
+        });
+    }
 
     return {player: player, kiln: kiln, hud: hud, completedShelf: completedShelf};
 }

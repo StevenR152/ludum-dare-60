@@ -123,7 +123,8 @@ var LEVELS = [
             potsBreakOnGround: false,
             prePlaced: [],
             kilnDelivers: false,
-            kilnHint: true
+            kilnHint: true,
+            doorGlowAfterMs: DOOR_GLOW_DELAY_MS
         }
     },
     {

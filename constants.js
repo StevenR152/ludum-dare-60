@@ -2,6 +2,9 @@
 var GAME_SCREEN_WIDTH = 1600;
 var GAME_SCREEN_HEIGHT = 768;
 
+// Stage colour of the game scene: shows wherever the Inside/Outside backdrop art doesn't reach.
+var GAME_BACKGROUND_COLOR = "#000";
+
 // gameAssets audio key played on the Start, Game and End scenes.
 var MUSIC_TRACK = "bgMusic";
 var MUSIC_VOLUME = 0.2;
@@ -142,6 +145,8 @@ var DOOR_BOXES = {
     inside: {x: -2626, y: 265, w: 85, h: 110}
 };
 var DOOR_ART_BOX = DOOR_BOXES.outside;
+// Level 2 only: how long the fox can stay outside before the outside door glows to say "go in".
+var DOOR_GLOW_DELAY_MS = 60000;
 // The inside door's colour (drawn fully transparent; it only shows in the debug outline).
 var INSIDE_DOOR_COLOR = "#8B5A2B";
 // The log picture in inventory slots: its opaque part of the 2268x2180 wood image.

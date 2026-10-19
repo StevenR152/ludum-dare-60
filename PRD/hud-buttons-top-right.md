@@ -8,7 +8,7 @@
 - The HUD layer stays pinned top-left and scales with the screen (`main.js`, `camera.js`); the left inventory + Goal panels stay where they are. Mobile has only gesture controls (no on-screen buttons), so nothing there sits in the corner.
 
 **Scope** — Move both buttons to the top right, edges aligned with the order panel; update the stale "beside the inventory panel" comment.
-**Out of scope** — Button size/look/labels (do not resize), click behaviour, the pulsing Restart on a cracked pot, the left HUD panels, order look and logic, mobile controls, art and sound.
+**Out of scope** — Button look/labels, click behaviour, the pulsing Restart on a cracked pot, the left HUD panels, order look and logic, mobile controls, art and sound.
 
 **Flow**
 1. Start any level (or the sandbox): Restart (left) and Menu (right) show top right, over the order panel.
@@ -17,7 +17,7 @@
 
 **Requirements**
 1. Menu's right edge = order panel's right edge (`GAME_SCREEN_WIDTH - 20`); Restart's left edge = order panel's left edge (`GAME_SCREEN_WIDTH - 300`); y stays 10.
-2. Buttons keep their 100x36 size, so the gap between them grows to fit (80px now).
+2. Buttons stay 36 tall and grow inwards to fill the panel width; the gap between them equals the gap from the buttons down to the order panel (14px), so each is 133 wide. Labels are centred horizontally and vertically.
 3. Positions derive from `GAME_SCREEN_WIDTH` / the order panel's x (no hard-coded 1300/1480); buttons end at y=46, above the order panel's top (y=60), never overlapping the score bar or cards.
 4. Restart still pulses red on `PotCracked`; clicks and hover sounds work at the new spot.
 5. Nothing else on the left HUD moves; the buttons follow the order panel as the window scales.
@@ -25,6 +25,7 @@
 **Acceptance criteria**
 - [ ] Restart's left edge and Menu's right edge line up with the order cards' left and right edges.
 - [ ] Order panel directly below with no overlap, including 5 open + finished cards and a fixed-orders level.
+- [ ] Both buttons 133x36, 14px between them and 14px above the orders; labels centred.
 - [ ] Restart rebuilds the level; Menu goes to level select; sandbox Menu goes to Start.
 - [ ] Crack a pot: Restart pulses and shows the status line.
 - [ ] Resize the browser window: buttons stay with the order panel. `?touch=1`: nothing overlaps.
@@ -43,6 +44,6 @@
 ## Decisions
 - Right edge → aligned with the order cards (x=1580); Restart's left edge aligns with the cards' left (x=1300).
 - Order → Restart left, Menu right.
-- Gap → free to change; buttons not resized (80px gap).
+- Gap → free to change; buttons not resized (80px gap). Superseded: buttons grow inwards to 133x36 with a 14px gap equal to the gap above the orders; labels centred.
 - Window scaling → follows the order panel.
 - Mobile → checked: gesture-only controls, no on-screen buttons, no overlap.
