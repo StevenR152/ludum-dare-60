@@ -21,7 +21,6 @@ function buildWorld(config) {
     worldRules = {maxGlazeDips: config.maxGlazeDips, potsBreakOnGround: config.potsBreakOnGround};
 
     // HUD (the music button, timer and inventory bar are built together once the holders exist, below)
-    Crafty.e("StatusMessage");
     Crafty.e("InventorySlot").attr({x: 20, y: 60});
     Crafty.e("OrderPanel").attr({x: GAME_SCREEN_WIDTH - 300, y: 60}).start(config.orders);
 
@@ -237,7 +236,7 @@ function buildWorld(config) {
     TouchControls.follow(player);
     makeCameraTrackEntity(player, 0);
     Crafty.e("PlayerNotification").follow(player);
-    Crafty.trigger("InstructionText", TouchControls.isActive() ? "Touch and hold to move" : "Arrow keys to move");
+    showStatus(TouchControls.isActive() ? "Touch and hold to move" : "Arrow keys to move");
 
     if (!config.inside) {
         return {player: player, kiln: kiln, hud: hud, completedShelf: null};
