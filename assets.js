@@ -63,6 +63,8 @@ var gameAssets = {
         "glazeDipFirst": ["assets/sounds/Sounds/glaze dipping 3.wav"],
         "glazeDipNext": ["assets/sounds/Sounds/glaze dipping 4.wav"],
         "kickWheel": ["assets/sounds/Sounds/pottery kick wheel LOOP.wav"],
+        "orderDelivered": ["assets/sounds/Sounds/order succes.wav"],
+        "orderFailed": ["assets/sounds/Sounds/order succes 3.wav"],
         "potCrack": ["assets/sounds/Sounds/pots crack big 2.wav"],
         // Placeholder until a stumble sound is recorded.
         "stumble": ["assets/sounds/Sounds/putdown pot 1.wav"]

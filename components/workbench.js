@@ -1,8 +1,8 @@
 // The workbench: a zone square inside the house with two parts, used while the fox touches it.
 // - The bench itself: hold the mouse on it for WEDGE_MS with weighed clay selected to wedge it (it stays
 //   in the pack, now "wedged"). Clay is weighed first, at the WeighingStation.
-// - Models (right): one per ORDER_SHAPES; click one to carry it to the owl. It comes
-//   back to its spot on "ModelReturned".
+// - Models (left): one per ORDER_SHAPES; click one to carry it to the owl. Clicking again gives another
+//   (so a lost model never blocks the player); the spot is lit again on "ModelReturned" of that shape.
 //   Crafty.e("Workbench").place(-1850, 242, 260, 50);
 Crafty.c("Workbench", {
     init: function() {
@@ -28,6 +28,8 @@ Crafty.c("Workbench", {
         ORDER_SHAPES.forEach(function (shape, col) {
             this.addModelSpot({type: "model", shape: shape}, x + gap + col * (spotW + gap), y + gap, spotW, h - gap * 2);
         }, this);
+        // The zone reaches WORKBENCH_REACH further down than the bench is drawn, so the fox counts as at the bench sooner.
+        this.h = h + WORKBENCH_REACH;
         return this;
     },
 
@@ -54,12 +56,12 @@ Crafty.c("Workbench", {
         var fox = this.touchingFox();
         if (!fox) {
             showStatus("Walk up to the workbench first");
-        } else if (!spot.home) {
-            showStatus("That model is already out");
-        } else if (fox.pickUp(spot.model)) {
+        } else if (fox.pickUp({type: "model", shape: spot.model.shape})) {
+            // A fresh model each time, so a lost one never leaves the player stuck.
+            var again = !spot.home;
             spot.home = false;
             this.drawModelSpot(spot);
-            showStatus("Picked up the " + spot.model.shape + " model");
+            showStatus("Picked up " + (again ? "another " : "the ") + spot.model.shape + " model");
         }
     },
 
@@ -75,7 +77,7 @@ Crafty.c("Workbench", {
 
     returnModel: function(model) {
         this.modelSpots.forEach(function (spot) {
-            if (spot.model === model) {
+            if (spot.model.shape === model.shape) {
                 spot.home = true;
                 this.drawModelSpot(spot);
             }
