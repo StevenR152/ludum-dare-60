@@ -102,7 +102,7 @@ var POT_REVEAL_SHARE = 0.25;
 var POT_TRIM_MS = 5000;
 
 // Kiln: how long it fires and cools a pot.
-var KILN_FIRE_MS = 2000; // reduced from 8000 for testing
+var KILN_FIRE_MS = 4000; // reduced from 8000 for testing
 var KILN_COOL_MS = 2000; // reduced from 8000 for testing
 
 // Outside art. The map and the full-size overlays (clay patches) share one 5763x2458 canvas drawn into
@@ -324,8 +324,8 @@ var WEDGE_MS = 3000;
 // clay on the drying shelf (a 200 g cup: leather hard after 1.2 s, bone dry after 12 s), OFF_SHELF_SLOWDOWN times slower
 // anywhere else, and not at all in the kiln. It is leather hard from LEATHER_HARD_AT. Each stage has its own colour; the bar under a pot shows how far it has got.
 var DRY_SLOTS = 3;
-var DRY_BASE_MS = 26000 / 3; // reduced for testing
-var DRY_MS_PER_GRAM = 50 / 3; // reduced for testing
+var DRY_BASE_MS = 26000 / 2; // reduced for testing
+var DRY_MS_PER_GRAM = 50 / 2; // reduced for testing
 var OFF_SHELF_SLOWDOWN = 3;
 var LEATHER_HARD_AT = 0.1;
 var DRY_STAGE_COLORS = { wet: "#8C6440", leatherHard: "#B9946A", boneDry: "#E3CDA8" };
