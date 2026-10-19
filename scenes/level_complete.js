@@ -35,8 +35,9 @@ Crafty.defineScene("LevelComplete", function(index) {
         .unselectable()
         .css({fontFamily: MENU_FONT, letterSpacing: "1px"});
 
-    // The Master's closing line for the level, if it has one.
+    // The Master's closing line for the level, if it has one, with his hoot.
     if (written(level.finish)) {
+        audioController.playSfx("owlSpeak");
         Crafty.e("2D, DOM, Text")
             .attr({x: GAME_SCREEN_WIDTH / 2 - 450, y: top + 205, w: 900, h: 90, z: 2})
             .text(level.finish)

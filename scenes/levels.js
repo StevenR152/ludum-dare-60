@@ -216,7 +216,7 @@ var LEVELS = [
             "order of the dips changes the colour. Dip carefully, and help him fill them all.",
         tip: "\u201cOrder of glaze dipping matters, apprentice.\u201d",
         finish: "\u201cFive fine pots, glazed to perfection. The old craft is in good hands, apprentice. " +
-            "Perhaps one day you could take over from the Master?\u201d",
+            "Perhaps one day you could take over from me?\u201d",
         masterTips: [],
         steps: [step("Make all five pots, matching each order's shape and clay", "PotterWorking"),
             step("Dry them", "PotDry"), potFired("First firing (1 log black, 2 red, 3 white)", "cooled"),
