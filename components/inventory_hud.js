@@ -1,7 +1,7 @@
 // One HUD row: a label, then a grey square per slot of each inventory given. An item in a slot is
 // drawn centred in it in its own colour or picture and shape (ITEM_SHAPES: clay square, pot a little wider than tall).
 // The selected slot of an inventory with more than one item is outlined in white. A drying pot has a
-// DryBar under its slot; a pot a border: solid green if trimmed, dashed orange if not (markBorder).
+// DryBar under its slot; a pot a red badge per firing (paintItem), wedged clay a border (markBorder).
 // Redraws whenever one of its inventories changes, and as pots dry ("PotsDried").
 //   Crafty.e("InventoryHud").attr({x: 20, y: 60}).show("Fox", [player.inventory]);
 //   Crafty.e("InventoryHud").attr({x: 20, y: 105}).show("Master", [owl.inventory]);

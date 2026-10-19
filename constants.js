@@ -236,9 +236,6 @@ var LEATHER_HARD_AT = 0.1;
 var DRY_STAGE_COLORS = { wet: "#8C6440", leatherHard: "#B9946A", boneDry: "#E3CDA8" };
 var DRY_STAGE_LABELS = { wet: "wet", leatherHard: "LH", boneDry: "dry" };
 var DRY_BAR_COLOR = "#555";
-// Border of a pot's box: trimmed and not.
-var TRIMMED_BORDER_COLOR = "#2E7D32";
-var UNTRIMMED_BORDER_COLOR = "#E67E22";
 // Completed shelf: places for pots waiting for an order, and how many delivered orders end the game (until levels).
 var COMPLETED_CAPACITY = 3;
 var ORDERS_TO_WIN = 3;

@@ -120,10 +120,17 @@ function fitPicture(box, picture) {
         position: (box.w - crop[2] * scale) / 2 - crop[0] * scale + "px " + ((box.h - crop[3] * scale) / 2 - crop[1] * scale) + "px"};
 }
 
-// Paints an item into its box: pots as their picture (cropped to the pot and fitted in the box, with a black
-// cross over it if cracked), logs and clay as their picture, everything else as a colour. Call with every box that shows an item (or no item,
+// Times a pot has left the kiln: 0 before its bisque firing has cooled, 1 after it, 2 after the glaze firing
+// (glazed or not).
+function firings(item) {
+    return item.before("cooled") ? 0 : item.before("glazeCooled") ? 1 : 2;
+}
+var FIRING_BADGE = "radial-gradient(circle closest-side, #D32F2F 0 65%, #FFF 68% 85%, transparent 88%)";
+
+// Paints an item into its box: pots as their picture (cropped to the pot and fitted in the box, with a red badge
+// per firing, except with noBadges (customer orders), and a black cross over it if cracked), logs and clay as their picture, everything else as a colour. Call with every box that shows an item (or no item,
 // to clear it): HUD slots, shelf slots, the kiln's, the owl's and dropped items.
-function paintItem(box, item) {
+function paintItem(box, item, noBadges) {
     var line = function (corner) {
         return "linear-gradient(to " + corner + ", transparent calc(50% - 1.5px), #000 calc(50% - 1.5px), " +
             "#000 calc(50% + 1.5px), transparent calc(50% + 1.5px))";
@@ -132,6 +139,15 @@ function paintItem(box, item) {
     var sizes = [];
     var positions = [];
     var isPot = !!item && item.type === "pot";
+    if (isPot && !noBadges) {
+        // On top of everything: a red badge bottom left per firing, so fired pots read at a glance.
+        var d = Math.max(6, Math.round(Math.min(box.w, box.h) * 0.32));
+        for (var i = 0; i < firings(item); i++) {
+            layers.push(FIRING_BADGE);
+            sizes.push(d + "px " + d + "px");
+            positions.push(i * (d + 1) + "px " + (box.h - d) + "px");
+        }
+    }
     var isLog = !!item && item.type === "log";
     var isClay = !!item && item.type === "clay";
     if (isPot && item.pot.cracked) {
@@ -170,12 +186,9 @@ function isDrying(item) {
     return !!item && item.type === "pot" && item.state === "thrown" && !item.pot.cracked;
 }
 
-// The border that marks an item's box: on a pot, solid green if trimmed and dashed orange if not (cracked
-// or fired, too); black on wedged clay. Use markBorder to apply it to every box that shows an item.
+// The border that marks an item's box: black on wedged clay, none otherwise. Use markBorder to apply it to
+// every box that shows an item.
 function itemBorder(item) {
-    if (item && item.type === "pot") {
-        return item.pot.trimmed ? "3px solid " + TRIMMED_BORDER_COLOR : "3px dashed " + UNTRIMMED_BORDER_COLOR;
-    }
     return item && item.state === "wedged" ? "2px solid #000" : "none";
 }
 

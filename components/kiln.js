@@ -111,6 +111,7 @@ Crafty.c("Kiln", {
         }, this);
         this.delay(function () {
             this.setState("cooling");
+            Crafty.trigger("KilnCooling"); // fires even when the kiln is empty, so the fire sound always ends
             this.inventory.items.forEach(function (pot, i) { pot.advance(this.passes[i].cooling); }, this);
             this.delay(this.finishPot, KILN_COOL_MS, 0);
         }, KILN_FIRE_MS, 0);
@@ -120,6 +121,7 @@ Crafty.c("Kiln", {
         this.inventory.items.forEach(function (pot, i) { pot.advance(this.passes[i].done); }, this);
         this.setState(this.inventory.items.length > 0 ? "ready" : "empty"); // fired empty: nothing to collect
         this.showPots();
+        this.inventory.changed(); // the pots changed state: redraw the HUD (badges, no drying bar)
     },
 
     // One box per pot waiting, in a row centred on the square, then moved KILN_OUTPUT_OFFSET so the pots clear the

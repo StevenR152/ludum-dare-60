@@ -29,12 +29,8 @@ Crafty.c("GameSounds", {
             audioController.playSfx("kilnLit");
             audioController.loopSfx("fireLoop");
         });
-        // The fire dies down as the kiln starts cooling a pot, either firing.
-        this.bind("PotAdvanced", function (e) {
-            if (e.to === "cooling" || e.to === "glazeCooling") {
-                audioController.stopSfx("fireLoop");
-            }
-        });
+        // The fire dies down as the kiln starts cooling, whether or not it holds a pot.
+        this.bind("KilnCooling", function () { audioController.stopSfx("fireLoop"); });
         this.bind("ClayDug", function () { audioController.playSfx("digClay"); });
         this.bind("ClayWeighed", function () { audioController.playSfx("weighScale"); });
         this.bind("LogChopped", function () { audioController.playSfx("chopLog"); });
