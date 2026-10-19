@@ -148,15 +148,12 @@ var LEVELS = [
         world: levelWorld({glaze: false, clays: ["red", "white"], models: ["Cup"]})
     },
     {
-        name: "Bowls and Cups",
+        name: "Word Spreads",
         description: "Two bowls and two cups, all in black clay.",
-        story: "",
-        tip: "",
-        finish: "",
-        // Said at the first weighing: this is the first level with two shapes, which want different weights.
-        masterTips: [
-            {on: "PotAdvanced", when: function (e) { return e.to === "weighed"; }, text: ""}
-        ],
+        story: "Word of the Master's capable new apprentice has spread through the village, and the orders are pouring " +
+            "in. Two bowls and two cups are wanted, plain and unglazed, all in black clay.",
+        tip: "\u201cEvery order is different, apprentice. Check the shape of each one before you begin.\u201d",
+        finish: "\u201cA full shelf and a busy kiln. The whole valley knows your name, apprentice.\u201d",
         steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
             potFired("Fire it (black clay: 1 log)", "cooled"),
             potFired("Fire it again", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
