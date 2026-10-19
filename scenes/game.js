@@ -286,11 +286,11 @@ function buildWorld(config) {
     // House doors, one per area, each leading to its partner. Invisible trigger zones; the outside one is
     // exactly the door picture.
     var outsideDoor = Crafty.e("2D, DebugHitbox")
-        .attr(DOOR_ART_BOX);
-    fitArt(Crafty.e("2D, DOM, doorOutside"), DOOR_ART_CONTENT, DOOR_ART_BOX);
+        .attr(DOOR_BOXES.outside);
+    fitArt(Crafty.e("2D, DOM, doorOutside"), DOOR_ART_CONTENT, DOOR_BOXES.outside);
     var insideDoor = Crafty.e("2D, DOM, Color, DebugHitbox")
-        .attr({x: -2626, y: 268, w: 54, h: 112})
-        .color('#8B5A2B', 0);
+        .attr(DOOR_BOXES.inside)
+        .color(INSIDE_DOOR_COLOR, 0);
     // Where each door leads: the spot in DOOR_DESTINATIONS for the area beyond it.
     outsideDoor.arrival = DOOR_DESTINATIONS.inside;
     insideDoor.arrival = DOOR_DESTINATIONS.outside;

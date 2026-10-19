@@ -40,7 +40,7 @@ var FIRE_LEVELS = ["low", "mid", "high"];
 // Debug: outline the fox's and the doors' collision boxes in red, and show the out-of-bounds masks
 // (COLLISION_AREAS) over the HUD, under the outlines. The overlay is every blocked pixel in solid red drawn at
 // exactly DEBUG_MASK_ALPHA, whatever opacity the mask PNGs were painted at.
-var DEBUG_HITBOXES = false;
+var DEBUG_HITBOXES = true;
 var DEBUG_MASK_ALPHA = 0.5;
 // Debug: the door arrival spots (DOOR_DESTINATIONS) are outlined and labelled in this colour instead of red.
 var DEBUG_DESTINATION_COLOR = "lime";
@@ -129,7 +129,14 @@ var KILN_ART_CONTENT = [376, 358, 782, 546];
 var KILN_OUTPUT_OFFSET = {x: -20, y: 20};
 var KILN_ART_BOX = {x: 1395, y: 478, w: 260, h: 181};
 var DOOR_ART_CONTENT = [630, 634, 856, 1102];
-var DOOR_ART_BOX = {x: 975, y: 415, w: 85, h: 110};
+// Each house door's trigger zone (top-left x, y and size). The outside one is exactly the door picture.
+var DOOR_BOXES = {
+    outside: {x: 975, y: 415, w: 85, h: 110},
+    inside: {x: -2626, y: 265, w: 7w5, h: 125}
+};
+var DOOR_ART_BOX = DOOR_BOXES.outside;
+// The inside door's colour (drawn fully transparent; it only shows in the debug outline).
+var INSIDE_DOOR_COLOR = "#8B5A2B";
 // The log picture in inventory slots: its opaque part of the 2268x2180 wood image.
 var LOG_IMAGE = {url: "assets/images/wood.png", w: 2268, h: 2180, crop: [826, 858, 556, 374]};
 
