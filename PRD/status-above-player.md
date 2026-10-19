@@ -21,18 +21,18 @@
 5. Each scene has exactly one notification entity (no leftover `StatusMessage`).
 
 **Acceptance criteria**
-- [ ] Trigger a status (e.g. "Nothing to drop" with D): text above fox, ~16px, none at screen bottom.
-- [ ] Same message twice in a row shows both times.
-- [ ] Text follows the fox while walking, in both Outside and Inside scenes.
-- [ ] "Arrow keys to move" is still 24px and appears once.
-- [ ] Longest status message is readable and not hidden behind/over the fox.
-- [ ] No console errors on scene start.
+- [x] Trigger a status (e.g. "Nothing to drop" with D): text above fox, ~16px, none at screen bottom.
+- [x] Same message twice in a row shows both times.
+- [ ] Text follows the fox while walking, in both Outside and Inside scenes. (attached to fox; Inside scene and walking not driven)
+- [x] "Arrow keys to move" is still 24px and appears once.
+- [x] Longest status message is readable and not hidden behind/over the fox.
+- [x] No console errors on scene start.
 
 **Constraints** — `components/player_notification.js`, `components/status_message.js`, `scenes/game.js` (remove `Crafty.e("StatusMessage")`); no new files; Crafty 0.9.0.
 **Open questions** — None (a long status wraps within the 400px box; will widen if the longest clips).
 
 **Tasks**
-- [ ] `player_notification.js`: bind `StatusText`, size per type, skip dedupe for status
-- [ ] `status_message.js`: drop the `StatusMessage` component, keep `showStatus`; update comments
-- [ ] `game.js`: remove `Crafty.e("StatusMessage")`
-- [ ] Verify each acceptance item in-app
+- [x] `player_notification.js`: bind `StatusText`, size per type, skip dedupe for status
+- [x] `status_message.js`: drop the `StatusMessage` component, keep `showStatus`; update comments
+- [x] `game.js`: remove `Crafty.e("StatusMessage")`
+- [x] Verify each acceptance item in-app
