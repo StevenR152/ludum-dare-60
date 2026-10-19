@@ -419,6 +419,7 @@ Crafty.defineScene("Game", function(options) {
         }
         finished = true;
         markLevelDone(index);
+        Crafty.trigger("LevelFinished", index); // GameSounds swaps the order jingle for the level one
         track("level_complete", {level: index + 1, seconds: gameState.seconds});
         showStatus(written(level.finish) || "Level " + (index + 1) + " complete!");
         Crafty.e("Delay").delay(function () { Crafty.scene("LevelComplete", index); }, STAGE_PAUSE_MS, 0);

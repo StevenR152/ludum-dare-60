@@ -70,8 +70,13 @@ var gameAssets = {
         "uiBack": ["assets/sounds/Sounds/UI/back.wav"],
         "bgMusic": ["assets/sounds/Sounds/music/theme test 1 ld60 LOOP.ogg"],
         "potCrack": ["assets/sounds/Sounds/pots crack big 2.wav"],
-        // Placeholder until a stumble sound is recorded.
-        "stumble": ["assets/sounds/Sounds/putdown pot 1.wav"]
+        "potCrackSmall": ["assets/sounds/Sounds/pots crack small 1.wav"],
+        // The fox's yelp when it trips (two takes, picked at random). The old stumble sound pointed at the same
+        // file as putdownBoneDry, which Crafty refuses to load twice, so tripping was silent.
+        "foxYelp1": ["assets/sounds/Sounds/fox 1.wav"],
+        "foxYelp2": ["assets/sounds/Sounds/fox 2.wav"],
+        // No sound was recorded for finishing a level; this is an unused take of the order-success jingle.
+        "levelComplete": ["assets/sounds/Sounds/order succes 2.wav"]
     },
     // The collision masks are preloaded here and read by collisionMap.load() (components/collision_map.js).
     "images": potImagePaths().concat(LOG_IMAGE.url, Object.keys(CLAY_IMAGES).map(function (letter) { return CLAY_IMAGES[letter].url; }), COLLISION_AREAS.map(function (area) { return area.mask; }),
