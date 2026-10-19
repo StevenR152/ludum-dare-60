@@ -250,22 +250,43 @@ Crafty.c("Fox", {
         var onPress = function (e) { fox.handlePress(e); };
         var onMove = function (e) { fox.handleDrag(e); };
         var onRelease = function () { fox.handleRelease(); };
+        // Crafty keeps its own "a button is down" state and clears it on window's mouseup, so anything that
+        // stops a release propagating hides that from it too. Left stuck, its mouse system ignores every
+        // later press and the game stops responding to clicks altogether. Check once the event has finished
+        // propagating: a release Crafty did see has already cleared it and this does nothing, while a
+        // swallowed one is repaired here. resetButtonDown replays a MouseUp, which also lets entities that
+        // were mid-hold see the release they missed.
+        var onCaptureRelease = function () {
+            fox.handleRelease();
+            window.setTimeout(function () {
+                var mouseSystem = Crafty.s("Mouse");
+                if (mouseSystem.isButtonDown("LEFT")) {
+                    mouseSystem.resetButtonDown();
+                }
+            }, 0);
+        };
         mouse.bind("MouseDown", onPress);
         // The release has to come from the same place as the press. Crafty's mouse system stops the events
         // it handles from bubbling (its processEvent calls preventBubbling), so a mouseup over the stage
         // never reaches window and handleRelease never ran: pressHeld latched true on the first click and
         // the fox then arrived at every station as though the button were still down.
         mouse.bind("MouseUp", onRelease);
-        // Still worth keeping: these catch a release that lands outside the stage, or the window losing focus
-        // mid-press. handleRelease does nothing the second time, so a doubled release is harmless.
+        // Crafty is not the only thing that swallows a release. The weighing station's panel is a DOM child
+        // of the stage that stops propagation on its own events (see WeighingStation.buildPanel), so a press
+        // on the playfield let go over the open panel reaches neither window nor Crafty's mouse system, and
+        // pressHeld would latch all over again. Listening in the capture phase runs this on the way down,
+        // before the event reaches anything that could stop it, so no descendant can hide a release from us.
+        // It also covers a release out in the letterbox; blur covers the window losing focus mid-press.
+        // handleRelease does nothing the second time, so being called by more than one of these is harmless.
+        window.addEventListener("mouseup", onCaptureRelease, true);
         window.addEventListener("mousemove", onMove);
-        window.addEventListener("mouseup", onRelease);
         window.addEventListener("blur", onRelease);
         this.bind("Remove", function () {
             mouse.unbind("MouseDown", onPress);
             mouse.unbind("MouseUp", onRelease);
+            // The capture flag has to match, or this does not remove the listener.
+            window.removeEventListener("mouseup", onCaptureRelease, true);
             window.removeEventListener("mousemove", onMove);
-            window.removeEventListener("mouseup", onRelease);
             window.removeEventListener("blur", onRelease);
         });
         return this;
