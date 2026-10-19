@@ -28,6 +28,19 @@ function potFired(text, state) {
     return step(text, "PotAdvanced", function (e) { return e.to === state && !e.pot.pot.cracked; });
 }
 
+// The buildWorld config shared by the levels played Inside (levels 3 to 7): `own` sets what differs.
+function levelWorld(own) {
+    return Object.assign({
+        inside: true,
+        glaze: false,
+        maxGlazeDips: MAX_GLAZE_DIPS,
+        potsBreakOnGround: false,
+        prePlaced: [],
+        kilnDelivers: false,
+        kilnHint: true
+    }, own);
+}
+
 var LEVELS = [
     {
         name: "Kiln Creations",
@@ -79,24 +92,56 @@ var LEVELS = [
     },
     {
         name: "First Orders",
-        description: "Four cups, each with one glaze. A pot takes only one dip.",
+        description: "Two cups, one white and one black. Mind each clay's fire level.",
+        steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
+            potFired("Fire it (1 log black, 3 white)", "cooled"),
+            potFired("Fire it again", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
+        card: [],
+        orders: [["Cup", "white", []], ["Cup", "black", []]],
+        world: levelWorld({glaze: false, clays: ["black", "white"], models: ["Cup"]})
+    },
+    {
+        name: "Bowls and Cups",
+        description: "Two bowls and two cups, all in black clay.",
+        steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
+            potFired("Fire it (black clay: 1 log)", "cooled"),
+            potFired("Fire it again", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
+        card: [],
+        orders: [["Bowl", "black", []], ["Bowl", "black", []], ["Cup", "black", []], ["Cup", "black", []]],
+        world: levelWorld({glaze: false, clays: ["black"], models: ["Bowl", "Cup"]})
+    },
+    {
+        name: "Glazing",
+        description: "Two vases and a cup, each with one glaze. A pot takes only one dip.",
         steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
             potFired("Bisque fire (1 log black, 2 red, 3 white)", "cooled"), step("Dip it in a glaze", "PotGlazed"),
             potFired("Glaze fire", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
         card: [],
-        orders: [["Cup", "white", ["Glaze A"]], ["Cup", "red", ["Glaze B"]], ["Cup", "black", ["Glaze B"]],
-            ["Cup", "red", ["Glaze A"]]],
-        world: {
-            inside: true,
-            glaze: true,
-            clays: ["black", "red", "white"],
-            models: ["Cup"],
-            maxGlazeDips: 1,
-            potsBreakOnGround: false,
-            prePlaced: [],
-            kilnDelivers: false,
-            kilnHint: true
-        }
+        orders: [["Vase", "red", ["Glaze A"]], ["Vase", "black", ["Glaze B"]], ["Cup", "white", ["Glaze A"]]],
+        world: levelWorld({glaze: true, clays: ["black", "red", "white"], models: ["Cup", "Vase"], maxGlazeDips: 1})
+    },
+    {
+        name: "Mixed Orders",
+        description: "Four glazed pots of different shapes and clays. One dip each.",
+        steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
+            potFired("Bisque fire (1 log black, 2 red, 3 white)", "cooled"), step("Dip it in a glaze", "PotGlazed"),
+            potFired("Glaze fire", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
+        card: [],
+        orders: [["Bowl", "white", ["Glaze A"]], ["Vase", "red", ["Glaze B"]], ["Cup", "black", ["Glaze A"]],
+            ["Cup", "red", ["Glaze B"]]],
+        world: levelWorld({glaze: true, clays: ["black", "red", "white"], models: ORDER_SHAPES, maxGlazeDips: 1})
+    },
+    {
+        name: "Double Dips",
+        description: "Five pots, each dipped in both glazes. The order of the dips matters.",
+        steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
+            potFired("Bisque fire (1 log black, 2 red, 3 white)", "cooled"), step("Dip it in a glaze", "PotGlazed"),
+            potFired("Glaze fire", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
+        card: [],
+        orders: [["Bowl", "white", ["Glaze A", "Glaze B"]], ["Vase", "red", ["Glaze B", "Glaze A"]],
+            ["Cup", "black", ["Glaze A", "Glaze B"]], ["Bowl", "red", ["Glaze B", "Glaze A"]],
+            ["Vase", "white", ["Glaze A", "Glaze B"]]],
+        world: levelWorld({glaze: true, clays: ["black", "red", "white"], models: ORDER_SHAPES, maxGlazeDips: 2})
     }
 ];
 
