@@ -10,9 +10,16 @@ Crafty.defineScene("Start", function() {
         .textColor('#222')
         .unselectable();
 
+    // Play is the continuous run through all the stages; Levels picks one to play alone (scenes/levels.js).
     Crafty.e("UIButton")
         .label("Play")
         .attr({x: GAME_SCREEN_WIDTH / 2 - 80, y: GAME_SCREEN_HEIGHT / 2})
+        .onClick(function () {
+            Crafty.scene("Game");
+        });
+    Crafty.e("UIButton")
+        .label("Levels")
+        .attr({x: GAME_SCREEN_WIDTH / 2 - 80, y: GAME_SCREEN_HEIGHT / 2 + 70})
         .onClick(function () {
             Crafty.scene("LevelSelect");
         });

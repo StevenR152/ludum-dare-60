@@ -24,7 +24,7 @@ Crafty.defineScene("LevelComplete", function(index) {
         Crafty.e("UIButton")
             .label("Next level")
             .attr({x: GAME_SCREEN_WIDTH / 2 - 80, y: y})
-            .onClick(function () { Crafty.scene(LEVELS[index + 1].scene); });
+            .onClick(function () { Crafty.scene("Game", {stage: index + 1, mode: "single"}); });
         y += 70;
     }
     Crafty.e("UIButton")

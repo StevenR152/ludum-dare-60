@@ -189,6 +189,9 @@ var GLAZE_NUMBERS = { "Glaze A": 1, "Glaze B": 2 };
 // in its 2268x2082 image, which the pictures are cropped to (the images themselves are never edited).
 var POT_IMAGE_W = 2268;
 var POT_IMAGE_H = 2082;
+// The unfired pot pictures of clays A (red) and C (white) are drawn peach and pale green, so they get a CSS filter
+// that pulls them toward the clay's colour (fired pots already show it). Clay B (black) is fine as it is.
+var UNFIRED_POT_FILTER = {A: "hue-rotate(-30deg) saturate(2.4) brightness(0.88)", B: "none", C: "saturate(0.15) brightness(1.05)"};
 var POT_SPRITES = {
     Cup:  {file: "smallpot", crop: [830, 820, 600, 470]},
     Bowl: {file: "bowl", crop: [550, 910, 1140, 500]},
@@ -213,7 +216,7 @@ var MODEL_COLOR = "#8A8F98";
 // Glaze: dips per pot, at most one per bucket.
 var MAX_GLAZE_DIPS = 2;
 // Levels: true opens every level on the level select (set true while we develop); false unlocks them in order.
-var UNLOCK_ALL_LEVELS = true;
+var UNLOCK_ALL_LEVELS = false;
 
 // Workbench: how long the fox holds to wedge a weighed piece of clay.
 var WEDGE_MS = 3000;

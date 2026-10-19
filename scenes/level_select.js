@@ -1,4 +1,4 @@
-// The mission list: one button per level (scenes/levels.js); locked ones do nothing. "Back" returns to Start.
+// The mission list: one button per level (scenes/levels.js), each played alone; locked ones do nothing. "Back" returns to Start.
 Crafty.defineScene("LevelSelect", function() {
     Crafty.background("#DDD");
     audioController.playMusic(MUSIC_TRACK);
@@ -16,7 +16,7 @@ Crafty.defineScene("LevelSelect", function() {
             .attr({x: GAME_SCREEN_WIDTH / 2 - 200, y: GAME_SCREEN_HEIGHT * 0.15 + 100 + index * 70, w: 400});
         if (levelUnlocked(index)) {
             button.label((index + 1) + "  " + level.name)
-                .onClick(function () { Crafty.scene(level.scene); });
+                .onClick(function () { Crafty.scene("Game", {stage: index, mode: "single"}); });
         } else {
             button.label((index + 1) + "  " + level.name + "  (locked)")
                 .css({backgroundColor: "#999", cursor: "default"});

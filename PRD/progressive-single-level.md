@@ -21,28 +21,37 @@
 1. A `STAGES` table (reusing `LEVELS` entries) lists per stage: orders, Goal text, `reveal` (door, inside stations, glaze, clay keys, models), `maxGlazeDips`.
 2. Unrevealed stations are not rendered and not clickable/collidable; the door neither draws nor teleports until stage 1 completes.
 3. Stage completion = existing rule (S1: 3rd kiln removal; S2/S3: all fixed orders delivered), checked by one handler, then reveal and swap orders + Goal panel.
-4. Stage 2 and 3 start with an empty order list swap; stage 1 floor pots are consumed/left as is (no respawn).
-5. Restart resets to the start of the **current** stage (state + that stage's orders; earlier reveals kept); cracked-pot hint pulses it. Menu button removed.
+4. Stage change: fox stays where it is; pack and kiln are empty (stage 1 pots consumed, kiln state kept as left); orders + Goal swap after a 1.5 s "Level N complete!" message (final stage: same pause, then `End`). Reveals appear immediately, even beside the fox.
+5. Restart rebuilds the scene at the **current** stage (earlier reveals kept, fox at the Outside start, stage 1 gets its 3 floor pots back, stage 2/3 start with empty pack and kiln); cracked-pot hint pulses it. Menu button removed.
+7. Kiln hint shows once per stage; the fire card is in the stage-1 Goal panel only (later Goal text says which clay needs how many logs).
 6. `Start` Play → `Game`; `Game` no longer runs random/timed orders; level scenes, `LevelSelect`, `LevelComplete` unused (files removed from `index.html`).
 
 **Acceptance criteria**
-- [ ] New game: no door, no Inside stations, no clay patches visible; Goal shows stage 1.
-- [ ] Completing S1 shows the door; walking in works; Inside has owl/weighing/bench/shelves but no glaze station.
-- [ ] Completing S2 reveals glaze station + red/white clay; second dip refused.
-- [ ] Completing S3 goes to `End`; Goal/orders swap correctly at each stage.
-- [ ] Cracked pot → Restart returns to the current stage start with earlier stations still shown.
-- [ ] Console free of errors; touch controls still work.
+- [x] New game: no door, no Inside stations, no clay patches visible; Goal shows stage 1.
+- [x] Completing S1 shows the door; walking in works; Inside has owl/weighing/bench/shelves but no glaze station.
+- [x] Completing S2 reveals glaze station + red/white clay; second dip refused.
+- [x] Completing S3 goes to `End`; Goal/orders swap correctly at each stage.
+- [x] Cracked pot → Restart returns to the current stage start with earlier stations still shown.
+- [x] Console free of errors. (touch not device-tested; `TouchControls` scene list is just `Game`)
+
+**Built as** — the stage manager rebuilds the `Game` scene per stage (`Crafty.scene("Game", {stage, seconds, at})`) instead of showing/hiding entities in place, so unrevealed stations simply don't exist. Same player-visible behaviour; empty pack/kiln/ground follow from the rebuild. Verified by driving orders in the browser (Crafty frames simulated; walking the door/doing real pottery not played through by hand).
 
 **Constraints** — Crafty 0.9.0, no new deps; refactor `scenes/game.js`/`levels.js` (stage manager in `levels.js`); keep `buildWorld` as the single builder.
 
-**Open questions**
-1. Restart granularity: current stage (assumed) vs. whole game?
-2. Stage 2/3 start: should stage-1 leftovers (kiln, logs, fired pots) stay as-is (assumed yes)?
+**Open questions** — None.
 
 **Tasks**
-- [ ] `STAGES` table + `revealStage(n)` that builds/shows station entities (gate by `visible`/removed colliders)
-- [ ] Build door lazily; hide Inside stations until stage 2
-- [ ] Single stage-complete handler → message, reveal, swap orders (`OrderPanel.start`) and Goal panel
-- [ ] Clay patches + glaze station gated per stage; `maxGlazeDips` per stage
-- [ ] Restart to current stage; remove Menu/LevelSelect/LevelComplete wiring; Start → `Game`; final stage → `End`
-- [ ] Verify acceptance criteria in the browser
+- [x] `STAGES` table + `revealStage(n)` that builds/shows station entities (gate by `visible`/removed colliders)
+- [x] Build door lazily; hide Inside stations until stage 2
+- [x] Single stage-complete handler → message, reveal, swap orders (`OrderPanel.start`) and Goal panel
+- [x] Clay patches + glaze station gated per stage; `maxGlazeDips` per stage
+- [x] Restart to current stage; remove Menu/LevelSelect/LevelComplete wiring; Start → `Game`; final stage → `End`
+- [x] Verify acceptance criteria in the browser
+
+## Decisions
+1. Door reveal → instant with a status message (default; not asked, folded into Req 4).
+2. Stage change → fox stays put, empty pack and kiln. Restart → rebuilds current stage (my reading; default).
+3. Stage-complete pause → 1.5 s message, then swap (default).
+4. Stage 1 leftovers → pots consumed, kiln state kept.
+5. Stage 3 reveals → immediately, no fox move.
+6. Hints → kiln hint each stage, fire card in stage 1 Goal only (default).
