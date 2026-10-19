@@ -228,7 +228,7 @@ var MAX_GLAZE_DIPS = 2;
 var UNLOCK_ALL_LEVELS = true;
 // Dev mode: true adds a "Sandbox" button to the Start menu that loads SANDBOX_LEVEL (scenes/levels.js), with every
 // station, clay, model and glaze on, to try any combination. Keep false for releases.
-var DEV_MODE = true;
+var DEV_MODE = false;
 
 // Workbench: how long the fox holds to wedge a weighed piece of clay.
 var WEDGE_MS = 3000;
