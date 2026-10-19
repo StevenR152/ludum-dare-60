@@ -1,5 +1,5 @@
 // 2304x768: twice the width of the original 1152x768 (3:2) screen.
-// Keep body width in index.html in step.
+// camera.js scales it down to fit smaller windows.
 var GAME_SCREEN_WIDTH = 2304;
 var GAME_SCREEN_HEIGHT = 768;
 
