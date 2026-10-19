@@ -3,5 +3,9 @@
 //   showStatus("Backpack full, you can't put more in");
 function showStatus(message) {
     console.log(message);
+    if (statusGate.open) {
+        statusGate.lines.push(message);
+        return;
+    }
     Crafty.trigger("StatusText", message);
 }

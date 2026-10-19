@@ -53,6 +53,9 @@ function buildWorld(config) {
     }
 
 
+    // Click to move: press the ground to walk there, or a far station to walk to it (see Fox.enableClickToMove).
+    player.enableClickToMove();
+
     // Debug aid for laying out the scene: log world coordinates of any click.
     player.logClickPosition = function (e) {
         console.log("location: x: " + Math.round(e.realX) + ", y: " + Math.round(e.realY));    }.bind(player);
