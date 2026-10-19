@@ -14,7 +14,7 @@
 //
 // The story fields are all optional and all safe to leave as "": `story` replaces the one-line `description` at the
 // top of the Goal panel, `tip` adds the Master's italic line under it, `finish` is what he says once the last order
-// is delivered, and each `masterTips` entry is a line he speaks aloud, once, the first time its event happens.
+// is delivered (shown on the LevelComplete screen), and each `masterTips` entry is a line he speaks aloud, once, the first time its event happens.
 // An empty or missing field is left out as if it were not there, so the slots can be filled in one at a time.
 var STAGE_PAUSE_MS = 1500;
 
@@ -148,15 +148,12 @@ var LEVELS = [
         world: levelWorld({glaze: false, clays: ["red", "white"], models: ["Cup"]})
     },
     {
-        name: "Bowls and Cups",
+        name: "Word Spreads",
         description: "Two bowls and two cups, all in black clay.",
-        story: "",
-        tip: "",
-        finish: "",
-        // Said at the first weighing: this is the first level with two shapes, which want different weights.
-        masterTips: [
-            {on: "PotAdvanced", when: function (e) { return e.to === "weighed"; }, text: ""}
-        ],
+        story: "Word of the Master's capable new apprentice has spread through the village, and the orders are pouring " +
+            "in. Two bowls and two cups are wanted, plain and unglazed, all in black clay.",
+        tip: "\u201cEvery order is different, apprentice. Check the shape of each one before you begin.\u201d",
+        finish: "\u201cA full shelf and a busy kiln. The whole valley knows your name, apprentice.\u201d",
         steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
             potFired("Fire it (black clay: 1 log)", "cooled"),
             potFired("Fire it again", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
@@ -169,18 +166,20 @@ var LEVELS = [
         world: levelWorld({glaze: false, clays: ["black"], models: ["Bowl", "Cup"], kilnTrees: true})
     },
     {
-        name: "Glazing",
+        name: "The Master's Glaze",
         description: "Two vases and a cup, each with one glaze. A pot takes only one dip.",
-        story: "",
-        tip: "",
-        finish: "",
+        story: "Villagers have heard that Master Owl invented a special liquid. Brushed on a pot, it burns into vivid " +
+            "colour with a magical, glass-like shine. Fill the order for two vases and a cup, and keep his invention alive.",
+        tip: "\u201cDip the pot after its first fire, apprentice. A pot takes only one dip.\u201d",
+        finish: "\u201cColours bright as a summer morning, and glass-smooth. The old craft lives on.\u201d",
         // Said at the first dip: this is the level that introduces glazing.
         masterTips: [
-            {on: "PotGlazed", text: ""}
+            {on: "PotGlazed", text: "Look how it shines, apprentice. That is my life's work."}
         ],
-        steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
-            potFired("Bisque fire (1 log black, 2 red, 3 white)", "cooled"), step("Dip it in a glaze", "PotGlazed"),
-            potFired("Glaze fire", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
+        steps: [step("Make two vases and a cup", "PotterWorking"), step("Dry them", "PotDry"),
+            potFired("First firing (1 log black, 2 red, 3 white)", "cooled"), step("Dip each pot in its glaze", "PotGlazed"),
+            potFired("Second firing: the glaze melts into glass", "glazeCooled"),
+            step("Put all three on the completed shelf", "OrderDelivered")],
         card: [
             {color: CLAY_TYPES.black.color, text: "Black clay: a gentle fire, 1 log"},
             {color: CLAY_TYPES.red.color, text: "Red clay: a steady fire, 2 logs"},
@@ -190,18 +189,17 @@ var LEVELS = [
         world: levelWorld({glaze: true, clays: ["black", "red", "white"], models: ["Cup", "Vase"], maxGlazeDips: 1, kilnTrees: true})
     },
     {
-        name: "Mixed Orders",
+        name: "Visitors from Far Away",
         description: "Four glazed pots of different shapes and clays. One dip each.",
-        story: "",
+        story: "Animals from villages beyond the hills have heard of the Master's glazed pots, and four very different " +
+            "orders have arrived. Help him fill them all.",
         tip: "",
-        finish: "",
-        // Said at the first delivery: this is the level where pots must be matched to the right open order.
-        masterTips: [
-            {on: "OrderDelivered", text: ""}
-        ],
-        steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
-            potFired("Bisque fire (1 log black, 2 red, 3 white)", "cooled"), step("Dip it in a glaze", "PotGlazed"),
-            potFired("Glaze fire", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
+        finish: "\u201cFour orders, four new friends. Well done, apprentice.\u201d",
+        masterTips: [],
+        steps: [step("Make all four pots, matching each order's shape and clay", "PotterWorking"),
+            step("Dry them", "PotDry"), potFired("First firing (1 log black, 2 red, 3 white)", "cooled"),
+            step("Dip each pot in its own glaze", "PotGlazed"), potFired("Second firing", "glazeCooled"),
+            step("Put each pot on the completed shelf", "OrderDelivered")],
         card: [
             {color: CLAY_TYPES.black.color, text: "Black clay: a gentle fire, 1 log"},
             {color: CLAY_TYPES.red.color, text: "Red clay: a steady fire, 2 logs"},
@@ -212,18 +210,18 @@ var LEVELS = [
         world: levelWorld({glaze: true, clays: ["black", "red", "white"], models: ORDER_SHAPES, maxGlazeDips: 1, kilnTrees: true})
     },
     {
-        name: "Double Dips",
+        name: "The Finest Pots in the Valley",
         description: "Five pots, each dipped in both glazes. The order of the dips matters.",
-        story: "",
-        tip: "",
-        finish: "",
-        // Said at the first dip: this is the level where the order of the two dips changes the result.
-        masterTips: [
-            {on: "PotGlazed", text: ""}
-        ],
-        steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
-            potFired("Bisque fire (1 log black, 2 red, 3 white)", "cooled"), step("Dip it in a glaze", "PotGlazed"),
-            potFired("Glaze fire", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
+        story: "The Master's finest glaze is a two-colour glaze. Five orders have come in, each dipped twice, and the " +
+            "order of the dips changes the colour. Dip carefully, and help him fill them all.",
+        tip: "\u201cOrder of glaze dipping matters, apprentice.\u201d",
+        finish: "\u201cFive fine pots, glazed to perfection. The old craft is in good hands, apprentice. " +
+            "Perhaps one day you could take over from me?\u201d",
+        masterTips: [],
+        steps: [step("Make all five pots, matching each order's shape and clay", "PotterWorking"),
+            step("Dry them", "PotDry"), potFired("First firing (1 log black, 2 red, 3 white)", "cooled"),
+            step("Dip each pot in both glazes, in the order shown", "PotGlazed"), potFired("Second firing", "glazeCooled"),
+            step("Put each pot on the completed shelf", "OrderDelivered")],
         card: [
             {color: CLAY_TYPES.black.color, text: "Black clay: a gentle fire, 1 log"},
             {color: CLAY_TYPES.red.color, text: "Red clay: a steady fire, 2 logs"},
@@ -422,7 +420,7 @@ Crafty.defineScene("Game", function(options) {
         markLevelDone(index);
         Crafty.trigger("LevelFinished", index); // GameSounds swaps the order jingle for the level one
         track("level_complete", {level: index + 1, seconds: gameState.seconds});
-        showStatus(written(level.finish) || "Level " + (index + 1) + " complete!");
+        showStatus("Level " + (index + 1) + " complete!");
         Crafty.e("Delay").delay(function () { Crafty.scene("LevelComplete", index); }, STAGE_PAUSE_MS, 0);
     });
 });
