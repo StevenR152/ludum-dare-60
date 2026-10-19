@@ -71,13 +71,21 @@ Crafty.c("TimerBar", {
         return this;
     },
 
-    // The kiln's bar: one fill while it burns, another while it cools, nothing in its resting states.
+    // The kiln's bar: one unbroken fill across the firing and the cooling, because the player is waiting
+    // for one thing, the pots. Two separate fills would look like the bar starting over. The fill changes
+    // colour when the fire goes out, so which phase it is in still reads.
     onKiln: function() {
         this.bind("KilnStateChanged", function (kiln) {
+            var whole = KILN_FIRE_MS + KILN_COOL_MS;
             if (kiln.state === "firing") {
-                this.run(KILN_FIRE_MS);
+                this.run(whole).fill.color(TIMER_BAR_FILL_COLOR);
             } else if (kiln.state === "cooling") {
-                this.run(KILN_COOL_MS);
+                // Carry on rather than restart, and pin the bar to the boundary so what is left is exactly
+                // KILN_COOL_MS however late the state change lands. grow() repaints it before the next frame.
+                this.run(whole);
+                this.startedAt = Date.now() - KILN_FIRE_MS;
+                this.fill.color(TIMER_BAR_COOL_COLOR);
+                this.grow();
             } else {
                 this.stop();
             }

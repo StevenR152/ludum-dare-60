@@ -278,6 +278,9 @@ var TIMER_BAR_Z = 2000;
 var TIMER_BAR_OFFSET_Y = -14;
 var TIMER_BAR_TRACK_COLOR = "#2B2522";
 var TIMER_BAR_FILL_COLOR = "#F28C28";
+// The kiln's bar runs unbroken across the firing and the cooling, changing to this colour when the fire
+// goes out, so the two phases read as one wait for the pots rather than as the bar starting again.
+var TIMER_BAR_COOL_COLOR = "#7FB2E5";
 
 // Sound names (see gameAssets.audio). GameSounds picks pot sounds by stage and, for wet pots, by clay.
 var AMBIENT_VOLUME = 0.1; // its own level, apart from the music

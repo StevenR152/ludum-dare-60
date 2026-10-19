@@ -24,7 +24,7 @@
 2. `Crafty.trigger("HoldStarted", {ms})` starts the fox's bar; `Crafty.trigger("HoldEnded")` hides it; a second `HoldStarted` restarts the fill. Dig, chop and wedge each fire both at the right moments.
 3. A repeating chop refills the bar for each log with no gap or flicker.
 4. The owl's bar runs on `PotterWorking` for `POT_MAKE_MS` or `POT_TRIM_MS` by job kind, and hides on `PotterDone`.
-5. The kiln's bar runs for `KILN_FIRE_MS` on entering `firing` and `KILN_COOL_MS` on entering `cooling`, and hides in every other state.
+5. The kiln's bar is one unbroken fill across `KILN_FIRE_MS` + `KILN_COOL_MS`, never resetting at the handover, and changes colour when the fire goes out; it hides in every other state.
 6. `Forest` and `Workbench` each gain an in-progress flag and say "You stopped chopping" / "You stopped wedging" **only on a real release** (MouseUp, which covers touch and the SPACE key), never on `MouseOut` and never on a press that was refused or on a cancel that already explained itself (e.g. "Backpack full").
 7. No bar overlaps the status text above the fox.
 
@@ -35,7 +35,8 @@
 - [x] Moving the cursor off mid-action stops it **silently** on all three stations — no "you stopped" line.
 - [x] Filling the pack on a chop says only "Chopped a log" then "Backpack full...", never "You stopped chopping".
 - [x] A refused press (tree out of reach, bench with nothing weighed) shows neither a bar nor a "you stopped" line.
-- [x] The owl's bar runs for 8000 ms on a throw and 5000 ms on a trim and hides on `PotterDone`; the kiln's shows on `firing` and `cooling` and hides on `ready` and `empty`.
+- [x] The owl's bar runs for 8000 ms on a throw and 5000 ms on a trim and hides on `PotterDone`.
+- [x] The kiln's bar fills once across both phases (0 / 14 / 28 px firing, then **28** / 42 / 56 px cooling — no reset at the handover), turns from orange to blue when the fire goes out, and hides on `ready`.
 - [x] The bar stays centred on the fox, moves with it exactly, and its bottom (566) sits clear of the status text's top (573).
 - [x] No console errors across all actions.
 - [ ] **Not verified:** the bar visibly animating in real time. The preview pane runs its frame loop at 0 fps while hidden, so `UpdateFrame` never fired; the fill function was driven by hand instead. Worth a glance in a real window.
