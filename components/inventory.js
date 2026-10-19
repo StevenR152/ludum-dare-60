@@ -101,7 +101,7 @@ function potSprite(item) {
     var glaze = dips > 0 ? GLAZE_NUMBERS[item.pot.glaze[dips - 1]] : 0;
     var kind = item.before("cooled") ? "unfired" : "fired";
     if (dips > 0) {
-        kind = !item.before("glazeCooled") ? "glazeFired" : dips >= MAX_GLAZE_DIPS ? "full" : "half";
+        kind = !item.before("glazeCooled") ? "glazeFired" : dips >= worldRules.maxGlazeDips ? "full" : "half";
     }
     return potImage(file, item.clay.letter, kind, glaze);
 }

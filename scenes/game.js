@@ -1,13 +1,41 @@
 //inside, door, gap, door, outside
 
-Crafty.defineScene("Game", function() {
+// What buildWorld puts in a scene. The Game scene uses FULL_WORLD; each level switches parts off and sets its own
+// rules (scenes/levels.js), so anything its goal does not need is simply not built.
+//   inside:            the house (doors, inside map and mask, owl, workbench, weighing station, shelves)
+//   glaze:             the glaze station (needs inside)
+//   clays:             CLAY_TYPES keys that get a patch to dig outside
+//   models:            ORDER_SHAPES names that get a model on the workbench
+//   maxGlazeDips:      glaze dips one pot takes
+//   potsBreakOnGround: whether dropped pots can be damaged by walking onto them
+//   orders:            null for random timed orders, else a list of fixedOrder()s that all arrive at once
+//   prePlaced:         pots lying on the ground at the start: [{clay, shape, x, y}] (x, y the pot's middle)
+//   kilnDelivers:      a glaze-fired pot taken out of the kiln fills its order straight away (no completed shelf)
+//   kilnHint:          explain the fire levels the first time the fox uses the kiln
+var FULL_WORLD = {
+    inside: true,
+    glaze: true,
+    clays: ["black", "red", "white"],
+    models: ORDER_SHAPES,
+    maxGlazeDips: MAX_GLAZE_DIPS,
+    potsBreakOnGround: true,
+    orders: null,
+    prePlaced: [],
+    kilnDelivers: false,
+    kilnHint: false
+};
+
+// Builds the HUD and world of one scene from a config like FULL_WORLD. Returns the parts a scene wires up
+// further: {player, kiln, hud, completedShelf (null without the house)}.
+function buildWorld(config) {
     Crafty.background("#EEE");
+    worldRules = {maxGlazeDips: config.maxGlazeDips, potsBreakOnGround: config.potsBreakOnGround};
 
     // HUD (the music button, timer and inventory bar are built together once the holders exist, below)
     Crafty.e("PlayerNotification");
     Crafty.e("StatusMessage");
     Crafty.e("InventorySlot").attr({x: 20, y: 60});
-    Crafty.e("OrderPanel").attr({x: GAME_SCREEN_WIDTH - 300, y: 60}).start();
+    Crafty.e("OrderPanel").attr({x: GAME_SCREEN_WIDTH - 300, y: 60}).start(config.orders);
 
     // Outside map, 5763x2458 drawn into OUTSIDE_MAP_BOX; z keeps it behind everything.
     Crafty.e("2D, DOM, backgroundOutside")
@@ -26,14 +54,16 @@ Crafty.defineScene("Game", function() {
         console.warn("The fox starts out of bounds: move its start or repaint the collision mask");
     }
 
-    // Inside sits left of Outside. The gap is wider than the screen, so the camera never shows both.
-    // House interior art at a quarter of its 8364x2246 source size, keeping its aspect ratio.
-    Crafty.e("2D, DOM, backgroundInside")
-        .attr(INSIDE_MAP_BOX).attr({z: -1});
+    if (config.inside) {
+        // Inside sits left of Outside. The gap is wider than the screen, so the camera never shows both.
+        // House interior art at a quarter of its 8364x2246 source size, keeping its aspect ratio.
+        Crafty.e("2D, DOM, backgroundInside")
+            .attr(INSIDE_MAP_BOX).attr({z: -1});
 
-    // The same art with only the foreground items the fox walks behind, drawn over him (below the HUD).
-    Crafty.e("2D, DOM, overlayInside")
-        .attr(INSIDE_MAP_BOX).attr({z: 50});
+        // The same art with only the foreground items the fox walks behind, drawn over him (below the HUD).
+        Crafty.e("2D, DOM, overlayInside")
+            .attr(INSIDE_MAP_BOX).attr({z: 50});
+    }
 
 
     // Debug aid for laying out the scene: log world coordinates of any click.
@@ -46,21 +76,24 @@ Crafty.defineScene("Game", function() {
     });
 
     // The master potter, inside the house. He keeps throwing pots while his hands are free.
-    var owl = Crafty.e("2D, DOM, owl, Mouse, Potter")
-        .attr({x: -1660, y: 327, w: 160, h: 152});
+    var owl = null;
+    if (config.inside) {
+        owl = Crafty.e("2D, DOM, owl, Mouse, Potter")
+            .attr({x: -1660, y: 327, w: 160, h: 152});
 
-    // Clicking the owl the fox is touching takes his oldest finished pot, if the fox can carry it;
-    // otherwise it hands him a pot to trim, or wedged clay and a model (see Potter.receiveFrom).
-    owl.bind("MouseDown", function () {
-        if (!player.touches(this)) {
-            return;
-        }
-        if (!this.hasFinishedPot()) {
-            showStatus(this.receiveFrom(player));
-        } else if (!this.takePot(player)) {
-            showStatus("You can't carry the pot: your pack is full");
-        }
-    });
+        // Clicking the owl the fox is touching takes his oldest finished pot, if the fox can carry it;
+        // otherwise it hands him a pot to trim, or wedged clay and a model (see Potter.receiveFrom).
+        owl.bind("MouseDown", function () {
+            if (!player.touches(this)) {
+                return;
+            }
+            if (!this.hasFinishedPot()) {
+                showStatus(this.receiveFrom(player));
+            } else if (!this.takePot(player)) {
+                showStatus("You can't carry the pot: your pack is full");
+            }
+        });
+    }
 
     // The kiln, Outside. The torch sits on top of the fire in its picture.
     var kiln = Crafty.e("Kiln, Mouse")
@@ -89,13 +122,18 @@ Crafty.defineScene("Game", function() {
     });
 
     // One HUD entity owns the music button, timer and inventory bar: hud.enable(false) hides it all.
-    Crafty.e("GameHud").build(player, owl, kiln);
+    var hud = Crafty.e("GameHud").build(player, owl, kiln);
 
     // Clicking the kiln the fox is touching loads the selected logs or pot (unfired at any dryness, or
     // bisque-fired for its glaze firing), or collects a fired pot.
+    var kilnHinted = false;
     kiln.bind("MouseDown", function () {
         if (!player.touches(this)) {
             return;
+        }
+        if (config.kilnHint && !kilnHinted) {
+            kilnHinted = true;
+            showStatus("Logs set the fire: 1 log is low (black clay), 2 mid (red clay), 3 high (white clay)");
         }
         var carried = player.inventory.selectedItem();
         if (carried && carried.type === "log") {
@@ -127,13 +165,50 @@ Crafty.defineScene("Game", function() {
         }
     });
 
+    if (config.kilnDelivers) {
+        // No completed shelf: a finished (glaze-fired, uncracked) pot taken out of the kiln fills its order and is used up.
+        player.bind("ItemMoved", function (move) {
+            var pot = move.item;
+            if (move.from !== kiln.inventory || move.to !== player.inventory || pot.state !== "glazeCooled" || pot.pot.cracked) {
+                return;
+            }
+            var order = findOpenOrder(pot);
+            if (order) {
+                player.inventory.pull(player.inventory.items.indexOf(pot));
+                player.inventory.changed();
+                pot.advance("shelved");
+                deliverOrder(order);
+                showStatus("Order delivered!");
+            }
+        });
+    }
+
+    // Pots lying on the ground at the start (with their pictures drawn like any dropped item).
+    config.prePlaced.forEach(function (spec) {
+        Crafty.e("DroppedItem").lieAt(player, makePot(spec.clay, spec.shape), spec.x, spec.y);
+    });
+
+    // Each clay node's dig zone is cut from its patch's art (see Clay.clay). The white patch is moved from
+    // the forest to the bottom right, near the kiln (its middle ends up around 1329, 817).
+    config.clays.forEach(function (key) {
+        Crafty.e("Clay").clay(CLAY_TYPES[key], key === "white" ? {x: 860, y: 259} : undefined);
+    });
+
+    TouchControls.follow(player);
+    makeCameraTrackEntity(player, 0);
+
+    if (!config.inside) {
+        return {player: player, kiln: kiln, hud: hud, completedShelf: null};
+    }
+
     // Glazing station, Inside left of the door: click a bucket to dip the selected pot.
-    Crafty.e("GlazeStation").station([{x: -1445 + 35 + 50, y: 247 + 50}, {x: -1340 + 35 + 25, y: 277 + 40}], player);
+    if (config.glaze) {
+        Crafty.e("GlazeStation").station([{x: -1445 + 35 + 50, y: 247 + 50}, {x: -1340 + 35 + 25, y: 277 + 40}], player);
+    }
 
     // Inside stations. The workbench is wedged on by holding and its models clicked (see
-    // Workbench); the shelves are clicked while the fox touches them. The third delivered order ends the
-    // game, after a pause to see it.
-    Crafty.e("Workbench").place(-1850, 242, 260, 50);
+    // Workbench); the shelves are clicked while the fox touches them.
+    Crafty.e("Workbench").place(-1850, 242, 260, 50, config.models);
 
     // Weighing station (the purple rectangle): dug clay goes on its piles and is weighed off (see WeighingStation).
     Crafty.e("WeighingStation").place(-2695 - 70 / 2 - 30, 432 + 70 / 4 + 70 / 2, 280, 70);
@@ -163,15 +238,6 @@ Crafty.defineScene("Game", function() {
             }
         });
     });
-    completedShelf.bind("OrdersComplete", function () {
-        this.delay(function () { player.trigger("GameOver"); }, 1500, 0);
-    });
-
-    // Each clay node's dig zone is cut from its patch's art (see Clay.clay). The white patch is moved from
-    // the forest to the bottom right, near the kiln (its middle ends up around 1329, 817).
-    var clayOne = Crafty.e("Clay").clay(CLAY_TYPES.black);
-    var clayTwo = Crafty.e("Clay").clay(CLAY_TYPES.red);
-    var clayThree = Crafty.e("Clay").clay(CLAY_TYPES.white, {x: 860, y: 259});
 
     // House doors, one per area, each leading to its partner. Invisible trigger zones; the outside one is
     // exactly the door picture.
@@ -208,11 +274,18 @@ Crafty.defineScene("Game", function() {
     outsideDoor.bind("EnterFrame", useDoor);
     insideDoor.bind("EnterFrame", useDoor);
 
-    makeCameraTrackEntity(player, 0);
-    TouchControls.follow(player);
+    return {player: player, kiln: kiln, hud: hud, completedShelf: completedShelf};
+}
 
+// The endless game: random timed orders, and the third delivered order ends it after a pause to see it.
+Crafty.defineScene("Game", function() {
+    resetGameState();
+    var world = buildWorld(FULL_WORLD);
+    world.completedShelf.bind("OrdersComplete", function () {
+        this.delay(function () { world.player.trigger("GameOver"); }, 1500, 0);
+    });
     // Bound on an entity so the handler is removed with the scene.
-    player.bind("GameOver", function () {
+    world.player.bind("GameOver", function () {
         track("game_complete", {seconds: gameState.seconds});
         Crafty.scene("End");
     });

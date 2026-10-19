@@ -212,6 +212,8 @@ var WEIGH_STEP_GRAMS = 50;
 var MODEL_COLOR = "#8A8F98";
 // Glaze: dips per pot, at most one per bucket.
 var MAX_GLAZE_DIPS = 2;
+// Levels: true opens every level on the level select (set true while we develop); false unlocks them in order.
+var UNLOCK_ALL_LEVELS = true;
 
 // Workbench: how long the fox holds to wedge a weighed piece of clay.
 var WEDGE_MS = 3000;

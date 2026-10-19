@@ -1,11 +1,24 @@
-// Named UIButton because Crafty 0.9 has its own built-in "Button" component.
+// Named UIButton because Crafty 0.9 has its own built-in "Button" component. HudButton is the same button
+// on the HUD layer, fixed on screen while the camera moves (in a game scene).
 // Text button until art exists:
 //   Crafty.e("UIButton").label("Play").attr({x: 100, y: 100}).onClick(fn);
 // Then swap in sprites from assets.js (hover sprite optional):
 //   .sprites("play_button", "play_button_hover")
 Crafty.c("UIButton", {
     init: function() {
-        this.requires("2D, DOM, Mouse, Text");
+        this.requires("DOM, ButtonBase");
+    }
+});
+
+Crafty.c("HudButton", {
+    init: function() {
+        this.requires("HUD, ButtonBase");
+    }
+});
+
+Crafty.c("ButtonBase", {
+    init: function() {
+        this.requires("2D, Mouse, Text");
         this.attr({w: 160, h: 48, z: 1000});
         this.textAlign("center").textFont({ size: '20px', weight: 'bold' }).textColor('#EEE').unselectable();
         this.css({ cursor: 'pointer', 'line-height': '48px', 'background-color': '#444', 'border-radius': '6px' });

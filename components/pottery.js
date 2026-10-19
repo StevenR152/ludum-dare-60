@@ -14,6 +14,19 @@ function Pottery(clayType, states) {
     this.state = this.states[0].name;
 }
 
+// A ready-made unfired pot, thrown from a CLAY_TYPES key and an ORDER_SHAPES name, trimmed and bone dry (for
+// levels that start with pots lying around).
+function makePot(clayKey, shape) {
+    var pottery = new Pottery(CLAY_TYPES[clayKey]);
+    pottery.clay.weight = ORDER_CLAY_GRAMS[shape];
+    pottery.advance("weighed");
+    pottery.advance("wedged");
+    pottery.advance("thrown", {shape: shape});
+    pottery.pot.dryness = 1;
+    pottery.pot.trimmed = true;
+    return pottery;
+}
+
 Pottery.prototype = {
     get type() {
         return this.pot ? "pot" : "clay";
@@ -108,6 +121,14 @@ Pottery.prototype = {
             var wasCracked = this.pot.cracked;
             this.pot.cracked = wasCracked || this.pot.fireLevel !== this.clay.fireLevel || this.pot.dryness < 1;
             if (this.pot.cracked && !wasCracked) {
+                var reasons = [];
+                if (this.pot.fireLevel !== this.clay.fireLevel) {
+                    reasons.push("fired at " + (this.pot.fireLevel || "no level") + ", " + this.clay.name + " clay needs " + this.clay.fireLevel);
+                }
+                if (this.pot.dryness < 1) {
+                    reasons.push("not bone dry (dryness " + Math.round(this.pot.dryness * 100) + "%)");
+                }
+                console.log("potterystate: " + this.clay.name + " " + this.pot.shape + " cracked in the kiln: " + reasons.join("; "));
                 Crafty.trigger("PotCracked", this);
             }
         } else if (to === "shelved") {

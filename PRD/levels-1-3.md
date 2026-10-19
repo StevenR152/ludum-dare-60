@@ -61,29 +61,29 @@
 10. A "Goal" HUD panel shows the level description and unticked checkbox steps; Menu and Back buttons work as above.
 
 **Acceptance criteria**
-- [ ] Play → mission list with 3 numbered, named levels; 2 and 3 locked with the constant false, open with it true.
-- [ ] L1: Outside only (no door, nothing Inside, no completed shelf); 3 floor pots (white, red, black), no table; no owl, clay or glaze; 3 orders; the level ends when the 3rd matching glaze-fired pot is taken out of the kiln.
-- [ ] L1: a pot fired at the wrong level cracks, the message shows, Restart returns a clean level; walking over the floor pots never damages them (levels 1–3).
-- [ ] L2: one cup made end to end delivers the single order and completes the level; no other clay or shape available.
-- [ ] L3: 4 fixed orders appear at once and no more ever come; a second dip is refused; all 4 delivered completes the level.
-- [ ] Completing 1 then restarting the game (constant false) opens level 2; `Game` scene and its README rules still work.
-- [ ] Each level shows a Goal panel with description and unticked steps; Menu returns to Level select, Back returns to Start.
+- [x] Play → mission list with 3 numbered, named levels; 2 and 3 locked with the constant false, open with it true. (Play button click not mouse-tested: the Click handler was triggered directly)
+- [x] L1: Outside only (no door, nothing Inside, no completed shelf); 3 floor pots (white, red, black), no table; no owl, clay or glaze; 3 orders; the level ends when the 3rd matching glaze-fired pot is taken out of the kiln.
+- [x] L1: a pot fired at the wrong level cracks, the message shows, Restart returns a clean level; walking over the floor pots never damages them (levels 1–3).
+- [x] L2: one cup made end to end delivers the single order and completes the level; no other clay or shape available. (weighing done through `weighOut`, not the slider)
+- [x] L3: 4 fixed orders appear at once and no more ever come; a second dip is refused; all 4 delivered completes the level. (pots made by script and put on the shelf; the full dig-to-glaze chain was walked in L2)
+- [x] Completing 1 then restarting the game (constant false) opens level 2; `Game` scene and its README rules still work.
+- [x] Each level shows a Goal panel with description and unticked steps; Menu returns to Level select, Back returns to Start. (Menu and Restart Click handlers triggered directly, not by mouse)
 
 **Constraints** — Crafty 0.9.0, no new dependencies; new `scenes/level_select.js`, `level_complete.js`, `levels.js` (config + scene definitions) added to `index.html`; refactor of `scenes/game.js` only to extract `buildWorld`.
 
 **Open questions** — None.
 
 **Tasks**
-- [ ] Constants: `UNLOCK_ALL_LEVELS`, `LEVELS` table (name, orders, features, pre-placed)
-- [ ] Extract `buildWorld(config)` from `scenes/game.js`; `Game` still uses everything
-- [ ] Fixed-order mode in `OrderPanel` (no timers/penalties); level-complete check; L1 completion on the 3rd kiln removal
-- [ ] `buildWorld` config can skip Inside entirely (doors, maps, masks, camera)
-- [ ] Pre-placed pot helper (`makePot`) and floor placement
-- [ ] `LevelSelect` scene and Start's Play wiring; unlock persistence
-- [ ] Level scenes 1–3, Goal panel, Restart and Menu buttons, crack message, `potsBreakOnGround` switch
-- [ ] `LevelComplete` scene; max dips = 1 in level 3
-- [ ] Touch scene list, `index.html`, README section
-- [ ] Verify acceptance criteria in the browser
+- [x] Constants: `UNLOCK_ALL_LEVELS`, `LEVELS` table (name, orders, features, pre-placed)
+- [x] Extract `buildWorld(config)` from `scenes/game.js`; `Game` still uses everything
+- [x] Fixed-order mode in `OrderPanel` (no timers/penalties); level-complete check; L1 completion on the 3rd kiln removal
+- [x] `buildWorld` config can skip Inside entirely (doors, maps, masks, camera)
+- [x] Pre-placed pot helper (`makePot`) and floor placement
+- [x] `LevelSelect` scene and Start's Play wiring; unlock persistence
+- [x] Level scenes 1–3, Goal panel, Restart and Menu buttons, crack message, `potsBreakOnGround` switch
+- [x] `LevelComplete` scene; max dips = 1 in level 3
+- [x] Touch scene list, `index.html`, README section
+- [x] Verify acceptance criteria in the browser
 
 ## Decisions
 1. Floor pots → no ground damage in levels 1–3 (breakage on the ground is off); firing mistakes still crack.

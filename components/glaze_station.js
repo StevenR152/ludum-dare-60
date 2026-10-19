@@ -1,6 +1,6 @@
 // Glazing station: one bucket square per GLAZE_BUCKET_COLORS entry (Glaze A orange, Glaze B pink).
 // Clicking a bucket while the fox touches it dips the fox's selected bisque-fired pot: the bucket's
-// name is added to pot.glaze, at most MAX_GLAZE_DIPS dips and one per bucket, in dipping order.
+// name is added to pot.glaze, at most worldRules.maxGlazeDips dips and one per bucket, in dipping order.
 // A pot that is never dipped is unglazed; either way it goes back to the kiln for its glaze firing.
 // Buckets are placed one position each, in GLAZE_BUCKET_COLORS order:
 //   Crafty.e("GlazeStation").station([{x: -1525, y: 572}, {x: -1430, y: 617}], player);
@@ -34,7 +34,7 @@ function dipPot(fox, glazeName) {
         showStatus("This pot has already been dipped in " + glazeName);
         return;
     }
-    if (pot.pot.glaze.length >= MAX_GLAZE_DIPS) {
+    if (pot.pot.glaze.length >= worldRules.maxGlazeDips) {
         showStatus("This pot can't take another glaze");
         return;
     }
