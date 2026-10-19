@@ -243,6 +243,13 @@ function buildWorld(config) {
     makeCameraTrackEntity(player, 0);
     Crafty.e("PlayerNotification").follow(player);
 
+    // A bar above each thing that can be busy, filling while it works (see components/timer_bar.js).
+    Crafty.e("TimerBar").follow(player, TIMER_BAR_OFFSET_Y).onHold();
+    Crafty.e("TimerBar").follow(kiln, TIMER_BAR_OFFSET_Y).onKiln();
+    if (owl) {
+        Crafty.e("TimerBar").follow(owl, TIMER_BAR_OFFSET_Y).onPotter(owl);
+    }
+
     if (!config.inside) {
         return {player: player, kiln: kiln, hud: hud, completedShelf: null};
     }

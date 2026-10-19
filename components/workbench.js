@@ -11,9 +11,11 @@ Crafty.c("Workbench", {
         this.color(WORKBENCH_COLOR);
         this.parts = [];
         this.modelSpots = [];
+        this.wedging = false;
         this.bind("MouseDown", this.startWedge);
-        this.bind("MouseUp", this.cancelWedge);
-        this.bind("MouseOut", this.cancelWedge);
+        // A real release says the wedging stopped; the cursor merely leaving the bench stops it quietly.
+        this.bind("MouseUp", function () { this.stopWedge(true); });
+        this.bind("MouseOut", function () { this.stopWedge(false); });
         this.bind("ModelReturned", this.returnModel);
         this.bind("Remove", function () {
             this.parts.forEach(function (part) { part.destroy(); });
@@ -117,13 +119,25 @@ Crafty.c("Workbench", {
             showStatus("Wedging, keep holding");
             this.wedgeSound = WEDGE_SOUNDS[this.clayToWedge().clay.name];
             audioController.loopSfx(this.wedgeSound);
+            this.wedging = true;
+            Crafty.trigger("HoldStarted", {ms: WEDGE_MS});
             this.delay(this.finishWedge, WEDGE_MS);
         }
     },
 
-    cancelWedge: function() {
+    // Ends wedging in progress. `spoken` true (a real release) also says so; a stray MouseOut stops it
+    // silently. A press that was refused never set the flag, so it says nothing either.
+    stopWedge: function(spoken) {
         this.cancelDelay(this.finishWedge);
         this.stopWedgeSound();
+        if (!this.wedging) {
+            return;
+        }
+        this.wedging = false;
+        Crafty.trigger("HoldEnded");
+        if (spoken) {
+            showStatus("You stopped wedging");
+        }
     },
 
     stopWedgeSound: function() {
@@ -136,6 +150,8 @@ Crafty.c("Workbench", {
     // The fox may have walked off or changed clay mid-hold; check again.
     finishWedge: function() {
         this.stopWedgeSound();
+        this.wedging = false;
+        Crafty.trigger("HoldEnded");
         var clay = this.clayToWedge();
         if (!clay) {
             return;

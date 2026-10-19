@@ -7,9 +7,11 @@
 Crafty.c("Forest", {
     init: function() {
         this.requires("2D, DOM, Mouse, Delay, Collision, DebugHitbox");
+        this.chopping = false;
         this.bind("MouseDown", this.startChop);
-        this.bind("MouseUp", this.cancelChop);
-        this.bind("MouseOut", this.cancelChop);
+        // A real release says the chop stopped; the cursor merely leaving the tree stops it quietly.
+        this.bind("MouseUp", function () { this.stopChop(true); });
+        this.bind("MouseOut", function () { this.stopChop(false); });
     },
 
     plant: function(tree) {
@@ -32,23 +34,42 @@ Crafty.c("Forest", {
             return;
         }
         showStatus("Chopping, keep holding");
-        this.delay(this.finishChop, LOG_CHOP_MS, -1);   // -1 repeats until cancelChop
+        this.chopping = true;
+        Crafty.trigger("HoldStarted", {ms: LOG_CHOP_MS});
+        this.delay(this.finishChop, LOG_CHOP_MS, -1);   // -1 repeats until stopChop
     },
 
-    cancelChop: function() { this.cancelDelay(this.finishChop); },
+    // Ends a chop in progress. `spoken` true (a real release) also says so; a stray MouseOut and the paths
+    // that have already explained themselves (a full pack, the fox out of reach) stop it silently.
+    stopChop: function(spoken) {
+        this.cancelDelay(this.finishChop);
+        if (!this.chopping) {
+            return;
+        }
+        this.chopping = false;
+        Crafty.trigger("HoldEnded");
+        if (spoken) {
+            showStatus("You stopped chopping");
+        }
+    },
 
     // Runs every LOG_CHOP_MS while held. The fox may have walked off mid-hold; pickUp explains a full or mixed pack.
     finishChop: function() {
         var fox = this.touchingFox();
         if (!fox || !fox.pickUp({type: "log"})) {
-            this.cancelChop();
+            this.stopChop(false);
             return;
         }
         showStatus("Chopped a log");
         Crafty.trigger("LogChopped");
         if (!fox.inventory.canAdd({type: "log"})) {
-            this.cancelChop();
+            // packFull() says its own line and flashes the pack, so the chop stops quietly; the return
+            // matters, or the bar below would start filling again for a log there is no room for.
+            this.stopChop(false);
             fox.packFull();
+            return;
         }
+        // Still holding and still room: the bar starts again for the next log.
+        Crafty.trigger("HoldStarted", {ms: LOG_CHOP_MS});
     }
 });

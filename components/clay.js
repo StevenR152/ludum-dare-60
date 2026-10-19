@@ -8,8 +8,9 @@ Crafty.c("Clay", {
         this.dug = false;
         this.digging = false;
         this.bind("MouseDown", this.startDig);
-        this.bind("MouseUp", this.cancelDig);
-        this.bind("MouseOut", this.cancelDig);
+        // A real release says the dig stopped; the cursor merely leaving the patch stops it quietly.
+        this.bind("MouseUp", function () { this.stopDig(true); });
+        this.bind("MouseOut", function () { this.stopDig(false); });
 
     },
 
@@ -85,6 +86,7 @@ Crafty.c("Clay", {
         }
         this.digging = true;
         showStatus("Digging clay...");
+        Crafty.trigger("HoldStarted", {ms: CLAY_DIG_MS});
         this.delay(this.dig, CLAY_DIG_MS);
     },
 
@@ -93,17 +95,23 @@ Crafty.c("Clay", {
         return hits ? hits[0].obj : null;
     },
 
-    // Letting go (or leaving the patch with the cursor) during a started dig stops it.
-    cancelDig: function() {
+    // Ends a dig in progress. `spoken` true (a real release) also says so; leaving the patch with the
+    // cursor stops it silently, so a stray MouseOut never pops a message mid-dig.
+    stopDig: function(spoken) {
         this.cancelDelay(this.dig);
-        if (this.digging) {
-            this.digging = false;
+        if (!this.digging) {
+            return;
+        }
+        this.digging = false;
+        Crafty.trigger("HoldEnded");
+        if (spoken) {
             showStatus("You stopped digging");
         }
     },
     // The fox may have walked off mid-hold, or have no room.
     dig: function() {
         this.digging = false;
+        Crafty.trigger("HoldEnded");
         var fox = this.touchingFox();
         if (!fox) {
             showStatus("I can't harvest the clay from here");
