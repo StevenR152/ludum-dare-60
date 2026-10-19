@@ -10,6 +10,7 @@
 // UNLOCK_ALL_LEVELS (constants.js) opens every level on the level select regardless.
 //   Crafty.scene("Game")                                  // Play: level 1 onwards
 //   Crafty.scene("Game", {stage: 1, mode: "single"})      // level 2 alone
+//   Crafty.scene("Game", {mode: "sandbox"})               // the dev sandbox (SANDBOX_LEVEL below)
 //
 // Per level: name, a one-line description and checklist steps for the Goal panel (each ticks the first time its
 // game event happens, see step()), the fixed orders as [shape, clay key, glaze], and `world`, the buildWorld config. A level's world only holds what its
@@ -103,6 +104,26 @@ var LEVELS = [
     }
 ];
 
+// The dev sandbox (DEV_MODE, Start menu): the whole game at once, played as the "sandbox" mode of the Game scene. It is
+// not in LEVELS, so it never appears on the level select, never unlocks anything and never ends. Orders are null: the
+// random timed customers of the full game, over every shape, clay and glaze.
+//   Crafty.scene("Game", {mode: "sandbox"})
+var SANDBOX_LEVEL = {
+    name: "Sandbox",
+    orders: null,
+    world: {
+        inside: true,
+        glaze: true,
+        clays: Object.keys(CLAY_TYPES),
+        models: ORDER_SHAPES,
+        maxGlazeDips: MAX_GLAZE_DIPS,
+        potsBreakOnGround: true,
+        prePlaced: [],
+        kilnDelivers: false,
+        kilnHint: true
+    }
+};
+
 var LEVELS_DONE_KEY = "kilnLevelsDone";
 
 // How many levels have been completed in order (0 if none, or if storage is unavailable).
@@ -185,19 +206,26 @@ function showLevelButtons(index, mode) {
     });
 }
 
-// options: {stage: index into LEVELS (default 0), mode: "progressive" (default) or "single", seconds: time already
-// played, at: {x, y} where the fox is}.
+// options: {stage: index into LEVELS (default 0), mode: "progressive" (default), "single" or "sandbox" (which plays
+// SANDBOX_LEVEL and ignores stage), seconds: time already played, at: {x, y} where the fox is}.
 Crafty.defineScene("Game", function(options) {
     options = options || {};
     var index = options.stage || 0;
     var mode = options.mode || "progressive";
-    var level = LEVELS[index];
+    var level = mode === "sandbox" ? SANDBOX_LEVEL : LEVELS[index];
     resetGameState();
     gameState.seconds = options.seconds || 0;
-    var orders = level.orders.map(function (spec) { return fixedOrder(spec[0], spec[1], spec[2]); });
+    var orders = level.orders && level.orders.map(function (spec) { return fixedOrder(spec[0], spec[1], spec[2]); });
     var world = buildWorld(Object.assign({}, level.world, {orders: orders, start: options.at}));
-    showGoalPanel(level);
+    if (mode !== "sandbox") {
+        showGoalPanel(level);
+    }
     showLevelButtons(index, mode);
+
+    // The sandbox has no end.
+    if (mode === "sandbox") {
+        return;
+    }
 
     // Done once every order is delivered; a pause to see it, then on to what the mode does next.
     var finished = false;

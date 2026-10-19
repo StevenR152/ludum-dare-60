@@ -33,9 +33,10 @@ if (DEBUG_HITBOXES) {
     Crafty.createLayer("DebugOutlineLayer", "DOM", {z: 70});
 }
 
-// Fit the screen to the window now and whenever it is resized.
+// Fit the screen to the window now and whenever it is resized (the itch.io fullscreen button resizes the iframe).
 fitScreenToWindow();
 window.addEventListener("resize", fitScreenToWindow);
+window.addEventListener("orientationchange", fitScreenToWindow);
 // Crafty resets the viewport scale to 1 on every scene change (just before SceneChange).
 Crafty.bind("SceneChange", fitScreenToWindow);
 

@@ -1,6 +1,5 @@
-// 2304x768: twice the width of the original 1152x768 (3:2) screen.
-// camera.js scales it down to fit smaller windows.
-var GAME_SCREEN_WIDTH = 2304;
+// The screen is laid out at 1600x768; camera.js scales it to fit the window.
+var GAME_SCREEN_WIDTH = 1600;
 var GAME_SCREEN_HEIGHT = 768;
 
 // gameAssets audio key played on the Start, Game and End scenes.
@@ -220,6 +219,9 @@ var MODEL_COLOR = "#8A8F98";
 var MAX_GLAZE_DIPS = 2;
 // Levels: true opens every level on the level select (set true while we develop); false unlocks them in order.
 var UNLOCK_ALL_LEVELS = false;
+// Dev mode: true adds a "Sandbox" button to the Start menu that loads SANDBOX_LEVEL (scenes/levels.js), with every
+// station, clay, model and glaze on, to try any combination. Keep false for releases.
+var DEV_MODE = true;
 
 // Workbench: how long the fox holds to wedge a weighed piece of clay.
 var WEDGE_MS = 3000;

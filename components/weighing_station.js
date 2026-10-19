@@ -112,7 +112,8 @@ Crafty.c("WeighingStation", {
     makePanel: function() {
         var station = this;
         var panel = document.createElement("div");
-        panel.style.cssText = "position:absolute; left:20px; top:220px; z-index:3000; padding:8px 12px;" +
+        panel.style.cssText = "position:absolute; left:calc(20px * var(--game-scale, 1)); top:calc(220px * var(--game-scale, 1)); z-index:3000;" +
+            "transform:scale(var(--game-scale, 1)); transform-origin:0 0; padding:8px 12px;" +
             "background:rgba(255,255,255,0.9); border-radius:8px; font:bold 16px sans-serif; color:#222;";
         panel.innerHTML = '<select></select> <span class="grams"></span> g <input type="range" style="vertical-align:middle; width:220px">' +
             ' <button>Weigh</button>';
