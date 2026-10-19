@@ -8,9 +8,11 @@ Crafty.c("GlazeStation", {
     station: function(positions, fox) {
         var names = Object.keys(GLAZE_BUCKET_COLORS);
         for (var i = 0; i < names.length; i++) {
-            var bucket = Crafty.e("2D, DOM, Color, Mouse, DebugHitbox")
-                .attr({x: positions[i].x, y: positions[i].y, w: 70, h: 70})
-                .color(GLAZE_BUCKET_COLORS[names[i]]);
+            // The art is a full inside-map canvas with the bucket already in place; the hitbox sits over it.
+            Crafty.e("2D, DOM, " + GLAZE_BUCKET_SPRITES[names[i]])
+                .attr(INSIDE_MAP_BOX).attr({z: 0});
+            var bucket = Crafty.e("2D, DOM, Mouse, DebugHitbox")
+                .attr({x: positions[i].x, y: positions[i].y, w: 80, h: 50});
             bucket.glazeName = names[i];
             bucket.bind("MouseDown", function () {
                 if (fox.touches(this)) {

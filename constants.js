@@ -189,10 +189,12 @@ var ORDER_PENALTIES = { Cup: 10, Vase: 20, Bowl: 25 };
 var ORDER_DELIVERED_COLOR = "#7CD992";
 var ORDER_EXPIRED_COLOR = "#E57373";
 var ORDER_OPEN_COLOR = "rgba(255, 255, 255, 0.85)";
-// Glazing station: two buckets, orange (glaze 1) and pink (glaze 2), also on order cards.
-var GLAZE_BUCKET_COLORS = { "Glaze A": "#F47B30", "Glaze B": "#EBA6DC" };
+// Glazing station: two buckets, Glaze A red/orange, Glaze B blue (bucket art); square colours show on order cards.
+var GLAZE_BUCKET_COLORS = { "Glaze A": "#F47B30", "Glaze B": "#7FB2E5" };
+// Sprite names of the bucket art (assets.js): A is red/orange, B is blue.
+var GLAZE_BUCKET_SPRITES = { "Glaze A": "glazeABucket", "Glaze B": "glazeBBucket" };
 // The same buckets in words, for the order tickets.
-var GLAZE_BUCKET_NAMES = { "Glaze A": "Orange", "Glaze B": "Pink" };
+var GLAZE_BUCKET_NAMES = { "Glaze A": "Orange", "Glaze B": "Blue" };
 var GLAZE_NUMBERS = { "Glaze A": 1, "Glaze B": 2 };
 // Pot pictures (assets/images/pots/<file>_...): each shape's file prefix and the box [x, y, w, h] around the pot
 // in its 2268x2082 image, which the pictures are cropped to (the images themselves are never edited).
