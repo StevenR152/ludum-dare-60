@@ -132,7 +132,7 @@ var DOOR_ART_CONTENT = [630, 634, 856, 1102];
 // Each house door's trigger zone (top-left x, y and size). The outside one is exactly the door picture.
 var DOOR_BOXES = {
     outside: {x: 975, y: 415, w: 85, h: 110},
-    inside: {x: -2626, y: 265, w: 7w5, h: 125}
+    inside: {x: -2626, y: 265, w: 75, h: 125}
 };
 var DOOR_ART_BOX = DOOR_BOXES.outside;
 // The inside door's colour (drawn fully transparent; it only shows in the debug outline).
