@@ -7,8 +7,8 @@ var MUSIC_TRACK = "bgMusic";
 var MUSIC_VOLUME = 0.2;
 // Quieter in the Game scene, where it layers under the ambient loop (AMBIENT_VOLUME) instead of playing alone.
 var GAME_MUSIC_VOLUME = 0.05;
-// Sound starts muted while we develop. TODO: set to false (music on by default) when we launch.
-var START_MUTED = true;
+// Sound starts on. Set true to start muted (handy while developing); players can still toggle it either way.
+var START_MUTED = false;
 
 // The menu screens (Loading, Start, Missions, Level complete) share one look: firelight in a dark
 // workshop, so the warm art and the clay colours sit on something other than flat grey. MENU_FONT is
@@ -276,8 +276,9 @@ var WEIGH_STEP_GRAMS = 50;
 var MODEL_COLOR = "#8A8F98";
 // Glaze: dips per pot, at most one per bucket.
 var MAX_GLAZE_DIPS = 2;
-// Levels: true opens every level on the level select (set true while we develop); false unlocks them in order.
-var UNLOCK_ALL_LEVELS = true;
+// Levels: false unlocks them in order as each is completed (the release setting); true opens every level on the
+// level select, for testing.
+var UNLOCK_ALL_LEVELS = false;
 // Dev mode: true adds a "Sandbox" button to the Start menu that loads SANDBOX_LEVEL (scenes/levels.js), with every
 // station, clay, model and glaze on, to try any combination. Keep false for releases.
 var DEV_MODE = false;
@@ -325,3 +326,8 @@ var TIMER_BAR_COOL_COLOR = "#7FB2E5";
 var AMBIENT_VOLUME = 0.1; // its own level, apart from the music
 var WEDGE_SOUNDS = {white: "wedgeBlue", red: "wedgeRed", black: "wedgeBrown"};
 var WET_POT_SOUND_SUFFIX = {white: "Blue", red: "Red", black: "Brown"};
+// A crack sounds like the size of the pot: a cup is a small pot, bowls and vases (500 g) big ones. A pot broken
+// for good (DESTROY_DAMAGE) always gets the big one.
+var CRACK_SOUNDS = {Cup: "potCrackSmall", Bowl: "potCrack", Vase: "potCrack"};
+// The fox's yelp when it trips, kept well under the sound of whatever it dropped.
+var STUMBLE_YELP_VOLUME = 0.3;

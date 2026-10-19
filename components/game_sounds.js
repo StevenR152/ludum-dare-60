@@ -6,9 +6,12 @@
 //   leaving it a putdown, by stage and clay; a pot into the kiln is a putdown too.
 // - "PotterWorking" / "PotterDone": the kick wheel loops while the owl works, then his pot's putdown sound.
 // - "KilnLit": the fire catching (the kiln's start-firing sound).
-// - "PotGlazed": first dip vs later dips. "PotCracked": one crack sound for every cracked pot ("PotDestroyed" too).
-// - "OrderDelivered" / "OrderExpired": the success sound / the failed sound.
-// - "Stumbled": the fox tripped and dropped something.
+// - "PotGlazed": first dip vs later dips.
+// - "OrderDelivered" / "OrderExpired": the success sound / the failed sound. "LevelFinished": the last order's
+//   jingle gives way to the level-complete one.
+// - "Stumbled": a quiet yelp from the fox (the dropped item makes its own landing sound).
+// - "ItemMoved" also covers clay (wet pickup/putdown by colour) and a log landing in the kiln or on the ground.
+// - "PotCracked" by the pot's size (CRACK_SOUNDS); "PotDestroyed" always the big crack.
 // A dipped pot is still bisque ware until it leaves the glaze firing.
 Crafty.c("GameSounds", {
     init: function() {
@@ -23,7 +26,14 @@ Crafty.c("GameSounds", {
             audioController.stopSfx("kickWheel");
             audioController.playSfx(this.potSound("putdown", pot));
         });
-        this.bind("OrderDelivered", function () { audioController.playSfx("orderDelivered"); });
+        this.levelFinished = false;
+        // Skipped for the level's last order: its "LevelFinished" (below) is heard first and plays the
+        // level-complete jingle, so the order one would only play over it.
+        this.bind("OrderDelivered", function () {
+            if (!this.levelFinished) {
+                audioController.playSfx("orderDelivered");
+            }
+        });
         this.bind("OrderExpired", function () { audioController.playSfx("orderFailed"); });
         this.bind("KilnLit", function () {
             audioController.playSfx("kilnLit");
@@ -40,9 +50,23 @@ Crafty.c("GameSounds", {
             audioController.stopSfx("kickWheel");
             audioController.stopSfx("fireLoop");
         });
-        this.bind("PotCracked", function () { audioController.playSfx("potCrack"); });
+        // A crack by the size of the pot (CRACK_SOUNDS); a pot broken for good is always the big one.
+        this.bind("PotCracked", function (pot) {
+            audioController.playSfx(pot && pot.pot && CRACK_SOUNDS[pot.pot.shape] || "potCrack");
+        });
         this.bind("PotDestroyed", function () { audioController.playSfx("potCrack"); });
-        this.bind("Stumbled", function () { audioController.playSfx("stumble"); });
+        // A quiet yelp; the dropped item makes its own sound as it lands (onItemMoved).
+        this.bind("Stumbled", function () {
+            audioController.playSfx(Math.random() < 0.5 ? "foxYelp1" : "foxYelp2", STUMBLE_YELP_VOLUME);
+        });
+        // The level's last order: its closing jingle takes over from the ordinary order one. The level's own
+        // OrderDelivered handler fires this before ours sees the order, so flag it to skip the order jingle; the
+        // stop covers the other order, should the order jingle already be playing.
+        this.bind("LevelFinished", function () {
+            this.levelFinished = true;
+            audioController.stopSfx("orderDelivered");
+            audioController.playSfx("levelComplete");
+        });
         this.bind("UpdateFrame", this.updateAmbient);
     },
 
@@ -62,8 +86,19 @@ Crafty.c("GameSounds", {
     },
 
     onItemMoved: function(move) {
-        if (move.item.type === "log" && move.to === this.kiln.woodInventory) {
+        // A log lands with a thunk, into the kiln or on the ground (dropped, or lost in a stumble).
+        if (move.item.type === "log" && (move.to === this.kiln.woodInventory || (move.to === null && move.from === this.fox.inventory))) {
             audioController.playSfx("dropLog");
+        }
+        // Clay sounds wet whichever form it is in (a dug kilo, a weighed piece, wedged): picked up into the pack,
+        // put down out of it (on the scales, handed to the owl, dropped, given back to its patch), by clay colour.
+        if (move.item.type === "clay") {
+            if (move.to === this.fox.inventory) {
+                audioController.playSfx("pickupWet" + WET_POT_SOUND_SUFFIX[move.item.clay.name]);
+            } else if (move.from === this.fox.inventory) {
+                audioController.playSfx("putdownWet" + WET_POT_SOUND_SUFFIX[move.item.clay.name]);
+            }
+            return;
         }
         if (move.item.type !== "pot") {
             return;
