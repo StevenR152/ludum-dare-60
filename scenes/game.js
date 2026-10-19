@@ -53,6 +53,10 @@ function buildWorld(config) {
         Crafty.e("2D, DOM, midInterior")
             .attr(INSIDE_MAP_BOX).attr({z: -1});
 
+        // The shelf, with the fox in front of it: the same layer as the back furniture, made after it so it draws over it.
+        Crafty.e("2D, DOM, shelfInterior")
+            .attr(INSIDE_MAP_BOX).attr({z: -1});
+
         // The foreground items the fox walks behind, drawn over him (below the HUD).
         Crafty.e("2D, DOM, frontInterior")
             .attr(INSIDE_MAP_BOX).attr({z: INTERIOR_FRONT_Z});    }

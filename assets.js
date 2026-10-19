@@ -97,7 +97,9 @@ var gameAssets = {
         // Interior layers, back to front, all on the inside map's canvas (see INSIDE_MAP_BOX).
         "assets/images/background_interior-bg.png": {"tile": 8364, "tileh": 2246, "map": {"backgroundInterior": [0, 0]}},
         "assets/images/background_interior-mid.png": {"tile": 8364, "tileh": 2246, "map": {"midInterior": [0, 0]}},
-        "assets/images/background_interior-front.png": {"tile": 8364, "tileh": 2246, "map": {"frontInterior": [0, 0]}},        // Glaze buckets: each drawn in place on a canvas the size of the inside map (see INSIDE_MAP_BOX).
+        "assets/images/background_interior-shelf.png": {"tile": 8364, "tileh": 2246, "map": {"shelfInterior": [0, 0]}},
+        "assets/images/background_interior-front.png": {"tile": 8364, "tileh": 2246, "map": {"frontInterior": [0, 0]}},
+        // Glaze buckets: each drawn in place on a canvas the size of the inside map (see INSIDE_MAP_BOX).
         "assets/images/glazeA_bucket.png": {"tile": 8364, "tileh": 2246, "map": {"glazeABucket": [0, 0]}},
         "assets/images/glazeB_bucket.png": {"tile": 8364, "tileh": 2246, "map": {"glazeBBucket": [0, 0]}},
         "assets/images/fox.png": {
