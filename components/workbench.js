@@ -21,6 +21,7 @@ Crafty.c("Workbench", {
         this.bind("MouseOut", function () { this.stopWedge(false); });
         this.bind("ModelReturned", this.returnModel);
         this.bind("Remove", function () {
+            this.hideWedgedClay();
             this.parts.forEach(function (part) { part.destroy(); });
         });
     },
@@ -124,6 +125,7 @@ Crafty.c("Workbench", {
             this.wedgeSound = WEDGE_SOUNDS[this.clayToWedge().clay.name];
             audioController.loopSfx(this.wedgeSound);
             this.wedging = true;
+            this.showWedgedClay(this.clayToWedge().clay);
             Crafty.trigger("HoldStarted", {ms: WEDGE_MS});
             this.delay(this.finishWedge, WEDGE_MS);
         }
@@ -138,9 +140,26 @@ Crafty.c("Workbench", {
             return;
         }
         this.wedging = false;
+        this.hideWedgedClay();
         Crafty.trigger("HoldEnded");
         if (spoken) {
             showStatus("You stopped wedging");
+        }
+    },
+
+    // The picture of the clay being wedged (by its letter), lying on the bench for as long as the hold lasts.
+    showWedgedClay: function(clay) {
+        var box = WEDGED_CLAY_BOX;
+        var fit = fitPicture(box, WEDGED_CLAY_IMAGES[clay.letter]);
+        this.wedgedPicture = Crafty.e("2D, DOM")
+            .attr({x: this.x + box.x, y: this.y + box.y, w: box.w, h: box.h, z: this.z + 1})
+            .css({backgroundImage: fit.layer, backgroundSize: fit.size, backgroundPosition: fit.position, backgroundRepeat: "no-repeat"});
+    },
+
+    hideWedgedClay: function() {
+        if (this.wedgedPicture) {
+            this.wedgedPicture.destroy();
+            this.wedgedPicture = null;
         }
     },
 
@@ -155,6 +174,7 @@ Crafty.c("Workbench", {
     finishWedge: function() {
         this.stopWedgeSound();
         this.wedging = false;
+        this.hideWedgedClay();
         Crafty.trigger("HoldEnded");
         var clay = this.clayToWedge();
         if (!clay) {

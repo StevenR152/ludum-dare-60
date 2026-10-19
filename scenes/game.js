@@ -70,7 +70,7 @@ function buildWorld(config) {
     var owl = null;
     if (config.inside) {
         owl = Crafty.e("2D, DOM, owl, Mouse, Potter")
-            .attr({x: -1660, y: 327, w: 160, h: 152});
+            .attr({x: -1684, y: 281, w: 208, h: 198});
 
         // Clicking the owl the fox is touching takes his oldest finished pot while the fox has a free slot; with a full
         // pack it gives him what he can work on instead (a pot to trim, or wedged clay and a model, see

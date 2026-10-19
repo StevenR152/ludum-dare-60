@@ -31,7 +31,7 @@ var GAME_TITLE = "Blind Master's Kiln";
 
 // Shown along the bottom of the Start scene.
 var CREDITS = [
-    { role: "Game Dev", name: "Steve, Crystal, Jacke, Caleri, James" },
+    { role: "Game Dev", name: "Steve, Crystal, Jacke, Caleri, James, Josh" },
 ];
 
 //click timing
@@ -75,10 +75,10 @@ var WALK_PROGRESS_EPSILON = 0.5;
 // Fox movement and inventory; each 1000 g of clay carried takes 20% off the base speed.
 var FOX_SPEED = 250;
 // The fox's touch area is its sprite box shrunk by this many px on every side (the art has empty margins).
-var FOX_HITBOX_INSET = 25;
-// The fox's feet, relative to its 160x102 sprite box: the strip of the art (its paws sit around y 79) that
+var FOX_HITBOX_INSET = 32;
+// The fox's feet, relative to its 208x133 sprite box: the strip of the art (its paws sit around y 103) that
 // is stopped by the out-of-bounds masks. Nothing else about the fox collides.
-var FOX_FEET_BOX = {x: 35, y: 62, w: 90, h: 15};
+var FOX_FEET_BOX = {x: 45, y: 81, w: 117, h: 20};
 var FOX_SLOWDOWN_PER_KG = 0.2;
 var FOX_INVENTORY_CAPACITY = 2;
 // Dropped items: drawn DROPPED_ITEM_SCALE times their HUD size; each one the fox overlaps multiplies its
@@ -127,7 +127,7 @@ var COLLISION_ALPHA = 128;
 var COLLISION_SAMPLE_STEP = 6;
 var COLLISION_SNAP_STEP = 4;
 var COLLISION_SNAP_RADIUS = 400;
-// Where the fox appears (its x, y, top-left of the 160x102 sprite box) after using the door into that area.
+// Where the fox appears (its x, y, top-left of the 208x133 sprite box) after using the door into that area.
 // Pick spots clear of the masks and of both door zones, or the fox walks straight back through.
 // Optional facing: "right" or "left" forces which way the fox looks on arrival; leave it out to keep its facing.
 var DOOR_DESTINATIONS = {
@@ -184,6 +184,15 @@ var CLAY_IMAGES = {
     B: {url: "assets/images/clay_cube_B_black.png", w: 4836, h: 2268, crop: [1990, 994, 769, 628]},
     C: {url: "assets/images/clay_cube_C_white.png", w: 4836, h: 2268, crop: [2015, 909, 805, 711]}
 };
+
+// The wedged clay pictures (4836x2268 each) by clay letter, cropped to their opaque part. WEDGED_CLAY_BOX is the
+// area on the workbench (offset from the bench's top-left, bottom-aligned on its right half) the picture is fitted into.
+var WEDGED_CLAY_IMAGES = {
+    A: {url: "assets/images/wedged_clayA_red.png", w: 4836, h: 2268, crop: [2152, 864, 842, 602]},
+    B: {url: "assets/images/wedged_clayB_Black.png", w: 4836, h: 2268, crop: [2186, 858, 810, 610]},
+    C: {url: "assets/images/wedged_clayC_white.png", w: 4836, h: 2268, crop: [2176, 866, 796, 616]}
+};
+var WEDGED_CLAY_BOX = {x: 140, y: -40, w: 110, h: 85};
 
 // The HUD's left panels (inventory and Goal): wide enough for a label and 5 slots. Inventory slots wrap onto a new line at its edge.
 var HUD_PANEL_X = 10;
@@ -284,7 +293,7 @@ var MODEL_COLOR = "#8A8F98";
 var MAX_GLAZE_DIPS = 2;
 // Levels: false unlocks them in order as each is completed (the release setting); true opens every level on the
 // level select, for testing.
-var UNLOCK_ALL_LEVELS = false;
+var UNLOCK_ALL_LEVELS = true;
 // Dev mode: true adds a "Sandbox" button to the Start menu that loads SANDBOX_LEVEL (scenes/levels.js), with every
 // station, clay, model and glaze on, to try any combination. Keep false for releases.
 var DEV_MODE = false;
