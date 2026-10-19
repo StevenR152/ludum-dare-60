@@ -101,11 +101,16 @@ var LEVELS = [
         }
     },
     {
-        name: "First Orders",
+        name: "Four Cups for the Village",
         description: "Four cups, each with one glaze. A pot takes only one dip.",
-        steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
-            potFired("Bisque fire (1 log black, 2 red, 3 white)", "cooled"), step("Dip it in a glaze", "PotGlazed"),
-            potFired("Glaze fire", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
+        story: "Barnaby's cup was so admired that four more villagers have ordered one, each in its own glaze. " +
+            "Dip each pot once before the second firing.",
+        tip: "\u201cGlaze is dipped after the first fire, apprentice. Each cup takes one dip only.\u201d",
+        finish: "\u201cFour cups, four happy villagers. Well glazed, apprentice.\u201d",
+        steps: [step("Make four cups (dig, weigh, wedge, give to the owl)", "PotterWorking"),
+            step("Dry them", "PotDry"), potFired("First firing", "cooled"),
+            step("Dip each cup in its glaze", "PotGlazed"), potFired("Second firing", "glazeCooled"),
+            step("Put the cups on the completed shelf", "OrderDelivered")],
         card: [],
         orders: [["Cup", "white", ["Glaze A"]], ["Cup", "red", ["Glaze B"]], ["Cup", "black", ["Glaze B"]],
             ["Cup", "red", ["Glaze A"]]],
