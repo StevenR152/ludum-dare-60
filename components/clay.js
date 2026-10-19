@@ -3,7 +3,7 @@
 //   Crafty.e("Clay").attr({x: 195, y: 775, w: 80, h: 80}).clay(CLAY_TYPES.black);
 Crafty.c("Clay", {
     init: function() {
-        this.requires("2D, DOM, Color, Mouse, Delay, Collision, DebugHitbox");
+        this.requires("2D, DOM, Mouse, Delay, Collision, DebugHitbox");
         this.clayType = null;
         this.dug = false;
         this.bind("MouseDown", this.startDig);
@@ -12,10 +12,14 @@ Crafty.c("Clay", {
 
     },
 
-//clay should have colour, change colour square when dug
+    // The patch picture covers the whole map and shows while the clay can be dug.
     clay: function(type) {
         this.clayType = type;
-        return this.color(type.color); },
+        var patch = Crafty.e("2D, DOM, " + type.patch).attr(OUTSIDE_MAP_BOX).attr({z: OUTSIDE_ART_Z});
+        this.patch = patch;
+        this.bind("Remove", function () { patch.destroy(); });
+        return this;
+    },
 
         //can only dig if pile not dug - ?could we run out of clay in future
     // Only the fox standing on the pile can dig it.
@@ -49,7 +53,7 @@ Crafty.c("Clay", {
             return;
         }
         this.dug = true;
-        this.color(CLAY_DUG_COLOR);
+        this.patch.visible = false;
         this.trigger("ClayDug", this.clayType);
         this.respawnDue = Date.now() + CLAY_RESPAWN_MS;
         this.delay(this.respawn, CLAY_RESPAWN_MS);
@@ -79,6 +83,6 @@ Crafty.c("Clay", {
     // Pile reappears so the same spot can be re-harvested.
     respawn: function() {
         this.dug = false;
-        this.color(this.clayType.color);
+        this.patch.visible = true;
     }
 });

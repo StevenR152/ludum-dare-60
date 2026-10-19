@@ -1,9 +1,9 @@
-// The kiln: a translucent zone square holding one pot in its inventory. Every pot is fired twice, each
+// The kiln: an invisible zone square holding one pot in its inventory. Every pot is fired twice, each
 // time for KILN_FIRE_MS then cooling for KILN_COOL_MS, then it waits, shown as a box, to be taken out:
 // - bisque: an unfired pot at any dryness goes firing -> cooling -> cooled; it cracks unless it went in
 //   bone dry (and at its clay's fire level), which only shows once it has cooled;
 // - glaze firing: a cooled (unglazed) or glazed pot goes glazeFiring -> glazeCooling -> glazeCooled.
-// Kiln states: empty -> firing -> cooling -> ready -> empty. The square's colour shows the state.
+// Kiln states: empty -> firing -> cooling -> ready -> empty. The picture is lit while firing.
 // The pot can only be taken once ready (transferItem(kiln.inventory, fox.inventory)).
 var KILN_PASSES = {
     bisque: {firing: "firing", cooling: "cooling", done: "cooled"},
@@ -12,7 +12,7 @@ var KILN_PASSES = {
 
 Crafty.c("Kiln", {
     init: function() {
-        this.requires("2D, DOM, Color, Delay, DebugHitbox");
+        this.requires("2D, DOM, Delay, DebugHitbox");
         var kiln = this;
         this.inventory = new Inventory(KILN_CAPACITY, {
             // Pots only go in while the kiln waits to be lit, never while it fires or while fired pots wait to be taken.
@@ -54,7 +54,26 @@ Crafty.c("Kiln", {
 
     setState: function(state) {
         this.state = state;
-        this.color(KILN_STATE_COLORS[state]);
+        if (this.art) {
+            this.showArt();
+        }
+    },
+
+    // Draws the kiln picture (lit only while firing) over KILN_ART_BOX; the zone itself stays invisible.
+    placeArt: function() {
+        this.art = {
+            idle: fitArt(Crafty.e("2D, DOM, kilnBase"), KILN_ART_CONTENT, KILN_ART_BOX),
+            lit: fitArt(Crafty.e("2D, DOM, kilnFiring"), KILN_ART_CONTENT, KILN_ART_BOX)
+        };
+        this.bind("Remove", function () { this.art.idle.destroy(); this.art.lit.destroy(); });
+        this.showArt();
+        return this;
+    },
+
+    showArt: function() {
+        var lit = this.state === "firing";
+        this.art.idle.visible = !lit;
+        this.art.lit.visible = lit;
     },
 
     // Starts firing if there is a pot and wood; otherwise says what is missing. Returns true if lit.
