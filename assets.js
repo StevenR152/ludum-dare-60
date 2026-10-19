@@ -59,6 +59,7 @@ var gameAssets = {
         "orderFailed": ["assets/sounds/Sounds/order succes 3.wav"],
         "digClay": ["assets/sounds/Sounds/dig 1.wav"],
         "door": ["assets/sounds/Sounds/door 1.wav"],
+        "owlSpeak": ["assets/sounds/Sounds/owl 1.wav"],
         "weighScale": ["assets/sounds/Sounds/weigh scale 1.wav"],
         "chopLog": ["assets/sounds/Sounds/harvest wood 1.wav"],
         "dropLog": ["assets/sounds/Sounds/drop wood 1.wav"],

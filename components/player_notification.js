@@ -18,13 +18,16 @@ Crafty.c("PlayerNotification", {
         return this;
     },
 
+    // `message` is the text, or {text, extraMs} to keep it up longer than usual.
     show: function(message) {
+        var extraMs = message.extraMs;
+        message = message.text || message;
         this.cancelDelay(this.fadeOut);
         this.cancelTween("alpha");
         this.text(message);
         this.alpha = 1;
         // Longer messages stay up longer.
-        this.delay(this.fadeOut, 1500 + message.length * 50);
+        this.delay(this.fadeOut, 1500 + message.length * 50 + (extraMs || 0));
     },
 
     fadeOut: function() {
