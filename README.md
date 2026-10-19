@@ -15,7 +15,7 @@ Built with [CraftyJS](http://craftyjs.com/api/) 0.9.0 (loaded from cdnjs).
 - Things you click in the world (doors, owl, kiln, shelves...) act the moment you press the button or touch, not when you let go. Menu buttons still act on release.
 - Anything that takes time shows a bar filling above whoever is doing it: the fox while it digs, chops or wedges, the owl while he throws or trims, and the kiln while it fires and again while it cools. Letting go of a hold before the bar fills stops the job and says so.
 - Hold-click a clay square (Outside) while standing on it to dig a kilo (1000 g) into your inventory (2 slots, HUD top left). You carry any 2 items in any mix (2 dug clays, a weighed piece and a model, 2 pots...). E picks a slot.
-- Click the purple weighing station (Inside) with a dug kilo selected to put it on the scales. Kilos of the same clay add up in one pile; different clays sit side by side (e.g. 1000 g white and 800 g red).
+- Click the weighing station (Inside, the wooden tray of scales) with a dug kilo selected to put it on the scales. Kilos of the same clay add up in one pile; different clays sit side by side (e.g. 1000 g white and 800 g red).
 - Click the weighing station with anything else selected to open a panel, choose a clay and the grams (up to what's in that pile) and press Weigh. A piece is always one clay. The weighed piece goes in your pack; the rest stays on the scales.
 - Hold-click the workbench (Inside) for 3s while standing on it with the weighed piece selected to wedge it. Wedged clay has a white outline.
 - Click a model on the workbench (Small/Medium/Large Bowl, Cup or Vase) to carry it.

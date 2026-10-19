@@ -273,7 +273,7 @@ function buildWorld(config) {
     // Workbench); the shelves are clicked while the fox touches them.
     Crafty.e("Workbench").place(-1850, 242, 260, 50, config.models);
 
-    // Weighing station (the purple rectangle): dug clay goes on its piles and is weighed off (see WeighingStation).
+    // Weighing station (the wooden tray): dug clay goes on its piles and is weighed off (see WeighingStation).
     Crafty.e("WeighingStation").place(-2695 - 70 / 2 - 30, 432 + 70 / 4 + 70 / 2, 280, 70);
     var dryingShelf = Crafty.e("DryingShelf").place(-2401, 405, 182, 43);
     var completedShelf = Crafty.e("CompletedShelf").place(-2180, 405, 183, 43);

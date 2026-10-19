@@ -299,8 +299,13 @@ var DRY_BAR_COLOR = "#555";
 // Completed shelf: places for pots waiting for an order, and how many delivered orders end the game (until levels).
 var COMPLETED_CAPACITY = 3;
 var ORDERS_TO_WIN = 3;
-// Zone square colours of the inside stations.
-var WEIGHING_STATION_COLOR = "#800080";
+// Zone square colours of the inside stations. The weighing station is a dark wooden tray (it was a placeholder
+// magenta); its empty pile spaces are faint cream outlines.
+var WEIGHING_STATION_COLOR = "rgba(92, 60, 38, 0.86)";
+var WEIGHING_EMPTY_PILE_COLOR = "rgba(250, 242, 226, 0.14)";
+// Where the weighing panel opens, in screen px: right of the HUD's inventory panel, below Restart and Menu.
+var WEIGH_PANEL_X = HUD_PANEL_X + HUD_PANEL_W + 10;
+var WEIGH_PANEL_Y = 58;
 // Extra pixels the workbench zone (where the fox counts as at the bench) extends below the bench.
 var WORKBENCH_REACH = 50;
 var WORKBENCH_COLOR = "rgba(139, 90, 43, 0.45)";
