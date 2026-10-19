@@ -2,7 +2,6 @@
 
 // What buildWorld puts in a scene: each stage (scenes/levels.js) switches parts off and sets its own rules, so anything
 // its goal does not need is simply not built.
-//   start:             where the fox starts {x, y} (default: left of the middle, Outside)
 //   inside:            the house (doors, inside map and mask, owl, workbench, weighing station, shelves)
 //   glaze:             the glaze station (needs inside)
 //   clays:             CLAY_TYPES keys that get a patch to dig outside
@@ -36,7 +35,7 @@ function buildWorld(config) {
     }
 
     // The fox starts on the ground, left of the middle of the map.
-    var player = Crafty.e("Fox").attr(config.start || {x: 512, y: 706});
+    var player = Crafty.e("Fox").attr({x: 512, y: 706});
     if (player.feetBlocked(player.x, player.y)) {
         console.warn("The fox starts out of bounds: move its start or repaint the collision mask");
     }
@@ -92,6 +91,8 @@ function buildWorld(config) {
 
     // Ambient loops and sound effects, driven by game events (see GameSounds).
     Crafty.e("GameSounds").listen(player, kiln);
+    // Background theme, layered under the ambient loop at a lower volume than on the menu scenes.
+    audioController.playMusic(MUSIC_TRACK, GAME_MUSIC_VOLUME);
 
     // The torch lights the kiln. The fox stands on it, e.g. at (1526, 555), and clicks.
     var torch = Crafty.e("2D, DOM, Color, Mouse, DebugHitbox")
@@ -239,7 +240,6 @@ function buildWorld(config) {
     TouchControls.follow(player);
     makeCameraTrackEntity(player, 0);
     Crafty.e("PlayerNotification").follow(player);
-    showStatus(TouchControls.isActive() ? "Touch and hold to move" : "Arrow keys to move");
 
     if (!config.inside) {
         return {player: player, kiln: kiln, hud: hud, completedShelf: null};
