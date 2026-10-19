@@ -312,10 +312,10 @@ function showGoalPanel(level, top) {
     Crafty.e("2D, HUD, Color")
         .attr({x: HUD_PANEL_X, y: top, w: HUD_PANEL_W, h: h, z: 999})
         .color(HUD_PANEL_COLOR)
-        .css({borderRadius: "8px"});
+        .css(HUD_PANEL_STYLE);
     var text = Crafty.e("2D, HUD, Text")
         .attr({x: 20, y: top + 8, w: HUD_PANEL_W - 20, h: h - 8, z: 1000})
-        .textFont({size: "15px"}).textColor("#222").unselectable()
+        .textFont({size: "15px"}).textColor(HUD_TEXT_COLOR).css({fontFamily: MENU_FONT}).unselectable()
         .css({lineHeight: "22px"});
     var ticked = level.steps.map(function () { return false; });
     var draw = function () {
@@ -372,7 +372,7 @@ function showLevelButtons(index, mode) {
         this.cancelDelay(this.pulse);
         this.delay(this.pulse = function () {
             alarm = !alarm;
-            this.css({backgroundColor: alarm ? "#C0392B" : "#444"});
+            this.css({backgroundColor: alarm ? "#C0392B" : MENU_BUTTON_COLOR});
         }, 400, -1);
     });
 }

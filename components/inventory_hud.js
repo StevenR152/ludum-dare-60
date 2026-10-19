@@ -2,7 +2,7 @@
 // drawn centred in it in its own colour or picture and shape (ITEM_SHAPES: clay square, pot a little wider than tall).
 // The selected slot of an inventory with more than one item is outlined in white (options.outlined(inventory, index)
 // decides instead, if given; options.watch lists more inventories whose changes redraw the row). A drying pot has a
-// DryBar under its slot; a pot a red badge per firing (paintItem), wedged clay a border (markBorder).
+// DryBar under its slot; a fired pot its "1x"/"2x" fire badge (paintItem), wedged clay a border (markBorder).
 // Redraws whenever one of its inventories changes, and as pots dry ("PotsDried").
 //   Crafty.e("InventoryHud").attr({x: 20, y: 60}).show("Fox", [player.inventory]);
 //   Crafty.e("InventoryHud").attr({x: 20, y: 105}).show("Master", [owl.inventory]);
@@ -45,7 +45,7 @@ Crafty.c("InventoryHud", {
         this.parts.push(Crafty.e("2D, HUD, Text")
             .attr({x: this.x, y: this.y, w: INVENTORY_HUD_LABEL_W, h: 40, z: 1000})
             .text(label)
-            .textFont({size: '16px', weight: 'bold'}).textColor('#222').unselectable()
+            .textFont({size: '16px', weight: 'bold'}).textColor(HUD_TEXT_COLOR).css({fontFamily: MENU_FONT}).unselectable()
             .css({lineHeight: '40px'}));
         this.slots = [];
         // Slots run along the row and wrap onto a new line, under the first slot, where the panel runs out.
@@ -128,7 +128,7 @@ Crafty.c("InventoryHud", {
             var item = slot.inventory.items[slot.index];
             var outlined = this.options.outlined ? !!item && this.options.outlined(slot.inventory, slot.index)
                 : item && slot.inventory.items.length > 1 && slot.index === slot.inventory.selected;
-            slot.box.color('#DDD');
+            slot.box.color(HUD_SLOT_COLOR);
             slot.itemBox.visible = this.shown && !!item;
             if (item) {
                 var shape = ITEM_SHAPES[item.type];
@@ -139,7 +139,7 @@ Crafty.c("InventoryHud", {
             slot.bar.show(item, this.shown);
             markBorder(slot.itemBox, item);
             var hinted = this.flashing && !!item && slot.index === slot.inventory.selected;
-            slot.box.css({boxSizing: 'border-box', border: hinted ? '3px solid ' + PACK_HINT_COLOR : outlined ? '3px solid #FFF' : '3px solid #222',
+            slot.box.css({boxSizing: 'border-box', border: hinted ? '3px solid ' + PACK_HINT_COLOR : outlined ? '3px solid ' + HUD_TEXT_COLOR : '2px solid rgba(122, 74, 43, 0.35)',
                 animation: hinted ? 'packHintPulse ' + PACK_HINT_CYCLE_S + 's ease-in-out infinite' : 'none'});
         }, this);
         return this;

@@ -125,10 +125,21 @@ function fitPicture(box, picture) {
 function firings(item) {
     return item.before("cooled") ? 0 : item.before("glazeCooled") ? 1 : 2;
 }
-var FIRING_BADGE = "radial-gradient(circle closest-side, #D32F2F 0 65%, #FFF 68% 85%, transparent 88%)";
+// The fired badge for a pot (FIRE_BADGES: "1x" or "2x" and a flame) as a background layer sitting in the bottom
+// left of `box`, FIRE_BADGE_SHARE of its width. Null for a pot that hasn't been fired yet.
+function fireBadgeLayer(box, item) {
+    var badge = FIRE_BADGES[firings(item)];
+    if (!badge) {
+        return null;
+    }
+    var crop = badge.crop;
+    var scale = Math.max(16, box.w * FIRE_BADGE_SHARE) / crop[2];
+    return {layer: "url(" + badge.url + ")", size: badge.w * scale + "px " + badge.h * scale + "px",
+        position: (1 - crop[0] * scale) + "px " + (box.h - crop[3] * scale - 1 - crop[1] * scale) + "px"};
+}
 
-// Paints an item into its box: pots as their picture (cropped to the pot and fitted in the box, with a red badge
-// per firing, except with noBadges (customer orders), and a black cross over it if cracked), logs and clay as their picture, everything else as a colour. Call with every box that shows an item (or no item,
+// Paints an item into its box: pots as their picture (cropped to the pot and fitted in the box, with a fired badge
+// once fired, except with noBadges (customer orders), and a black cross over it if cracked), logs and clay as their picture, everything else as a colour. Call with every box that shows an item (or no item,
 // to clear it): HUD slots, shelf slots, the kiln's, the owl's and dropped items.
 function paintItem(box, item, noBadges) {
     var line = function (corner) {
@@ -139,14 +150,12 @@ function paintItem(box, item, noBadges) {
     var sizes = [];
     var positions = [];
     var isPot = !!item && item.type === "pot";
-    if (isPot && !noBadges) {
-        // On top of everything: a red badge bottom left per firing, so fired pots read at a glance.
-        var d = Math.max(6, Math.round(Math.min(box.w, box.h) * 0.32));
-        for (var i = 0; i < firings(item); i++) {
-            layers.push(FIRING_BADGE);
-            sizes.push(d + "px " + d + "px");
-            positions.push(i * (d + 1) + "px " + (box.h - d) + "px");
-        }
+    var badge = isPot && !noBadges ? fireBadgeLayer(box, item) : null;
+    if (badge) {
+        // On top of everything: "1x" or "2x" and a flame, bottom left, so fired pots read at a glance.
+        layers.push(badge.layer);
+        sizes.push(badge.size);
+        positions.push(badge.position);
     }
     var isLog = !!item && item.type === "log";
     var isClay = !!item && item.type === "clay";

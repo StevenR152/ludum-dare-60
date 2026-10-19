@@ -101,10 +101,10 @@ Crafty.c("OrderPanel", {
         }
         this.scoreBack = Crafty.e("2D, HUD, Color")
             .attr({x: this.x, y: this.y, w: ORDER_CARD_W, h: ORDER_SCORE_H, z: 1000})
-            .color("rgba(34, 34, 34, 0.85)");
+            .color("rgba(58, 40, 28, 0.9)").css({borderRadius: "8px"});
         this.scoreText = Crafty.e("2D, HUD, Text")
             .attr({x: this.x, y: this.y + 4, w: ORDER_CARD_W, h: ORDER_SCORE_H - 4, z: 1001})
-            .textFont({size: "15px", weight: "bold"}).textColor("#FFF").unselectable()
+            .textFont({size: "15px", weight: "bold"}).textColor(MENU_TEXT_COLOR).css({fontFamily: MENU_FONT}).unselectable()
             .css({textAlign: "center"});
         this.addOrder();
         this.delay(this.addOrder, ORDER_INTERVAL_MS, -1);
@@ -142,7 +142,8 @@ Crafty.c("OrderPanel", {
         var card = {order: order};
         card.back = Crafty.e("2D, HUD, Color")
             .attr({x: x, y: y, w: ORDER_CARD_W, h: ORDER_CARD_H, z: 1000})
-            .color(order.delivered ? ORDER_DELIVERED_COLOR : order.expired ? ORDER_EXPIRED_COLOR : ORDER_OPEN_COLOR);
+            .color(order.delivered ? ORDER_DELIVERED_COLOR : order.expired ? ORDER_EXPIRED_COLOR : ORDER_OPEN_COLOR)
+            .css(HUD_PANEL_STYLE);
         // The finished pot: its shape and clay, glazed (after the glaze firing, the last dip shows) or fired bare.
         card.swatch = Crafty.e("2D, HUD, Color")
             .attr({x: x + 4, y: y + 8, w: 38, h: 34, z: 1001});
@@ -150,7 +151,7 @@ Crafty.c("OrderPanel", {
         card.label = Crafty.e("2D, HUD, Text")
             .attr({x: x + 48, y: y + 6, w: ORDER_CARD_W - 56, h: 36, z: 1001})
             .text(order.clay.name.charAt(0).toUpperCase() + order.clay.name.slice(1) + " " + order.shape + " (" + order.grams + "g)")
-            .textFont({size: "13px", weight: "bold"}).textColor("#222").unselectable();
+            .textFont({size: "13px", weight: "bold"}).textColor(HUD_TEXT_COLOR).css({fontFamily: MENU_FONT}).unselectable();
         // Second row: the glaze colours in words, then one square per bucket, in dipping order (or "Unglazed"), then the speed.
         var unglazed = order.glaze.length === 0;
         var glazeWords = unglazed ? "Unglazed" : order.glaze.map(function (name) { return GLAZE_BUCKET_NAMES[name]; }).join(", ");
@@ -158,7 +159,7 @@ Crafty.c("OrderPanel", {
         card.glazeWord = Crafty.e("2D, HUD, Text")
             .attr({x: x + 48, y: y + 24, w: glazeWords.length * 7.5 + 6, h: 16, z: 1001})
             .text(glazeWords)
-            .textFont({size: "13px", weight: "bold"}).textColor("#222").unselectable();
+            .textFont({size: "13px", weight: "bold"}).textColor(HUD_TEXT_COLOR).css({fontFamily: MENU_FONT}).unselectable();
         card.glazeSquares = [];
         for (var i = 0; i < order.glaze.length; i++) {
             card.glazeSquares.push(Crafty.e("2D, HUD, Color")
@@ -169,14 +170,14 @@ Crafty.c("OrderPanel", {
             card.speedLabel = Crafty.e("2D, HUD, Text")
                 .attr({x: squaresX + order.glaze.length * 20 + 8, y: y + 24, w: 90, h: 16, z: 1001})
                 .text("· " + order.speed)
-                .textFont({size: "13px", weight: "bold"}).textColor("#222").unselectable();
+                .textFont({size: "13px", weight: "bold"}).textColor(HUD_TEXT_COLOR).css({fontFamily: MENU_FONT}).unselectable();
         }
         if (this.fixed) {
             // The card colour alone shows whether it is delivered: no timer bar, no points.
         } else if (isOpen(order)) {
             card.barBack = Crafty.e("2D, HUD, Color")
                 .attr({x: x + 8, y: y + 46, w: ORDER_CARD_W - 16, h: 8, z: 1001})
-                .color("#999");
+                .color("rgba(59, 42, 29, 0.22)");
             card.bar = Crafty.e("2D, HUD, Color")
                 .attr({x: x + 8, y: y + 46, w: ORDER_CARD_W - 16, h: 8, z: 1002});
             this.paintBar(card);
@@ -184,7 +185,7 @@ Crafty.c("OrderPanel", {
             card.points = Crafty.e("2D, HUD, Text")
                 .attr({x: x + 8, y: y + 42, w: ORDER_CARD_W - 16, h: 16, z: 1001})
                 .text(pointsText(order))
-                .textFont({size: "14px", weight: "bold"}).textColor("#222").unselectable();
+                .textFont({size: "14px", weight: "bold"}).textColor(HUD_TEXT_COLOR).css({fontFamily: MENU_FONT}).unselectable();
         }
         card.parts = [card.back, card.swatch, card.label, card.glazeWord, card.speedLabel, card.barBack, card.bar, card.points]
             .concat(card.glazeSquares).filter(Boolean);

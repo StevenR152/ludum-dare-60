@@ -16,7 +16,7 @@ Crafty.c("GameHud", {
         var panel = Crafty.e("2D, HUD, Color")
             .attr({x: HUD_PANEL_X, y: 10, w: HUD_PANEL_W, h: 0, z: 999})
             .color(HUD_PANEL_COLOR)
-            .css({borderRadius: "8px"});
+            .css(HUD_PANEL_STYLE);
         this.parts.push(panel);
         this.parts.push(Crafty.e("MuteButton").attr({x: 20, y: 20}));
         this.parts.push(Crafty.e("GameTimer").attr({x: 125, y: 20}));
