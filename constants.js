@@ -27,7 +27,7 @@ var MENU_BUTTON_HOVER_COLOR = "#9C5F35";
 var MENU_BUTTON_LOCKED_COLOR = "rgba(72, 58, 47, 0.55)";
 // The name on the title screen. The game had none and showed "Ludum Dare #60"; this is what the README and
 // the design doc call it, so it is one line to change if the team settles on something else.
-var GAME_TITLE = "Blind Master's Kiln";
+var GAME_TITLE = "The Owl Master's Kiln";
 
 // Shown along the bottom of the Start scene.
 var CREDITS = [

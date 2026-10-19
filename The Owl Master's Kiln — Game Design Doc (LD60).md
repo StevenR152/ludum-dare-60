@@ -1,4 +1,4 @@
-# Blind Master's Kiln — Game Design Doc (LD60)
+# The Owl Master's Kiln — Game Design Doc (LD60)
 
 Oct 17, 2026 · @Steve
 

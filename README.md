@@ -1,7 +1,7 @@
-# Blind Master's Kiln (Ludum Dare 60)
+# The Owl Master's Kiln (Ludum Dare 60)
 Theme: Old Tech.
 
-You're a young fox helping an old owl master potter who can't see anymore. He throws the pots; you do everything else. See the [game design doc](<Blind Master's Kiln — Game Design Doc (LD60).md>) for the full plan.
+You're a young fox helping an old owl master potter who can't see anymore. He throws the pots; you do everything else. See the [game design doc](<The Owl Master's Kiln — Game Design Doc (LD60).md>) for the full plan.
 
 Built with [CraftyJS](http://craftyjs.com/api/) 0.9.0 (loaded from cdnjs).
 
