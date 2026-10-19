@@ -36,6 +36,7 @@ var LEVELS = [
             "a bowl and a vase before leaving, but none has been fired. Help the Master fill these three orders.",
         tip: "\u201cFire it twice, apprentice. The first fire hardens the clay. The second melts it together into " +
             "something strong enough to last. Each clay has its own temper:\u201d",
+        finish: "\u201cWell fired! Three orders ready, and the customers will be pleased.\u201d",
         steps: [step("Chop logs in the forest", "LogChopped"), step("Build the fire to the right heat", "KilnLit"),
             potFired("Fire the pots once to harden them", "cooled"), potFired("Fire them again", "glazeCooled")],
         card: [
@@ -61,12 +62,30 @@ var LEVELS = [
         }
     },
     {
-        name: "Pottery Craft",
+        name: "A Cup for Barnaby",
         description: "Make one cup from digging the clay to the completed shelf.",
-        steps: [step("Dig 1 kilo of black clay", "ClayDug"), potReaches("Weigh off 200 g", "weighed"),
+        story: "Master Owl is grateful for your help with the first three pieces. Now Barnaby Badger has asked for " +
+            "a cup, because he's tired of drinking his tea out of his boot. Make it from scratch, starting with the clay.",
+        tip: "\u201cTake it one careful step at a time, apprentice. I'll tell you why as we go.\u201d",
+        finish: "\u201cBarnaby will never drink from a boot again. Well made, apprentice.\u201d",
+        // The Master explains a step the first time the fox does it (hooting as he speaks): see showMasterTip.
+        masterTips: [
+            {on: "PotAdvanced", when: function (e) { return e.to === "weighed"; },
+                text: "Weighed true. A cup this size needs 200 grams of clay, no more and no less."},
+            {on: "PotAdvanced", when: function (e) { return e.to === "wedged"; },
+                text: "Pressing out the air. Bubbles in clay can burst in the kiln."},
+            // Said when a pot is put on the drying shelf.
+            {on: "ItemMoved", text: "Resting in the dry air. Wet clay cracks in a hot kiln, so it must dry slowly.",
+                when: function (move) {
+                    var shelf = Crafty("DryingShelf").get(0);
+                    return move.item.type === "pot" && shelf && move.to === shelf.inventory;
+                }}
+        ],
+        steps: [step("Dig 1 kilo of black clay", "ClayDug"), step("Weigh off 200 g", "PotAdvanced", function (e) { return e.to === "weighed" && e.pot.clay.weight === 200; }),
             potReaches("Wedge it", "wedged"), step("Give clay and the Cup model to the owl", "PotterWorking"),
-            step("Dry the pot", "PotDry"), potFired("Fire it (black clay: 1 log)", "cooled"),
-            potFired("Fire it again", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
+            step("Dry the pot", "PotDry"), potFired("First firing: harden the pot (black clay: 1 log)", "cooled"),
+            potFired("Second firing: make it strong", "glazeCooled"),
+            step("Put the cup on the completed shelf for Barnaby", "OrderDelivered")],
         card: [],
         orders: [["Cup", "black", []]],
         world: {
@@ -194,6 +213,18 @@ function showGoalPanel(level) {
     draw();
 }
 
+// The Master's tip above the fox, with his hoot (the "owlSpeak" sound). It waits MASTER_TIP_DELAY_MS so the action's
+// own status line can be read first, then stays up MASTER_TIP_EXTRA_MS longer than a normal status line.
+var MASTER_TIP_DELAY_MS = 2000;
+var MASTER_TIP_EXTRA_MS = 3000;
+function showMasterTip(text) {
+    Crafty.e("Delay").delay(function () {
+        audioController.playSfx("owlSpeak");
+        console.log(text);
+        Crafty.trigger("StatusText", {text: text, extraMs: MASTER_TIP_EXTRA_MS});
+    }, MASTER_TIP_DELAY_MS, 0);
+}
+
 // Restart and Menu beside the inventory panel. Restart rebuilds this level; Menu leaves for the level select (the
 // sandbox, which isn't on it, goes to Start). A cracked pot makes the player start over, so Restart pulses.
 function showLevelButtons(index, mode) {
@@ -232,6 +263,16 @@ Crafty.defineScene("Game", function(options) {
         showGoalPanel(level);
     }
     showLevelButtons(index, mode);
+    // Each of the level's Master tips is said once, the first time its event happens.
+    (level.masterTips || []).forEach(function (tip) {
+        var said = false;
+        world.player.bind(tip.on, function (payload) {
+            if (!said && (!tip.when || tip.when(payload))) {
+                said = true;
+                showMasterTip(tip.text);
+            }
+        });
+    });
 
     // The sandbox has no end.
     if (mode === "sandbox") {
@@ -247,7 +288,7 @@ Crafty.defineScene("Game", function(options) {
         finished = true;
         markLevelDone(index);
         track("level_complete", {level: index + 1, seconds: gameState.seconds});
-        showStatus("Level " + (index + 1) + " complete!");
+        showStatus(level.finish || "Level " + (index + 1) + " complete!");
         Crafty.e("Delay").delay(function () { Crafty.scene("LevelComplete", index); }, STAGE_PAUSE_MS, 0);
     });
 });
