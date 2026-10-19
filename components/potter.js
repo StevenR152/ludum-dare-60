@@ -6,7 +6,8 @@
 //   model goes back to the bench ("ModelReturned").
 // - trim: an untrimmed pot (receiveFrom). He judges it as he starts: leather hard comes out trimmed
 //   after POT_TRIM_MS; wet collapses and bone dry cracks (pot.cracked). Either way it waits for the fox.
-// Finished pots show as a box on him until the fox takes them (takePot).
+// The clay or pot he is working on shows on his wheel (POTTER_WHEEL), and so does a finished pot he holds alone.
+// Other finished pots show as a box on him until the fox takes them (takePot).
 Crafty.c("Potter", {
     init: function() {
         this.requires("2D, Delay, DebugHitbox");
@@ -18,10 +19,14 @@ Crafty.c("Potter", {
         });
         this.potBox = Crafty.e("2D, DOM, Color")
             .attr({w: 40, h: 40, visible: false});
+        // The clay or pot he is working on, or a finished pot he holds alone, sits on his wheel (POTTER_WHEEL).
+        this.wheel = Crafty.e("2D, DOM, Color")
+            .attr({visible: false});
         this.bind("InventoryChanged", function (changed) {
             if (changed === this.inventory) {
-                this.showPot();
+                // startNext first, so the wheel shows the job that has just begun.
                 this.startNext();
+                this.showPot();
             }
         });
     },
@@ -166,11 +171,29 @@ Crafty.c("Potter", {
         this.inventory.changed();
     },
 
-    // Low on the owl, centred; placed now because the owl's position is set after init.
+    // What is on the wheel: the clay or pot of the job under way (never a model), else a finished pot when it is
+    // the only thing he holds. Otherwise null.
+    wheelItem: function() {
+        if (this.working) {
+            return this.working.items[0];
+        }
+        var items = this.inventory.items;
+        return items.length === 1 && this.isFinished(items[0]) ? items[0] : null;
+    },
+
+    // The wheel shows wheelItem(); a finished pot not on the wheel shows in the box low on the owl, centred.
+    // Placed now because the owl's position is set after init.
     showPot: function() {
+        var onWheel = this.wheelItem();
+        this.wheel.attr({x: POTTER_WHEEL.x, y: POTTER_WHEEL.y, w: POTTER_WHEEL.w, h: POTTER_WHEEL.h, z: this.z + 1,
+            visible: !!onWheel});
+        if (onWheel) {
+            paintItem(this.wheel, onWheel);
+            markBorder(this.wheel, onWheel);
+        }
         var index = this.inventory.find(this.isFinished.bind(this));
-        if (index >= 0) {
-            var pot = this.inventory.items[index];
+        var pot = index >= 0 ? this.inventory.items[index] : null;
+        if (pot && pot !== onWheel) {
             this.potBox.attr({
                 x: this.x + (this.w - this.potBox.w) / 2,
                 y: this.y + this.h - this.potBox.h - 10,
@@ -179,6 +202,6 @@ Crafty.c("Potter", {
             paintItem(this.potBox, pot);
             markBorder(this.potBox, pot);
         }
-        this.potBox.visible = index >= 0;
+        this.potBox.visible = !!pot && pot !== onWheel;
     }
 });

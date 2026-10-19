@@ -296,17 +296,19 @@ function showMasterTip(text) {
     }, MASTER_TIP_DELAY_MS, 0);
 }
 
-// Restart and Menu beside the inventory panel. Restart rebuilds this level; Menu leaves for the level select (the
+// Restart and Menu in the top-right corner, spanning the order panel below them (Restart on its left edge, Menu on its
+// right edge). Restart rebuilds this level; Menu leaves for the level select (the
 // sandbox, which isn't on it, goes to Start). A cracked pot makes the player start over, so Restart pulses.
 function showLevelButtons(index, mode) {
+    var ORDER_PANEL_X = GAME_SCREEN_WIDTH - 300; // the order panel's left edge (see buildWorld)
     var restart = Crafty.e("HudButton, Delay")
         .label("Restart")
-        .attr({x: HUD_PANEL_X + HUD_PANEL_W + 10, y: 10, w: 100, h: 36})
+        .attr({x: ORDER_PANEL_X, y: 10, w: 100, h: 36})
         .css({lineHeight: "36px"})
         .onClick(function () { Crafty.scene("Game", {stage: index, mode: mode}); });
     Crafty.e("HudButton")
         .label("Menu")
-        .attr({x: HUD_PANEL_X + HUD_PANEL_W + 120, y: 10, w: 100, h: 36})
+        .attr({x: ORDER_PANEL_X + ORDER_CARD_W - 100, y: 10, w: 100, h: 36})
         .css({lineHeight: "36px"})
         .onClick(function () { Crafty.scene(mode === "sandbox" ? "Start" : "LevelSelect"); });
     restart.bind("PotCracked", function () {

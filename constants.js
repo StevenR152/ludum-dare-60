@@ -40,7 +40,7 @@ var FIRE_LEVELS = ["low", "mid", "high"];
 // Debug: outline the fox's and the doors' collision boxes in red, and show the out-of-bounds masks
 // (COLLISION_AREAS) over the HUD, under the outlines. The overlay is every blocked pixel in solid red drawn at
 // exactly DEBUG_MASK_ALPHA, whatever opacity the mask PNGs were painted at.
-var DEBUG_HITBOXES = true;
+var DEBUG_HITBOXES = false;
 var DEBUG_MASK_ALPHA = 0.5;
 // Debug: the door arrival spots (DOOR_DESTINATIONS) are outlined and labelled in this colour instead of red.
 var DEBUG_DESTINATION_COLOR = "lime";
@@ -155,6 +155,10 @@ var HUD_PANEL_COLOR = "rgba(255, 255, 255, 0.92)";
 // Inventory sizes of the owl (everything he holds: clay, models, pots to trim and pots to collect) and
 // the kiln. The fox's is FOX_INVENTORY_CAPACITY.
 var OWL_CAPACITY = 5;
+// The master's spinning circle (kick wheel), inside: the clay or pot he is working on, and a finished pot he is
+// holding alone, is drawn fitted and centred in this box. World px, x, y top-left. Move and resize it to
+// line up with the wheel in the inside art.
+var POTTER_WHEEL = {x: -1400, y: 400, w: 80, h: 60};
 var KILN_CAPACITY = 4;
 
 // Wood: logs the kiln holds, logs per fire level (1 log low, 2 mid, 3 high), how long the fox chops one, colours.
