@@ -1,4 +1,4 @@
-// An item lying on the ground where the fox dropped it (SPACE, or a stumble). Any item can be dropped;
+// An item lying on the ground where the fox dropped it (BACKSPACE, or a stumble). Any item can be dropped;
 // it is drawn like its HUD box, DROPPED_ITEM_SCALE times bigger, and keeps its state (Fox.dropItem).
 // - While the fox overlaps it the fox is slowed (see Fox.updateSpeed); several items multiply.
 // - The first time the fox walks onto it, a pot may take damage (POT_BREAK_CHANCES by cook state). The

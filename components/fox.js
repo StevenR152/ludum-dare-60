@@ -2,8 +2,9 @@
 // kind in any mix (2 dug clays, wedged clay and a model, 2 pots, a pot and a model...).
 // Each 1000 g of clay carried slows the fox by FOX_SLOWDOWN_PER_KG of its base speed, and every dropped
 // item it overlaps multiplies its speed by DROPPED_ITEM_SLOWDOWN (see DroppedItem).
-// E steps through the slots; SPACE puts the selected item back at the Workbench or Clay node the fox stands
-// at if that takes it, else drops it on the ground. A moving fox carrying something may also stumble and
+// E steps through the slots; SPACE acts like a click on what the fox touches (see pressAction); BACKSPACE puts
+// the selected item back at the Workbench or Clay node the fox stands at if that takes it, else drops it on the
+// ground. A moving fox carrying something may also stumble and
 // drop a random item on the ground; the more it is slowed, the likelier.
 //   var player = Crafty.e("Fox").attr({x: 512, y: 706});
 Crafty.c("Fox", {
@@ -36,7 +37,9 @@ Crafty.c("Fox", {
             }
         });
         this.bind("DroppedOverlapChanged", this.updateSpeed);
+        this.actionId = null;
         this.bind("KeyDown", this.onKeyDown);
+        this.bind("KeyUp", this.onKeyUp);
         this.bind("UpdateFrame", this.maybeStumble);
         // Click to move (see enableClickToMove): walk is null, {x, y} (a ground point) or {entity} (a station).
         this.walk = null;
@@ -121,8 +124,52 @@ Crafty.c("Fox", {
         if (e.key === Crafty.keys.E) {
             this.selectNext();
         } else if (e.key === Crafty.keys.SPACE) {
+            this.pressAction();
+        } else if (e.key === Crafty.keys.BACKSPACE) {
             this.dropSelected();
         }
+    },
+
+    onKeyUp: function(e) {
+        if (e.key === Crafty.keys.SPACE) {
+            this.releaseAction();
+        }
+    },
+
+    // SPACE is a click on the world object the fox touches whose middle is nearest the fox's (the higher one
+    // on a tie): its MouseDown now, its MouseUp when SPACE is let go, so hold actions (dig, wedge, chop) work.
+    pressAction: function() {
+        if (this.actionId !== null) {
+            return; // key auto-repeat
+        }
+        var fox = this;
+        var foxX = this.x + this.w / 2;
+        var foxY = this.y + this.h / 2;
+        var best = null;
+        var bestDistance = Infinity;
+        Crafty("Mouse").each(function () {
+            if (this.has("HUD") || !fox.touches(this)) {
+                return;
+            }
+            var distance = Math.pow(this.x + this.w / 2 - foxX, 2) + Math.pow(this.y + this.h / 2 - foxY, 2);
+            if (distance < bestDistance || (distance === bestDistance && this.z > best.z)) {
+                best = this;
+                bestDistance = distance;
+            }
+        });
+        if (best) {
+            this.actionId = best[0];
+            best.trigger("MouseDown");
+        }
+    },
+
+    releaseAction: function() {
+        if (this.actionId === null) {
+            return;
+        }
+        // A target used up by the press (a picked-up dropped item) no longer exists.
+        Crafty(this.actionId).trigger("MouseUp");
+        this.actionId = null;
     },
 
     selectNext: function() {

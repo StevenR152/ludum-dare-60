@@ -1,10 +1,11 @@
 Crafty.init(GAME_SCREEN_WIDTH,GAME_SCREEN_HEIGHT, document.getElementById('game'));
 
-// On touch screens: touch and hold to walk toward the finger, tap for SPACE.
+// On touch screens: touch and hold to walk toward the finger, tap for SPACE (act), swipe down for BACKSPACE (drop).
 // The Game scene points hold-toward at each new player with TouchControls.follow.
 TouchControls.init({
     holdToward: {},
     tap: "SPACE",
+    swipe: {down: "BACKSPACE"},
     scenes: ["Game"]
 });
 
