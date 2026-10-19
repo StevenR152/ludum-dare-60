@@ -106,8 +106,17 @@ function potSprite(item) {
     return potImage(file, item.clay.letter, kind, glaze);
 }
 
+// The background layer (url, size, position) that draws the cropped part of `picture` ({url, w, h, crop}) as
+// large as fits, centred in `box`.
+function fitPicture(box, picture) {
+    var crop = picture.crop;
+    var scale = Math.min(box.w / crop[2], box.h / crop[3]);
+    return {layer: "url(" + picture.url + ")", size: picture.w * scale + "px " + picture.h * scale + "px",
+        position: (box.w - crop[2] * scale) / 2 - crop[0] * scale + "px " + ((box.h - crop[3] * scale) / 2 - crop[1] * scale) + "px"};
+}
+
 // Paints an item into its box: pots as their picture (cropped to the pot and fitted in the box, with a black
-// cross over it if cracked), logs as their picture, everything else as a colour. Call with every box that shows an item (or no item,
+// cross over it if cracked), logs and clay as their picture, everything else as a colour. Call with every box that shows an item (or no item,
 // to clear it): HUD slots, shelf slots, the kiln's, the owl's and dropped items.
 function paintItem(box, item) {
     var line = function (corner) {
@@ -119,18 +128,19 @@ function paintItem(box, item) {
     var positions = [];
     var isPot = !!item && item.type === "pot";
     var isLog = !!item && item.type === "log";
+    var isClay = !!item && item.type === "clay";
     if (isPot && item.pot.cracked) {
         layers.push(line("top right"), line("bottom right"));
         sizes.push("100% 100%", "100% 100%");
         positions.push("0 0", "0 0");
     }
-    if (isPot || isLog) {
-        var crop = isPot ? POT_SPRITES[item.pot.shape].crop : LOG_IMAGE.crop;
-        var scale = Math.min(box.w / crop[2], box.h / crop[3]);
-        layers.push("url(" + (isPot ? potSprite(item) : LOG_IMAGE.url) + ")");
-        sizes.push((isPot ? POT_IMAGE_W : LOG_IMAGE.w) * scale + "px " + (isPot ? POT_IMAGE_H : LOG_IMAGE.h) * scale + "px");
-        positions.push((box.w - crop[2] * scale) / 2 - crop[0] * scale + "px " +
-            ((box.h - crop[3] * scale) / 2 - crop[1] * scale) + "px");
+    var picture = isPot ? {url: potSprite(item), w: POT_IMAGE_W, h: POT_IMAGE_H, crop: POT_SPRITES[item.pot.shape].crop} :
+        isLog ? LOG_IMAGE : isClay ? CLAY_IMAGES[item.clay.letter] : null;
+    if (picture) {
+        var fit = fitPicture(box, picture);
+        layers.push(fit.layer);
+        sizes.push(fit.size);
+        positions.push(fit.position);
         box.color("#FFF", 0);
     } else if (item) {
         box.color(itemColor(item));
@@ -156,12 +166,12 @@ function isDrying(item) {
 }
 
 // The border that marks an item's box: on a pot, solid green if trimmed and dashed orange if not (cracked
-// or fired, too); white on wedged clay. Use markBorder to apply it to every box that shows an item.
+// or fired, too); black on wedged clay. Use markBorder to apply it to every box that shows an item.
 function itemBorder(item) {
     if (item && item.type === "pot") {
         return item.pot.trimmed ? "3px solid " + TRIMMED_BORDER_COLOR : "3px dashed " + UNTRIMMED_BORDER_COLOR;
     }
-    return item && item.state === "wedged" ? "2px solid #FFF" : "none";
+    return item && item.state === "wedged" ? "2px solid #000" : "none";
 }
 
 function markBorder(box, item) {
