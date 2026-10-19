@@ -1,15 +1,11 @@
-// The levels, played two ways by the one "Game" scene, built from buildWorld (scenes/game.js) with only what the
+// The levels, each played alone by the one "Game" scene, built from buildWorld (scenes/game.js) with only what the
 // level needs. Delivering all of a level's fixed orders (no random ones, no deadlines) shows "Level N complete!"
-// for a moment, then:
-//   "progressive" (Play):  the scene is rebuilt for the next level where the fox stands, with new stations (the
-//                          door, the house, the glaze station and more clay appear); the last one goes to End.
-//                          The time keeps counting, but the pack, kiln and ground items start empty.
-//   "single" (Levels):     LevelComplete shows the time and unlocks the next level; each level starts alone.
-// Restart rebuilds the current level in the same mode. Progress (the highest level completed) is kept in
-// localStorage, which can be missing or blocked, so every access is guarded; either mode records it.
+// for a moment, then LevelComplete shows the time and unlocks the next level.
+// Restart rebuilds the current level with the timer back at 0. Progress (the highest level completed) is kept in
+// localStorage, which can be missing or blocked, so every access is guarded.
 // UNLOCK_ALL_LEVELS (constants.js) opens every level on the level select regardless.
-//   Crafty.scene("Game")                                  // Play: level 1 onwards
-//   Crafty.scene("Game", {stage: 1, mode: "single"})      // level 2 alone
+//   Crafty.scene("Game")                                  // level 1
+//   Crafty.scene("Game", {stage: 1})                      // level 2
 //   Crafty.scene("Game", {mode: "sandbox"})               // the dev sandbox (SANDBOX_LEVEL below)
 //
 // Per level: name, a one-line description and checklist steps for the Goal panel (each ticks the first time its
@@ -191,19 +187,19 @@ function showGoalPanel(level) {
     draw();
 }
 
-// Restart and Menu beside the inventory panel. Restart rebuilds this level in the same mode; Menu leaves for the
-// level select (single) or Start (progressive). A cracked pot makes the player start over, so Restart pulses.
+// Restart and Menu beside the inventory panel. Restart rebuilds this level; Menu leaves for the level select (the
+// sandbox, which isn't on it, goes to Start). A cracked pot makes the player start over, so Restart pulses.
 function showLevelButtons(index, mode) {
     var restart = Crafty.e("HudButton, Delay")
         .label("Restart")
         .attr({x: 450, y: 10, w: 100, h: 36})
         .css({lineHeight: "36px"})
-        .onClick(function () { Crafty.scene("Game", {stage: index, mode: mode, seconds: gameState.seconds}); });
+        .onClick(function () { Crafty.scene("Game", {stage: index, mode: mode}); });
     Crafty.e("HudButton")
         .label("Menu")
         .attr({x: 560, y: 10, w: 100, h: 36})
         .css({lineHeight: "36px"})
-        .onClick(function () { Crafty.scene(mode === "single" ? "LevelSelect" : "Start"); });
+        .onClick(function () { Crafty.scene(mode === "sandbox" ? "Start" : "LevelSelect"); });
     restart.bind("PotCracked", function () {
         showStatus("Cracked: restart the level");
         var alarm = false;
@@ -215,17 +211,16 @@ function showLevelButtons(index, mode) {
     });
 }
 
-// options: {stage: index into LEVELS (default 0), mode: "progressive" (default), "single" or "sandbox" (which plays
-// SANDBOX_LEVEL and ignores stage), seconds: time already played, at: {x, y} where the fox is}.
+// options: {stage: index into LEVELS (default 0), mode: "single" (default) or "sandbox" (which plays SANDBOX_LEVEL
+// and ignores stage)}.
 Crafty.defineScene("Game", function(options) {
     options = options || {};
     var index = options.stage || 0;
-    var mode = options.mode || "progressive";
+    var mode = options.mode || "single";
     var level = mode === "sandbox" ? SANDBOX_LEVEL : LEVELS[index];
     resetGameState();
-    gameState.seconds = options.seconds || 0;
     var orders = level.orders && level.orders.map(function (spec) { return fixedOrder(spec[0], spec[1], spec[2]); });
-    var world = buildWorld(Object.assign({}, level.world, {orders: orders, start: options.at}));
+    var world = buildWorld(Object.assign({}, level.world, {orders: orders}));
     if (mode !== "sandbox") {
         showGoalPanel(level);
     }
@@ -236,7 +231,7 @@ Crafty.defineScene("Game", function(options) {
         return;
     }
 
-    // Done once every order is delivered; a pause to see it, then on to what the mode does next.
+    // Done once every order is delivered; a pause to see it, then the level complete screen.
     var finished = false;
     world.player.bind("OrderDelivered", function () {
         if (finished || !gameState.orders.every(function (order) { return order.delivered; })) {
@@ -244,17 +239,8 @@ Crafty.defineScene("Game", function(options) {
         }
         finished = true;
         markLevelDone(index);
-        track("level_complete", {level: index + 1, mode: mode, seconds: gameState.seconds});
+        track("level_complete", {level: index + 1, seconds: gameState.seconds});
         showStatus("Level " + (index + 1) + " complete!");
-        var player = this;
-        Crafty.e("Delay").delay(function () {
-            if (mode === "single") {
-                Crafty.scene("LevelComplete", index);
-            } else if (index < LEVELS.length - 1) {
-                Crafty.scene("Game", {stage: index + 1, seconds: gameState.seconds, at: {x: player.x, y: player.y}});
-            } else {
-                Crafty.scene("End");
-            }
-        }, STAGE_PAUSE_MS, 0);
+        Crafty.e("Delay").delay(function () { Crafty.scene("LevelComplete", index); }, STAGE_PAUSE_MS, 0);
     });
 });
