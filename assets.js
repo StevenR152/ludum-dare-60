@@ -51,15 +51,7 @@ var gameAssets = {
         "putdownBoneDry": ["assets/sounds/Sounds/putdown pot 1.wav"],
         "putdownBisque": ["assets/sounds/Sounds/putdown pot 3.wav"],
         "putdownGlazed": ["assets/sounds/Sounds/putdown pot 2.wav"],
-        // The old kiln-load sound now marks the kiln being lit; pots put into the kiln reuse the putdown
-        // sounds, processed with echo and distortion to sound like they are inside a brick kiln.
         "kilnLit": ["assets/sounds/Sounds/fire 4.wav"],
-        "kilnPutdownBoneDry": ["assets/sounds/Sounds/kiln putdown pot 1.wav"],
-        "kilnPutdownBisque": ["assets/sounds/Sounds/kiln putdown pot 3.wav"],
-        "kilnPutdownGlazed": ["assets/sounds/Sounds/kiln putdown pot 2.wav"],
-        "kilnPutdownWetBlue": ["assets/sounds/Sounds/kiln putdown wet clay 2.wav"],
-        "kilnPutdownWetRed": ["assets/sounds/Sounds/kiln putdown wet clay 3.wav"],
-        "kilnPutdownWetBrown": ["assets/sounds/Sounds/kiln putdown wet clay 4.wav"],
         "glazeDipFirst": ["assets/sounds/Sounds/glaze dipping 3.wav"],
         "glazeDipNext": ["assets/sounds/Sounds/glaze dipping 4.wav"],
         "kickWheel": ["assets/sounds/Sounds/pottery kick wheel LOOP.wav"],
