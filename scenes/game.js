@@ -35,7 +35,7 @@ function buildWorld(config) {
     }
 
     // The fox starts on the ground, left of the middle of the map.
-    var player = Crafty.e("Fox").attr({x: 512, y: 706});
+    var player = Crafty.e("Fox").attr({x: 542, y: 656});
     if (player.feetBlocked(player.x, player.y)) {
         console.warn("The fox starts out of bounds: move its start or repaint the collision mask");
     }
@@ -116,7 +116,7 @@ function buildWorld(config) {
     var hud = Crafty.e("GameHud").build(player, owl, kiln);
 
     // Clicking the kiln the fox is touching loads the selected logs or pot (unfired at any dryness, or
-    // bisque-fired for its glaze firing), or collects a fired pot.
+    // bisque-fired for its glaze firing), or collects a fired pot. Nothing moves while the kiln fires; while it cools only wood goes in.
     var kilnHinted = false;
     kiln.bind("MouseDown", function () {
         if (!player.touches(this)) {
@@ -127,48 +127,51 @@ function buildWorld(config) {
             kilnHinted = true;
             showStatus("Logs set the fire: 1 log is low (black clay), 2 mid (red clay), 3 high (white clay)");
         }
-        var carried = player.inventory.selectedItem();
-        if (carried && carried.type === "log") {
+        var held = player.inventory.selectedItem();
+        var packFull = player.inventory.items.length >= player.inventory.capacity;
+        if (this.state === "firing") {
+            showStatus("I shouldn't reach into the kiln while it's burning");
+            return;
+        }
+        if (held && held.type === "log") {
+            // Wood may go in while the kiln cools; a selected log always goes to the wood, never collects.
             showStatus(transferItem(player.inventory, this.woodInventory) ? "Wood loaded into the kiln" : "The kiln is full of wood");
             return;
         }
-        if (transferItem(player.inventory, this.inventory)) {
+        if (this.state === "cooling") {
+            showStatus("I'll wait, the kiln is still cooling down");
+            return;
+        }
+        // A ready kiln is collected from unless the pack is full: then the selected pot goes in beside the fired ones.
+        if (held && (this.state !== "ready" || packFull) && transferItem(player.inventory, this.inventory)) {
             showStatus("Kiln loaded");
             return;
         }
-        var held = player.inventory.selectedItem();
-        if (!held && (this.state === "empty" || this.state === "loaded")) {
-            // Not lit yet: empty hands take back the pot, else a log, one per click.
-            var pot = this.inventory.items.length > 0;
-            var back = pot ? this.inventory : this.woodInventory;
-            if (back.items.length > 0) {
-                showStatus(transferItem(back, player.inventory, 0)
-                    ? "Took the " + (pot ? "pot" : "log") + " out of the kiln"
-                    : "You can't carry that");
-                return;
+        var out = this.nextOut(); // a finished pot first, then a fresh pot, then a log
+        if (this.state === "ready") {
+            if (held && held.type === "pot" && packFull && this.passFor(held) && this.inventory.items.length >= this.inventory.capacity) {
+                showStatus("The kiln is full");
+            } else {
+                showStatus(out && transferItem(out.inventory, player.inventory, out.index)
+                    ? "Took the pot out of the kiln"
+                    : "You can't carry the pot: your pack is full or holds clay");
             }
-        }
-        if ((this.state === "empty" || this.state === "loaded") && held && held.type === "pot" && held.pot.cracked) {
+        } else if (!held && out) {
+            // Not lit yet: empty hands take back the pot, else a log, one per click.
+            showStatus(transferItem(out.inventory, player.inventory, out.index)
+                ? "Took the " + (out.inventory === this.inventory ? "pot" : "log") + " out of the kiln"
+                : "You can't carry that");
+        } else if (held && held.type === "pot" && held.pot.cracked) {
             showStatus("This pot is cracked, it can't be fired");
         } else if (this.state === "empty" && held && held.state === "glazeCooled") {
             showStatus("This pot is finished, take it to the completed shelf");
-        } else if (this.state === "ready") {
-            showStatus(transferItem(this.inventory, player.inventory)
-                ? "Took the pot out of the kiln"
-                : "You can't carry the pot: your pack is full or holds clay");
         } else if (held && held.type === "pot") {
-            if (this.state === "firing" || this.state === "cooling") {
-                showStatus("The kiln is busy");
-            } else {
-                showStatus("The kiln is full");
-            }
+            showStatus("The kiln is full");
         } else {
             // The press did nothing: say what the kiln is doing.
             showStatus({
                 empty: "The kiln is cold and empty",
-                loaded: "The kiln is loaded, add wood and light the torch",
-                firing: "The fire is roaring, hands off",
-                cooling: "Still cooling, give it a moment"
+                loaded: "The kiln is loaded, add wood and light the torch"
             }[this.state]);
         }
     });

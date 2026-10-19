@@ -28,6 +28,19 @@ function potFired(text, state) {
     return step(text, "PotAdvanced", function (e) { return e.to === state && !e.pot.pot.cracked; });
 }
 
+// The buildWorld config shared by the levels played Inside (levels 3 to 7): `own` sets what differs.
+function levelWorld(own) {
+    return Object.assign({
+        inside: true,
+        glaze: false,
+        maxGlazeDips: MAX_GLAZE_DIPS,
+        potsBreakOnGround: false,
+        prePlaced: [],
+        kilnDelivers: false,
+        kilnHint: true
+    }, own);
+}
+
 var LEVELS = [
     {
         name: "The First Firing",
@@ -101,30 +114,62 @@ var LEVELS = [
         }
     },
     {
-        name: "Four Cups for the Village",
-        description: "Four cups, each with one glaze. A pot takes only one dip.",
-        story: "Barnaby's cup was so admired that four more villagers have ordered one, each in its own glaze. " +
-            "Dip each pot once before the second firing.",
-        tip: "\u201cGlaze is dipped after the first fire, apprentice. Each cup takes one dip only.\u201d",
-        finish: "\u201cFour cups, four happy villagers. Well glazed, apprentice.\u201d",
-        steps: [step("Make four cups (dig, weigh, wedge, give to the owl)", "PotterWorking"),
-            step("Dry them", "PotDry"), potFired("First firing", "cooled"),
-            step("Dip each cup in its glaze", "PotGlazed"), potFired("Second firing", "glazeCooled"),
-            step("Put the cups on the completed shelf", "OrderDelivered")],
+        name: "Villagers' Orders",
+        description: "Two cups, one white and one red. Mind each clay's fire level.",
+        story: "Barnaby's cup was so admired that two more villagers have ordered one. ",
+        finish: "\u201cTwo cups, two happy villagers. Well crafted, apprentice.\u201d",
+        steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
+            potFired("Fire it (2 log red, 3 white)", "cooled"),
+            potFired("Fire it again", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
+        card: [
+            {color: CLAY_TYPES.red.color, text: "Red clay: a steady fire, 2 logs"},
+            {color: CLAY_TYPES.white.color, text: "White clay: a roaring fire, 3 logs"}
+        ],
+        orders: [["Cup", "white", []], ["Cup", "red", []]],
+        world: levelWorld({glaze: false, clays: ["red", "white"], models: ["Cup"]})
+    },
+    {
+        name: "Bowls and Cups",
+        description: "Two bowls and two cups, all in black clay.",
+        steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
+            potFired("Fire it (black clay: 1 log)", "cooled"),
+            potFired("Fire it again", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
         card: [],
-        orders: [["Cup", "white", ["Glaze A"]], ["Cup", "red", ["Glaze B"]], ["Cup", "black", ["Glaze B"]],
-            ["Cup", "red", ["Glaze A"]]],
-        world: {
-            inside: true,
-            glaze: true,
-            clays: ["black", "red", "white"],
-            models: ["Cup"],
-            maxGlazeDips: 1,
-            potsBreakOnGround: false,
-            prePlaced: [],
-            kilnDelivers: false,
-            kilnHint: true
-        }
+        orders: [["Bowl", "black", []], ["Bowl", "black", []], ["Cup", "black", []], ["Cup", "black", []]],
+        world: levelWorld({glaze: false, clays: ["black"], models: ["Bowl", "Cup"]})
+    },
+    {
+        name: "Glazing",
+        description: "Two vases and a cup, each with one glaze. A pot takes only one dip.",
+        steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
+            potFired("Bisque fire (1 log black, 2 red, 3 white)", "cooled"), step("Dip it in a glaze", "PotGlazed"),
+            potFired("Glaze fire", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
+        card: [],
+        orders: [["Vase", "red", ["Glaze A"]], ["Vase", "black", ["Glaze B"]], ["Cup", "white", ["Glaze A"]]],
+        world: levelWorld({glaze: true, clays: ["black", "red", "white"], models: ["Cup", "Vase"], maxGlazeDips: 1})
+    },
+    {
+        name: "Mixed Orders",
+        description: "Four glazed pots of different shapes and clays. One dip each.",
+        steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
+            potFired("Bisque fire (1 log black, 2 red, 3 white)", "cooled"), step("Dip it in a glaze", "PotGlazed"),
+            potFired("Glaze fire", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
+        card: [],
+        orders: [["Bowl", "white", ["Glaze A"]], ["Vase", "red", ["Glaze B"]], ["Cup", "black", ["Glaze A"]],
+            ["Cup", "red", ["Glaze B"]]],
+        world: levelWorld({glaze: true, clays: ["black", "red", "white"], models: ORDER_SHAPES, maxGlazeDips: 1})
+    },
+    {
+        name: "Double Dips",
+        description: "Five pots, each dipped in both glazes. The order of the dips matters.",
+        steps: [step("Dig, weigh, wedge and give it to the owl", "PotterWorking"), step("Dry the pot", "PotDry"),
+            potFired("Bisque fire (1 log black, 2 red, 3 white)", "cooled"), step("Dip it in a glaze", "PotGlazed"),
+            potFired("Glaze fire", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
+        card: [],
+        orders: [["Bowl", "white", ["Glaze A", "Glaze B"]], ["Vase", "red", ["Glaze B", "Glaze A"]],
+            ["Cup", "black", ["Glaze A", "Glaze B"]], ["Bowl", "red", ["Glaze B", "Glaze A"]],
+            ["Vase", "white", ["Glaze A", "Glaze B"]]],
+        world: levelWorld({glaze: true, clays: ["black", "red", "white"], models: ORDER_SHAPES, maxGlazeDips: 2})
     }
 ];
 
@@ -181,30 +226,33 @@ function levelUnlocked(index) {
     return UNLOCK_ALL_LEVELS || index <= levelsDone();
 }
 
-// The Goal box (HUD, under the inventory panel): title, description, the level's fire card if it has one, and
-// the step checkboxes, which tick as the player does each step. The text entity listens for the steps' events, so
+// The Goal box (HUD, under the inventory panel): title, description, the first step, the level's fire card if it has one,
+// and the remaining step checkboxes, which tick as the player does each step. The text entity listens for the steps' events, so
 // its bindings go with the scene.
-function showGoalPanel(level) {
+function showGoalPanel(level, top) {
     // A level with a story shows it (and the Master's tip) in place of the one-line description; the long lines wrap.
     var head = level.story ? ["<b>" + level.name + "</b>", level.story, "<i>" + level.tip + "</i>"] :
         ["<b>Goal</b>", level.description];
-    var wrapped = head.reduce(function (n, line) { return n + Math.ceil(line.length / 55); }, 0);
-    level.card.forEach(function (row) {
-        head.push("<span style='display:inline-block;width:12px;height:12px;border:1px solid #222;background:" +
-            row.color + "'></span> " + row.text);
+    var wrapLines = function (line) { return Math.ceil(line.length / 43); };
+    var wrapped = head.concat(level.steps.map(function (s) { return "☐ " + s.text; })).concat(level.card.map(function (row) { return row.text; }))
+        .reduce(function (n, line) { return n + wrapLines(line); }, 0);
+    var card = level.card.map(function (row) {
+        return "<span style='display:inline-block;width:12px;height:12px;border:1px solid #222;background:" +
+            row.color + "'></span> " + row.text;
     });
-    var h = 16 + (wrapped + level.card.length + level.steps.length) * 22;
+    var h = 16 + wrapped * 22;
     Crafty.e("2D, HUD, Color")
-        .attr({x: 10, y: 225, w: 430, h: h, z: 999})
-        .color("rgba(255, 255, 255, 0.8)")
+        .attr({x: HUD_PANEL_X, y: top, w: HUD_PANEL_W, h: h, z: 999})
+        .color(HUD_PANEL_COLOR)
         .css({borderRadius: "8px"});
     var text = Crafty.e("2D, HUD, Text")
-        .attr({x: 20, y: 233, w: 410, h: h - 8, z: 1000})
+        .attr({x: 20, y: top + 8, w: HUD_PANEL_W - 20, h: h - 8, z: 1000})
         .textFont({size: "15px"}).textColor("#222").unselectable()
         .css({lineHeight: "22px"});
     var ticked = level.steps.map(function () { return false; });
     var draw = function () {
-        var lines = head.concat(level.steps.map(function (s, i) { return (ticked[i] ? "☑ " : "☐ ") + s.text; }));
+        var steps = level.steps.map(function (s, i) { return (ticked[i] ? "☑ " : "☐ ") + s.text; });
+        var lines = head.concat(steps.slice(0, 1), card, steps.slice(1));
         text.text(lines.join("<br>"));
     };
     level.steps.forEach(function (s, i) {
@@ -235,12 +283,12 @@ function showMasterTip(text) {
 function showLevelButtons(index, mode) {
     var restart = Crafty.e("HudButton, Delay")
         .label("Restart")
-        .attr({x: 450, y: 10, w: 100, h: 36})
+        .attr({x: HUD_PANEL_X + HUD_PANEL_W + 10, y: 10, w: 100, h: 36})
         .css({lineHeight: "36px"})
         .onClick(function () { Crafty.scene("Game", {stage: index, mode: mode}); });
     Crafty.e("HudButton")
         .label("Menu")
-        .attr({x: 560, y: 10, w: 100, h: 36})
+        .attr({x: HUD_PANEL_X + HUD_PANEL_W + 120, y: 10, w: 100, h: 36})
         .css({lineHeight: "36px"})
         .onClick(function () { Crafty.scene(mode === "sandbox" ? "Start" : "LevelSelect"); });
     restart.bind("PotCracked", function () {
@@ -265,7 +313,7 @@ Crafty.defineScene("Game", function(options) {
     var orders = level.orders && level.orders.map(function (spec) { return fixedOrder(spec[0], spec[1], spec[2]); });
     var world = buildWorld(Object.assign({}, level.world, {orders: orders}));
     if (mode !== "sandbox") {
-        showGoalPanel(level);
+        showGoalPanel(level, world.hud.bottom + 15);
     }
     showLevelButtons(index, mode);
     // Each of the level's Master tips is said once, the first time its event happens.

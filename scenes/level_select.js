@@ -11,9 +11,12 @@ Crafty.defineScene("LevelSelect", function() {
         .textColor('#222')
         .unselectable();
 
+    // Two columns, filled top to bottom (the left one first), so a long list fits the screen.
+    var rows = Math.ceil(LEVELS.length / 2);
     LEVELS.forEach(function (level, index) {
+        var column = Math.floor(index / rows);
         var button = Crafty.e("UIButton")
-            .attr({x: GAME_SCREEN_WIDTH / 2 - 200, y: GAME_SCREEN_HEIGHT * 0.15 + 100 + index * 70, w: 400});
+            .attr({x: GAME_SCREEN_WIDTH / 2 - 420 + column * 440, y: GAME_SCREEN_HEIGHT * 0.15 + 100 + (index % rows) * 70, w: 400});
         if (levelUnlocked(index)) {
             button.clickSound = "uiSelect";
             button.label((index + 1) + "  " + level.name)
@@ -27,7 +30,7 @@ Crafty.defineScene("LevelSelect", function() {
 
     var back = Crafty.e("UIButton")
         .label("Back")
-        .attr({x: GAME_SCREEN_WIDTH / 2 - 80, y: GAME_SCREEN_HEIGHT * 0.15 + 100 + LEVELS.length * 70 + 20})
+        .attr({x: GAME_SCREEN_WIDTH / 2 - 80, y: GAME_SCREEN_HEIGHT * 0.15 + 100 + rows * 70 + 20})
         .onClick(function () { Crafty.scene("Start"); });
     back.clickSound = "uiBack";
 
