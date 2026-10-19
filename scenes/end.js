@@ -18,5 +18,10 @@ Crafty.defineScene("End", function() {
             Crafty.scene("Game");
         });
 
+    Crafty.e("UIButton")
+        .label("Menu")
+        .attr({x: GAME_SCREEN_WIDTH / 2 - 80, y: GAME_SCREEN_HEIGHT / 2 + 70})
+        .onClick(function () { Crafty.scene("Start"); });
+
     Crafty.e("MuteButton").attr({x: 20, y: 20});
 });

@@ -64,6 +64,20 @@ Crafty.c("DroppedItem", {
         return this;
     },
 
+    // Puts `item` on the ground with its middle at (cx, cy), the fox not on it: walking onto it later can roll damage.
+    lieAt: function(fox, item, cx, cy) {
+        var shape = ITEM_SHAPES[item.type];
+        var w = shape.w * DROPPED_ITEM_SCALE;
+        var h = shape.h * DROPPED_ITEM_SCALE;
+        this.fox = fox;
+        this.item = item;
+        this.attr({x: cx - w / 2, y: cy - h / 2, w: w, h: h, z: DROPPED_ITEM_Z});
+        this.overlapping = false;
+        this.armed = true;
+        this.redraw();
+        return this;
+    },
+
     redraw: function() {
         if (!this.item) {
             return;
@@ -90,6 +104,9 @@ Crafty.c("DroppedItem", {
     // Pots only: POT_BREAK_CHANCES by cook state, a hit adds DAMAGE_PER_BREAK to pot.damage.
     rollDamage: function() {
         var pottery = this.item;
+        if (!worldRules.potsBreakOnGround) {
+            return;
+        }
         var chance = POT_BREAK_CHANCES[pottery.state];
         if (pottery.type !== "pot" || !(Math.random() < chance)) {
             return;

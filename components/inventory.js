@@ -101,9 +101,14 @@ function potSprite(item) {
     var glaze = dips > 0 ? GLAZE_NUMBERS[item.pot.glaze[dips - 1]] : 0;
     var kind = item.before("cooled") ? "unfired" : "fired";
     if (dips > 0) {
-        kind = !item.before("glazeCooled") ? "glazeFired" : dips >= MAX_GLAZE_DIPS ? "full" : "half";
+        kind = !item.before("glazeCooled") ? "glazeFired" : dips >= worldRules.maxGlazeDips ? "full" : "half";
     }
     return potImage(file, item.clay.letter, kind, glaze);
+}
+
+// The CSS filter that makes a pot's picture match its clay colour (see UNFIRED_POT_FILTER); "none" once fired.
+function potFilter(item) {
+    return item.before("cooled") ? UNFIRED_POT_FILTER[item.clay.letter] : "none";
 }
 
 // The background layer (url, size, position) that draws the cropped part of `picture` ({url, w, h, crop}) as
@@ -145,7 +150,7 @@ function paintItem(box, item) {
     } else if (item) {
         box.color(itemColor(item));
     }
-    box.css({backgroundImage: layers.length > 0 ? layers.join(", ") : "none", backgroundSize: sizes.join(", "),
+    box.css({filter: isPot ? potFilter(item) : "none", backgroundImage: layers.length > 0 ? layers.join(", ") : "none", backgroundSize: sizes.join(", "),
         backgroundPosition: positions.join(", "), backgroundRepeat: "no-repeat"});
 }
 

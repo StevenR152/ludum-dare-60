@@ -3,7 +3,8 @@
 //   in the pack, now "wedged"). Clay is weighed first, at the WeighingStation.
 // - Models (left): one per ORDER_SHAPES; click one to carry it to the owl. Clicking again gives another
 //   (so a lost model never blocks the player); the spot is lit again on "ModelReturned" of that shape.
-//   Crafty.e("Workbench").place(-1850, 242, 260, 50);
+//   Crafty.e("Workbench").place(-1850, 242, 260, 50);          // a model per shape
+//   Crafty.e("Workbench").place(-1850, 242, 260, 50, ["Cup"]); // only these models
 Crafty.c("Workbench", {
     init: function() {
         this.requires("2D, DOM, Color, Mouse, Delay, Collision, DebugHitbox");
@@ -20,12 +21,13 @@ Crafty.c("Workbench", {
     },
 
     // Parts are laid out from the bench's position, so they are made here rather than in init.
-    place: function(x, y, w, h) {
+    place: function(x, y, w, h, shapes) {
+        shapes = shapes || ORDER_SHAPES;
         this.attr({x: x, y: y, w: w, h: h});
         // One model spot per shape, side by side across the left half; the right half is bare bench to wedge on.
         var gap = 3;
-        var spotW = (w / 2 - gap * (ORDER_SHAPES.length + 1)) / ORDER_SHAPES.length;
-        ORDER_SHAPES.forEach(function (shape, col) {
+        var spotW = (w / 2 - gap * (shapes.length + 1)) / shapes.length;
+        shapes.forEach(function (shape, col) {
             this.addModelSpot({type: "model", shape: shape}, x + gap + col * (spotW + gap), y + gap, spotW, h - gap * 2);
         }, this);
         // The zone reaches WORKBENCH_REACH further down than the bench is drawn, so the fox counts as at the bench sooner.

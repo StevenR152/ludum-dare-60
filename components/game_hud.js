@@ -1,6 +1,6 @@
 // The Game scene's HUD as one thing: a faint panel holding the music button, the timer and the
 // Fox / Master / Kiln inventory rows. It owns them all, so one call shows or hides the lot.
-//   var hud = Crafty.e("GameHud").build(player, owl, kiln);
+//   var hud = Crafty.e("GameHud").build(player, owl, kiln);   // owl may be null: no Master row
 //   hud.enable(false);   // hide and disable the whole HUD; hud.enable(true) brings it back
 // The timer keeps counting while the HUD is hidden.
 Crafty.c("GameHud", {
@@ -13,14 +13,18 @@ Crafty.c("GameHud", {
     // Call once the fox, owl and kiln exist.
     build: function(fox, owl, kiln) {
         this.parts.push(Crafty.e("2D, HUD, Color")
-            .attr({x: 10, y: 10, w: 430, h: 200, z: 999})
+            .attr({x: 10, y: 10, w: 430, h: owl ? 200 : 150, z: 999})
             .color("rgba(255, 255, 255, 0.8)")
             .css({borderRadius: "8px"}));
         this.parts.push(Crafty.e("MuteButton").attr({x: 20, y: 20}));
         this.parts.push(Crafty.e("GameTimer").attr({x: 125, y: 20}));
         this.addRow("Fox", [fox.inventory], 60);
-        this.addRow("Master", [owl.inventory], 110);
-        this.addRow("Kiln", [kiln.inventory, kiln.woodInventory], 160);
+        var y = 110;
+        if (owl) {
+            this.addRow("Master", [owl.inventory], y);
+            y += 50;
+        }
+        this.addRow("Kiln", [kiln.inventory, kiln.woodInventory], y);
         this.bind("Remove", function () {
             this.parts.concat(this.rows).forEach(function (part) { part.destroy(); });
         });

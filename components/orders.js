@@ -5,6 +5,8 @@
 // order.points. Cards list delivered orders, then open ones, then expired ones.
 // Triggers "OrderAdded", "OrderDelivered" and "OrderExpired" with the order.
 //   Crafty.e("OrderPanel").attr({x: GAME_SCREEN_WIDTH - 300, y: 60}).start();
+// With a list, .start([fixedOrder("Cup", "black"), ...]) shows exactly those orders at once instead: no timers,
+// bars, penalties or score, and no new orders ever (levels).
 var ORDER_CARD_W = 280;
 var ORDER_CARD_H = 60;
 var ORDER_CARD_GAP = 8;
@@ -22,6 +24,19 @@ function findOpenOrder(pot) {
         return isOpen(order) && pot.pot.shape === order.shape && pot.clay.name === order.clay.name &&
             pot.pot.glaze.join() === order.glaze.join();
     }) || null;
+}
+
+// A fixed order for a level: no deadline, so it never expires. glaze is the buckets dipped in order ([] for none).
+function fixedOrder(shape, clayKey, glaze) {
+    return {
+        shape: shape,
+        grams: ORDER_CLAY_GRAMS[shape],
+        clay: CLAY_TYPES[clayKey],
+        glaze: glaze || [],
+        speed: null,
+        deadlineMs: Infinity,
+        madeMs: 0
+    };
 }
 
 // Delivers an open order: early (first half of its time) or late points.
@@ -74,8 +89,16 @@ Crafty.c("OrderPanel", {
         this.refresh();
     },
 
-    // Call after positioning the panel: the first order arrives at once.
-    start: function() {
+    // Call after positioning the panel: the first order arrives at once. With a list of fixed orders, they all
+    // arrive at once and nothing else does.
+    start: function(fixed) {
+        if (fixed) {
+            this.fixed = true;
+            fixed.forEach(function (order) { gameState.orders.push(order); });
+            this.refresh();
+            fixed.forEach(function (order) { Crafty.trigger("OrderAdded", order); });
+            return this;
+        }
         this.scoreBack = Crafty.e("2D, HUD, Color")
             .attr({x: this.x, y: this.y, w: ORDER_CARD_W, h: ORDER_SCORE_H, z: 1000})
             .color("rgba(34, 34, 34, 0.85)");
@@ -101,7 +124,9 @@ Crafty.c("OrderPanel", {
 
     // Redraws the score and every card: delivered, open, then expired, dropping the oldest finished ones that do not fit.
     refresh: function() {
-        this.scoreText.text("Total Score  " + gameState.score);
+        if (this.scoreText) {
+            this.scoreText.text("Total Score  " + gameState.score);
+        }
         this.cards.forEach(function (card) { card.parts.forEach(function (part) { part.destroy(); }); });
         var open = gameState.orders.filter(isOpen);
         var finished = gameState.orders.filter(function (order) { return !isOpen(order); });
@@ -113,7 +138,7 @@ Crafty.c("OrderPanel", {
 
     makeCard: function(order, index) {
         var x = this.x;
-        var y = this.y + ORDER_SCORE_H + 4 + index * (ORDER_CARD_H + ORDER_CARD_GAP);
+        var y = this.y + (this.fixed ? 0 : ORDER_SCORE_H + 4) + index * (ORDER_CARD_H + ORDER_CARD_GAP);
         var card = {order: order};
         card.back = Crafty.e("2D, HUD, Color")
             .attr({x: x, y: y, w: ORDER_CARD_W, h: ORDER_CARD_H, z: 1000})
@@ -140,11 +165,15 @@ Crafty.c("OrderPanel", {
                 .attr({x: squaresX + i * 20, y: y + 25, w: 16, h: 16, z: 1001})
                 .color(GLAZE_BUCKET_COLORS[order.glaze[i]]));
         }
-        card.speedLabel = Crafty.e("2D, HUD, Text")
-            .attr({x: squaresX + order.glaze.length * 20 + 8, y: y + 24, w: 90, h: 16, z: 1001})
-            .text("· " + order.speed)
-            .textFont({size: "13px", weight: "bold"}).textColor("#222").unselectable();
-        if (isOpen(order)) {
+        if (order.speed) {
+            card.speedLabel = Crafty.e("2D, HUD, Text")
+                .attr({x: squaresX + order.glaze.length * 20 + 8, y: y + 24, w: 90, h: 16, z: 1001})
+                .text("· " + order.speed)
+                .textFont({size: "13px", weight: "bold"}).textColor("#222").unselectable();
+        }
+        if (this.fixed) {
+            // The card colour alone shows whether it is delivered: no timer bar, no points.
+        } else if (isOpen(order)) {
             card.barBack = Crafty.e("2D, HUD, Color")
                 .attr({x: x + 8, y: y + 46, w: ORDER_CARD_W - 16, h: 8, z: 1001})
                 .color("#999");
