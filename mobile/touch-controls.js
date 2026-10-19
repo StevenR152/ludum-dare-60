@@ -71,7 +71,7 @@
      * - `holdToward`: `{entity, keys, deadZone}`. Holds the keys (arrow keys by default) pointing from
      *   the entity's centre to the first finger down, in 8 directions, until it lifts or the entity arrives.
      * - `scenes`: scene names gestures run on, default `["Game"]`; `null` for every scene.
-     * - `fitPage`: fit the page to the phone (viewport width, no scrolling, hide `.touch-hide`), default `true`.
+     * - `fitPage`: lock the page for touch (no scrolling or zooming, hide `.touch-hide`, size the touch rings), default `true`.
      *
      * Keys are `Crafty.keys` names. Touches that start on a `Mouse` entity are left to Crafty.
      *
@@ -493,27 +493,17 @@
             }, 400);
         },
 
-        // Fits the game to the screen with the browser's own page zoom: CSS transforms would
-        // put taps in the wrong place, because Crafty doesn't account for them.
+        // Sizes the touch rings for the screen. The page scales the game itself (the game's own
+        // resize handler, using Crafty.viewport.scale): a viewport meta tag is ignored inside iframes
+        // such as itch.io's, and CSS transforms would put taps in the wrong place.
         _fitPage: function () {
             if (!Crafty.stage) {
                 return;
             }
-            var stage = Crafty.stage.elem;
-            var aspect = window.innerWidth / window.innerHeight;
-            // Landscape fills the height, portrait the width; the formula covers both.
-            var width = Math.ceil(Math.max(stage.offsetWidth, stage.offsetHeight * aspect));
-            var meta = document.querySelector("meta[name=viewport]");
-            if (!meta) {
-                meta = document.createElement("meta");
-                meta.name = "viewport";
-                document.head.appendChild(meta);
-            }
-            meta.content = "width=" + width + ", user-scalable=no";
             // About 58pt on a phone in either orientation, bigger than the 44pt minimum touch size.
             var ring = Math.round(0.15 * Math.min(window.innerWidth, window.innerHeight));
             document.documentElement.style.setProperty("--touch-controls-ring", ring + "px");
-            // Hidden page chrome moves the stage, and Crafty maps taps from the stage's position.
+            // A resize moves the stage, and Crafty maps taps from the stage's position.
             Crafty.viewport.reload();
         }
     }, {}, false);

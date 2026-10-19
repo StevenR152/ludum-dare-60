@@ -1,22 +1,16 @@
-// The game screen is GAME_SCREEN_WIDTH x GAME_SCREEN_HEIGHT; on smaller windows the world and HUD layers are
-// scaled down together and the stage shrinks to match, so everything fits and Crafty's mouse mapping
-// (which knows the viewport scale but not CSS transforms) stays accurate. Never scales above 1.
-// Touch devices are fitted by TouchControls instead, so they stay at 1.
-function screenFitScale() {
-    if (TouchControls.isActive()) {
-        return 1;
-    }
-    // Fit the width the page has left after a scrollbar, and the height left under the page title.
-    var width = document.documentElement.clientWidth;
-    var height = window.innerHeight - Crafty.stage.elem.offsetTop;
-    return Math.min(1, width / GAME_SCREEN_WIDTH, height / GAME_SCREEN_HEIGHT);
-}
-
+// The game is laid out on a fixed GAME_SCREEN_WIDTH x GAME_SCREEN_HEIGHT screen. This fits it to whatever
+// space the page has (a browser window, an itch.io iframe, fullscreen, a phone): the world and HUD layers are
+// scaled together and the stage shrinks or grows to match, so Crafty's mouse mapping (which knows the viewport
+// scale but not CSS transforms) stays accurate. The page centres the stage (see index.html), which
+// letterboxes the leftover space.
 function fitScreenToWindow() {
-    var scale = screenFitScale();
+    var scale = Math.min(document.documentElement.clientWidth / GAME_SCREEN_WIDTH,
+        window.innerHeight / GAME_SCREEN_HEIGHT);
     Crafty.viewport.scale(scale);
     Crafty.stage.elem.style.width = GAME_SCREEN_WIDTH * scale + "px";
     Crafty.stage.elem.style.height = GAME_SCREEN_HEIGHT * scale + "px";
+    // Plain DOM panels inside the stage size themselves from this (see the weighing station).
+    Crafty.stage.elem.style.setProperty("--game-scale", scale);
     Crafty.viewport.width = GAME_SCREEN_WIDTH * scale;
     Crafty.viewport.height = GAME_SCREEN_HEIGHT * scale;
     Crafty.viewport.reload();
