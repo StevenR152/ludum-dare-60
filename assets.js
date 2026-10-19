@@ -57,6 +57,17 @@ var gameAssets = {
         "kickWheel": ["assets/sounds/Sounds/pottery kick wheel LOOP.wav"],
         "orderDelivered": ["assets/sounds/Sounds/order succes.wav"],
         "orderFailed": ["assets/sounds/Sounds/order succes 3.wav"],
+        "digClay": ["assets/sounds/Sounds/dig 1.wav"],
+        "door": ["assets/sounds/Sounds/door 1.wav"],
+        "weighScale": ["assets/sounds/Sounds/weigh scale 1.wav"],
+        "chopLog": ["assets/sounds/Sounds/harvest wood 1.wav"],
+        "dropLog": ["assets/sounds/Sounds/drop wood 1.wav"],
+        "fireLoop": ["assets/sounds/Sounds/fire LOOP.wav"],
+        "uiHover": ["assets/sounds/Sounds/UI/hover.wav"],
+        "uiConfirm": ["assets/sounds/Sounds/UI/confirm.wav"],
+        "uiSelect": ["assets/sounds/Sounds/UI/select.wav"],
+        "uiBack": ["assets/sounds/Sounds/UI/back.wav"],
+        "bgMusic": ["assets/sounds/Sounds/music/theme test 1 ld60 LOOP.ogg"],
         "potCrack": ["assets/sounds/Sounds/pots crack big 2.wav"],
         // Placeholder until a stumble sound is recorded.
         "stumble": ["assets/sounds/Sounds/putdown pot 1.wav"]

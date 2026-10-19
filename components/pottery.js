@@ -86,6 +86,9 @@ Pottery.prototype = {
             return false;
         }
         this.pot.dryness = Math.min(1, this.pot.dryness + ms / ((DRY_BASE_MS + this.pot.weight * DRY_MS_PER_GRAM) * slowdown));
+        if (this.pot.dryness >= 1) {
+            Crafty.trigger("PotDry", this);
+        }
         return true;
     },
 
@@ -134,6 +137,7 @@ Pottery.prototype = {
         } else if (to === "shelved") {
             this.pot.completed = true;
         }
+        Crafty.trigger("PotAdvanced", {pot: this, to: to});
         return true;
     }
 };

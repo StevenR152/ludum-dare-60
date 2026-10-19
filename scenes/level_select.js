@@ -15,6 +15,7 @@ Crafty.defineScene("LevelSelect", function() {
         var button = Crafty.e("UIButton")
             .attr({x: GAME_SCREEN_WIDTH / 2 - 200, y: GAME_SCREEN_HEIGHT * 0.15 + 100 + index * 70, w: 400});
         if (levelUnlocked(index)) {
+            button.clickSound = "uiSelect";
             button.label((index + 1) + "  " + level.name)
                 .onClick(function () { Crafty.scene("Game", {stage: index, mode: "single"}); });
         } else {
@@ -24,10 +25,11 @@ Crafty.defineScene("LevelSelect", function() {
         }
     });
 
-    Crafty.e("UIButton")
+    var back = Crafty.e("UIButton")
         .label("Back")
         .attr({x: GAME_SCREEN_WIDTH / 2 - 80, y: GAME_SCREEN_HEIGHT * 0.15 + 100 + LEVELS.length * 70 + 20})
         .onClick(function () { Crafty.scene("Start"); });
+    back.clickSound = "uiBack";
 
     Crafty.e("MuteButton").attr({x: 20, y: 20});
 });

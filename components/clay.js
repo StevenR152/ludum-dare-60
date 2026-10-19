@@ -1,5 +1,5 @@
 // Hold for CLAY_DIG_MS to dig; the patch fades to CLAY_DUG_ALPHA and triggers "ClayDug" with its
-// type, then respawns (fully opaque, diggable again) after CLAY_RESPAWN_MS.
+// type (a global event, so the Goal panel can hear it), then respawns (fully opaque, diggable again) after CLAY_RESPAWN_MS.
 //   Crafty.e("Clay").clay(CLAY_TYPES.black);
 Crafty.c("Clay", {
     init: function() {
@@ -76,7 +76,7 @@ Crafty.c("Clay", {
         showStatus("Dug up " + this.clayType.name + " clay");
         this.dug = true;
         this.patch.alpha = CLAY_DUG_ALPHA;
-        this.trigger("ClayDug", this.clayType);
+        Crafty.trigger("ClayDug", this.clayType);
         this.respawnDue = Date.now() + CLAY_RESPAWN_MS;
         this.delay(this.respawn, CLAY_RESPAWN_MS);
     },

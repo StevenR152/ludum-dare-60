@@ -24,7 +24,10 @@ Crafty.c("ButtonBase", {
         this.css({ cursor: 'pointer', 'line-height': '48px', 'background-color': '#444', 'border-radius': '6px' });
         this.normalSprite = null;
         this.hoverSprite = null;
-        this.bind("MouseOver", function () { this.setHover(true); });
+        // The sound played on click; set to "uiSelect" or "uiBack" for those buttons.
+        this.clickSound = "uiConfirm";
+        this.bind("MouseOver", function () { audioController.playSfx("uiHover"); this.setHover(true); });
+        this.bind("Click", function () { audioController.playSfx(this.clickSound); });
         this.bind("MouseOut", function () { this.setHover(false); });
     },
 
