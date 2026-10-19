@@ -126,7 +126,15 @@ Crafty.defineScene("Loading", function() {
     ticker.bind("Remove", function () { clearInterval(tick); });
 
     // gameAssets is defined in assets.js. The callbacks are, in order: done, each asset, each failure.
-    Crafty.load(gameAssets, function () {
+    // Audio is loaded after, not with, the pictures. Crafty counts a sound as loaded on its canplaythrough event,
+    // which iOS Safari never fires before the player has tapped, so waiting on sounds left the bar stuck on
+    // iPhones. Sounds not yet loaded are simply skipped (audioController.isLoaded), and they are tiny now.
+    var visualAssets = {};
+    Object.keys(gameAssets).forEach(function (type) {
+        if (type !== "audio") { visualAssets[type] = gameAssets[type]; }
+    });
+    Crafty.load(visualAssets, function () {
+        Crafty.load({audio: gameAssets.audio}, function () {}, function () {}, function () {});
         realFraction = 1;
         assetsDone = true;
     }, function (progress) {

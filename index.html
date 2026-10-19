@@ -19,6 +19,7 @@
   </head>
   <body>
     <div id="game"></div>
+    <div id="rotate-hint">Please turn your phone sideways to play</div>
     <style>
       /* The page is only the game: it fills the window (or itch.io iframe) and camera.js fits and
          scales the stage into it, so the dark page colour letterboxes the leftover space. */
@@ -27,6 +28,19 @@
         margin: 0;
         overflow: hidden;
         background: #222;
+      }
+      /* The game is a wide stage; upright on a phone it shrinks to a thin, unreadable strip (and iOS Safari
+         draws nothing at that scale), so phones are asked to turn sideways. */
+      #rotate-hint { display: none; }
+      @media (orientation: portrait) and (pointer: coarse) {
+        #game { display: none; }
+        #rotate-hint {
+          display: block;
+          padding: 0 32px;
+          text-align: center;
+          font: italic 600 22px/1.4 Alegreya, Georgia, serif;
+          color: #E3CDA8;
+        }
       }
       body {
         display: flex;
