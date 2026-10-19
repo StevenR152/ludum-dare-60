@@ -16,6 +16,8 @@ Crafty.c("DroppedItem", {
         // True while the fox overlaps it; armed once the fox has left, so the next touch rolls damage.
         this.overlapping = false;
         this.armed = false;
+        // True for the sandbox's test table: walking on it never damages the pot.
+        this.immune = false;
         this.checkHits("Fox");
         this.bind("HitOn", this.onHitOn);
         this.bind("HitOff", this.onHitOff);
@@ -104,7 +106,7 @@ Crafty.c("DroppedItem", {
     // Pots only: POT_BREAK_CHANCES by cook state, a hit adds DAMAGE_PER_BREAK to pot.damage.
     rollDamage: function() {
         var pottery = this.item;
-        if (!worldRules.potsBreakOnGround) {
+        if (!worldRules.potsBreakOnGround || this.immune) {
             return;
         }
         var chance = POT_BREAK_CHANCES[pottery.state];
