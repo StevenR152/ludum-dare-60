@@ -43,6 +43,7 @@ Crafty.c("Workbench", {
             .textFont({size: "12px", weight: "bold"}).textColor("#FFF").unselectable()
             .css({lineHeight: h + "px", textAlign: "center"});
         spot.model = model;
+        spot.reachVia = bench; // click-to-move walks to the bench, not the model spot
         spot.home = true;
         spot.bind("MouseDown", function () { bench.takeModel(spot); });
         this.parts.push(spot);

@@ -1,4 +1,4 @@
-// The player: sprite, arrow-key movement, and an Inventory of FOX_INVENTORY_CAPACITY items of any
+// The player: sprite, arrow-key movement, click-to-move (enableClickToMove), and an Inventory of FOX_INVENTORY_CAPACITY items of any
 // kind in any mix (2 dug clays, wedged clay and a model, 2 pots, a pot and a model...).
 // Each 1000 g of clay carried slows the fox by FOX_SLOWDOWN_PER_KG of its base speed, and every dropped
 // item it overlaps multiplies its speed by DROPPED_ITEM_SLOWDOWN (see DroppedItem).
@@ -38,6 +38,13 @@ Crafty.c("Fox", {
         this.bind("DroppedOverlapChanged", this.updateSpeed);
         this.bind("KeyDown", this.onKeyDown);
         this.bind("UpdateFrame", this.maybeStumble);
+        // Click to move (see enableClickToMove): walk is null, {x, y} (a ground point) or {entity} (a station).
+        this.walk = null;
+        this.walkSpeed = FOX_SPEED;
+        this.pressHeld = false;
+        this.dragging = false;
+        this.armed = null;
+        this.bind("UpdateFrame", this.walkStep);
         // The sprite faces right; mirror it while walking left, keep the last facing when stopped/vertical.
         this.bind("NewDirection", function (direction) {
             if (direction.x < 0) {
@@ -76,6 +83,7 @@ Crafty.c("Fox", {
 
     // Puts the fox at (x, y) whatever the masks say (doors; DOOR_DESTINATIONS should be clear anyway).
     teleportTo: function(x, y) {
+        this.cancelWalk();
         this.teleporting = true;
         this.attr({x: x, y: y});
         this.teleporting = false;
@@ -101,10 +109,15 @@ Crafty.c("Fox", {
         });
         this.slowFraction = Math.max(0, 1 - speed / FOX_SPEED);
         console.log("Speed changed to " + speed);
+        this.walkSpeed = speed;
         this.speed({x: speed, y: speed});
     },
 
     onKeyDown: function(e) {
+        var keys = Crafty.keys;
+        if ([keys.LEFT_ARROW, keys.RIGHT_ARROW, keys.UP_ARROW, keys.DOWN_ARROW, keys.A, keys.D, keys.W, keys.S].indexOf(e.key) >= 0) {
+            this.cancelWalk();
+        }
         if (e.key === Crafty.keys.E) {
             this.selectNext();
         } else if (e.key === Crafty.keys.SPACE) {
@@ -159,7 +172,173 @@ Crafty.c("Fox", {
 
     isMoving: function() {
         var velocity = this.velocity();
-        return velocity.x !== 0 || velocity.y !== 0;
+        return velocity.x !== 0 || velocity.y !== 0 || this.walk !== null;
+    },
+
+    // ---- Click to move ----
+    // A press on open ground walks the fox until its feet box contains that point (while the button stays
+    // down the point follows the cursor). A press on a station the fox does not touch walks it to the
+    // station and stops on first touch; if the press is still held on arrival, the station's own press
+    // handler runs then (dig, wedge, chop...). The walk is straight, at the fox's current speed, and ends
+    // the moment a step would put the feet out of bounds.
+
+    // Hooks the mouse up for this fox; call once after creating it in a scene.
+    enableClickToMove: function() {
+        var fox = this;
+        var mouse = Crafty.s("Mouse");
+        var onPress = function (e) { fox.handlePress(e); };
+        var onMove = function (e) { fox.handleDrag(e); };
+        var onRelease = function () { fox.handleRelease(); };
+        mouse.bind("MouseDown", onPress);
+        window.addEventListener("mousemove", onMove);
+        window.addEventListener("mouseup", onRelease);
+        window.addEventListener("blur", onRelease);
+        this.bind("Remove", function () {
+            mouse.unbind("MouseDown", onPress);
+            window.removeEventListener("mousemove", onMove);
+            window.removeEventListener("mouseup", onRelease);
+            window.removeEventListener("blur", onRelease);
+        });
+        return this;
+    },
+
+    // True if the press landed on the HUD or a menu button: those never start a walk.
+    pressedUi: function(e) {
+        var target = e.target;
+        if (target && ["HUD", "UIButton", "MuteButton", "OrderPanel"].some(function (name) { return target.has(name); })) {
+            return true;
+        }
+        if (typeof e.realX !== "number") {
+            return false;
+        }
+        var sx = e.realX + Crafty.viewport._x; // screen position: HUD pieces are fixed on screen
+        var sy = e.realY + Crafty.viewport._y;
+        var over = false;
+        Crafty("HUD").each(function () {
+            if (this.has("StatusMessage") || this.has("PlayerNotification") || this.visible === false) {
+                return;
+            }
+            if (sx >= this._x && sx < this._x + this._w && sy >= this._y && sy < this._y + this._h) {
+                over = true;
+            }
+        });
+        return over;
+    },
+
+    handlePress: function(e) {
+        this.pressHeld = true;
+        this.dragging = false;
+        if (this.pressedUi(e)) {
+            return;
+        }
+        var target = e.target;
+        if (target && target.has("Mouse")) {
+            // A station. In reach it handles the press itself; out of reach the fox walks to it, and its
+            // "I can't reach..." line waits to see whether the press was a tap or is held.
+            var station = target.reachVia || target;
+            if (!this.touches(station)) {
+                // Aim at the spot clicked on the station, not its middle (which can sit out of bounds).
+                this.walk = {entity: station, event: e, x: e.realX, y: e.realY};
+                statusGate.defer = true;
+            }
+            return;
+        }
+        // Touch screens already walk toward a held finger (TouchControls); don't also walk to the tap.
+        if (typeof TouchControls !== "undefined" && TouchControls.isActive()) {
+            return;
+        }
+        this.walk = {x: e.realX, y: e.realY};
+        this.dragging = true;
+    },
+
+    // While the button is down on open ground the destination follows the cursor.
+    handleDrag: function(e) {
+        if (!this.dragging || (this.walk && this.walk.entity)) {
+            return;
+        }
+        var spot = Crafty.domHelper.translate(e.clientX, e.clientY);
+        this.walk = {x: spot.x, y: spot.y};
+    },
+
+    handleRelease: function() {
+        this.pressHeld = false;
+        this.dragging = false;
+        // Let go before arriving: a tap, so its out-of-reach line is said now.
+        statusGate.releaseDeferred(true);
+        if (this.armed) {
+            var station = this.armed;
+            this.armed = null;
+            station.trigger("MouseUp", {});
+        }
+    },
+
+    cancelWalk: function() {
+        this.walk = null;
+        this.dragging = false;
+    },
+
+    // Each frame: one step toward the destination, or arrival.
+    walkStep: function(frame) {
+        var walk = this.walk;
+        if (!walk) {
+            return;
+        }
+        var feet = {x: this.x + FOX_FEET_BOX.x, y: this.y + FOX_FEET_BOX.y};
+        var aimX;
+        var aimY;
+        if (walk.entity) {
+            var station = walk.entity;
+            if (!station.has("2D")) { // destroyed on the way (a dropped item picked up...)
+                this.cancelWalk();
+                return;
+            }
+            if (this.touches(station)) {
+                this.arrive();
+                return;
+            }
+            aimX = walk.x;
+            aimY = walk.y;
+        } else {
+            if (walk.x >= feet.x && walk.x < feet.x + FOX_FEET_BOX.w && walk.y >= feet.y && walk.y < feet.y + FOX_FEET_BOX.h) {
+                this.cancelWalk();
+                return;
+            }
+            aimX = walk.x;
+            aimY = walk.y;
+        }
+        var dx = aimX - (feet.x + FOX_FEET_BOX.w / 2);
+        var dy = aimY - (feet.y + FOX_FEET_BOX.h / 2);
+        var distance = Math.sqrt(dx * dx + dy * dy);
+        var step = this.walkSpeed * frame.dt / 1000;
+        if (distance > step) {
+            dx = dx * step / distance;
+            dy = dy * step / distance;
+        }
+        var newX = this.x + dx;
+        var newY = this.y + dy;
+        // A wall ends the walk at once (no sliding). A fox already out of bounds moves freely.
+        if (!this.feetBlocked(this.x, this.y) && this.feetBlocked(newX, newY)) {
+            this.cancelWalk();
+            return;
+        }
+        if (dx < -0.01) {
+            this.flip("X");
+        } else if (dx > 0.01) {
+            this.unflip("X");
+        }
+        this.attr({x: newX, y: newY});
+    },
+
+    // Reached a station. A press still held now runs the station's press handler (no out-of-reach line);
+    // otherwise the fox just stands there and the next press interacts.
+    arrive: function() {
+        var walk = this.walk;
+        this.cancelWalk();
+        if (this.pressHeld) {
+            statusGate.releaseDeferred(false);
+            this.armed = walk.entity;
+            walk.entity.trigger("MouseDown", walk.event);
+        }
     },
 
     // Each frame a moving fox carrying something may stumble: STUMBLE_BASE_CHANCE per second, plus

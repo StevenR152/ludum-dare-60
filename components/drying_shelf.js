@@ -28,6 +28,7 @@ Crafty.c("DryingShelf", {
             var y = this.slotTop() + 46;
             if (!this.bars[i]) {
                 this.slotBoxes[i].addComponent("Mouse").bind("MouseDown", this.trigger.bind(this, "SlotClicked", i));
+                this.slotBoxes[i].reachVia = this; // click-to-move walks to the shelf, not the slot
                 this.bars[i] = new DryBar("DOM");
                 this.labels[i] = Crafty.e("2D, DOM, Text")
                     .attr({w: 40, h: 16})

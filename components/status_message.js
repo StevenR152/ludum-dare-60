@@ -24,8 +24,54 @@ Crafty.c("StatusMessage", {
     }
 });
 
+// Lines said while a mouse/touch press is being handled wait until that press has been dispatched
+// (one tick). If the press started a walk to a far station (Fox.handlePress sets `defer`), they are kept
+// instead, and said on release if the press was a tap, or dropped if it is still held on arrival.
+var statusGate = {
+    open: false,
+    defer: false,
+    lines: [],
+    deferred: [],
+
+    begin: function() {
+        if (this.open) {
+            return;
+        }
+        this.open = true;
+        this.lines = [];
+        setTimeout(this.end.bind(this), 0);
+    },
+
+    end: function() {
+        var said = this.lines;
+        this.open = false;
+        this.lines = [];
+        if (this.defer) {
+            this.defer = false;
+            this.deferred = said;
+        } else {
+            said.forEach(function (message) { Crafty.trigger("StatusText", message); });
+        }
+    },
+
+    // Says the kept lines (show) or drops them.
+    releaseDeferred: function(show) {
+        var kept = this.deferred;
+        this.deferred = [];
+        if (show) {
+            kept.forEach(function (message) { Crafty.trigger("StatusText", message); });
+        }
+    }
+};
+window.addEventListener("mousedown", function () { statusGate.begin(); }, true);
+window.addEventListener("touchstart", function () { statusGate.begin(); }, true);
+
 // Logs to the console and shows the message on screen.
 function showStatus(message) {
     console.log(message);
+    if (statusGate.open) {
+        statusGate.lines.push(message);
+        return;
+    }
     Crafty.trigger("StatusText", message);
 }
