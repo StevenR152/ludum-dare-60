@@ -51,7 +51,15 @@ var gameAssets = {
         "putdownBoneDry": ["assets/sounds/Sounds/putdown pot 1.wav"],
         "putdownBisque": ["assets/sounds/Sounds/putdown pot 3.wav"],
         "putdownGlazed": ["assets/sounds/Sounds/putdown pot 2.wav"],
-        "kilnLoad": ["assets/sounds/Sounds/fire 4.wav"],
+        // The old kiln-load sound now marks the kiln being lit; pots put into the kiln reuse the putdown
+        // sounds, processed with echo and distortion to sound like they are inside a brick kiln.
+        "kilnLit": ["assets/sounds/Sounds/fire 4.wav"],
+        "kilnPutdownBoneDry": ["assets/sounds/Sounds/kiln putdown pot 1.wav"],
+        "kilnPutdownBisque": ["assets/sounds/Sounds/kiln putdown pot 3.wav"],
+        "kilnPutdownGlazed": ["assets/sounds/Sounds/kiln putdown pot 2.wav"],
+        "kilnPutdownWetBlue": ["assets/sounds/Sounds/kiln putdown wet clay 2.wav"],
+        "kilnPutdownWetRed": ["assets/sounds/Sounds/kiln putdown wet clay 3.wav"],
+        "kilnPutdownWetBrown": ["assets/sounds/Sounds/kiln putdown wet clay 4.wav"],
         "glazeDipFirst": ["assets/sounds/Sounds/glaze dipping 3.wav"],
         "glazeDipNext": ["assets/sounds/Sounds/glaze dipping 4.wav"],
         "kickWheel": ["assets/sounds/Sounds/pottery kick wheel LOOP.wav"],
@@ -61,7 +69,8 @@ var gameAssets = {
         // Placeholder until a stumble sound is recorded.
         "stumble": ["assets/sounds/Sounds/putdown pot 1.wav"]
     },
-    "images": potImagePaths().concat(LOG_IMAGE.url),
+    // The collision masks are preloaded here and read by collisionMap.load() (components/collision_map.js).
+    "images": potImagePaths().concat(LOG_IMAGE.url, COLLISION_AREAS.map(function (area) { return area.mask; })),
     "sprites": {
         "assets/images/background_outside_map.png": {
             "tile": 5763,

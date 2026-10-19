@@ -36,13 +36,19 @@ var CLAY_TYPES = {
 // level than its clay's cracks when it cools.
 var FIRE_LEVELS = ["low", "mid", "high"];
 
-// Debug: outline the fox's and the doors' collision boxes in red.
-var DEBUG_HITBOXES = false;
+// Debug: outline the fox's and the doors' collision boxes in red, and show the out-of-bounds masks
+// (COLLISION_AREAS) over the HUD, under the outlines. The overlay is every blocked pixel in solid red drawn at
+// exactly DEBUG_MASK_ALPHA, whatever opacity the mask PNGs were painted at.
+var DEBUG_HITBOXES = true;
+var DEBUG_MASK_ALPHA = 0.5;
 
 // Fox movement and inventory; each 1000 g of clay carried takes 20% off the base speed.
 var FOX_SPEED = 250;
 // The fox's touch area is its sprite box shrunk by this many px on every side (the art has empty margins).
 var FOX_HITBOX_INSET = 40;
+// The fox's feet, relative to its 160x102 sprite box: the strip of the art (its paws sit around y 79) that
+// is stopped by the out-of-bounds masks. Nothing else about the fox collides.
+var FOX_FEET_BOX = {x: 30, y: 62, w: 100, h: 17};
 var FOX_SLOWDOWN_PER_KG = 0.2;
 var FOX_INVENTORY_CAPACITY = 2;
 // Dropped items: drawn DROPPED_ITEM_SCALE times their HUD size; each one the fox overlaps multiplies its
@@ -72,6 +78,31 @@ var KILN_COOL_MS = 2000; // reduced from 8000 for testing
 // x, y, w, h in image pixels), scaled so that part fills a world rectangle. OUTSIDE_ART_Z sits between the
 // map (OUTSIDE_MAP_Z) and the fox (0).
 var OUTSIDE_MAP_BOX = {x: -350, y: -100, w: 2500, h: 1080};
+// The house interior sits left of Outside, in a gap wider than the screen; the art is 8364x2246 at a quarter size.
+var INSIDE_MAP_BOX = {x: -2000 - 1200, y: 0, w: 8364 / 4, h: 2246 / 4};
+
+// Out-of-bounds: one painted mask image per area, the same picture size as that area's background, laid over
+// the world box x, y, w, h. Where a mask pixel is opaque (alpha >= COLLISION_ALPHA) the fox's feet and dropped
+// items can't go; transparent is walkable. Anything outside every area is blocked too. Repaint the PNGs
+// (any resolution with the same aspect) to change what is blocked; turn on DEBUG_HITBOXES to see them.
+var COLLISION_AREAS = [
+    {name: "outside", mask: "assets/images/mask_outside.png",
+     x: OUTSIDE_MAP_BOX.x, y: OUTSIDE_MAP_BOX.y, w: OUTSIDE_MAP_BOX.w, h: OUTSIDE_MAP_BOX.h},
+    {name: "inside", mask: "assets/images/mask_inside.png",
+     x: INSIDE_MAP_BOX.x, y: INSIDE_MAP_BOX.y, w: INSIDE_MAP_BOX.w, h: INSIDE_MAP_BOX.h}
+];
+var COLLISION_ALPHA = 128;
+// Lookups sample a box every this many px; a dropped item looks for a free spot in rings this far apart,
+// out to COLLISION_SNAP_RADIUS. Paint walls thicker than the sample step so nothing slips through.
+var COLLISION_SAMPLE_STEP = 6;
+var COLLISION_SNAP_STEP = 4;
+var COLLISION_SNAP_RADIUS = 400;
+// Where the fox appears (its x, y, top-left of the 160x102 sprite box) after using the door into that area.
+// Pick spots clear of the masks and of both door zones, or the fox walks straight back through.
+var DOOR_DESTINATIONS = {
+    outside: {x: 937.5, y: 545},
+    inside: {x: -2679, y: 400}
+};
 // How opaque a clay patch's picture stays while it is dug and replenishing.
 var CLAY_DUG_ALPHA = 0.8;
 var OUTSIDE_MAP_PX = {w: 5763, h: 2458};

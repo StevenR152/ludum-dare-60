@@ -7,7 +7,8 @@ Crafty.c("DebugHitbox", {
         if (!DEBUG_HITBOXES) {
             return;
         }
-        var outline = Crafty.e("2D, DOM")
+        // DebugOutlineLayer (main.js) sits above the HUD and the collision masks, so outlines stay visible.
+        var outline = Crafty.e("2D, DOM, DebugOutlineLayer")
             .css({border: "2px solid red", boxSizing: "border-box", pointerEvents: "none"})
             .attr({z: 1000});
         var sync = function () {

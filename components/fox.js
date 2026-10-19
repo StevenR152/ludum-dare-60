@@ -18,7 +18,16 @@ Crafty.c("Fox", {
                 x: this.x + inset, y: this.y + inset, w: this.w - 2 * inset, h: this.h - 2 * inset, z: 1000
             }));
         }
+        if (DEBUG_HITBOXES) {
+            this.attach(Crafty.e("2D, DebugHitbox").attr({
+                x: this.x + FOX_FEET_BOX.x, y: this.y + FOX_FEET_BOX.y, w: FOX_FEET_BOX.w, h: FOX_FEET_BOX.h, z: 1000
+            }));
+        }
         this.fourway(FOX_SPEED);
+        // Out-of-bounds: every step is checked against the collision masks (see keepInBounds).
+        this.teleporting = false;
+        this.inBoundsFix = false;
+        this.bind("Move", this.keepInBounds);
         this.slowFraction = 0;
         this.inventory = new Inventory(FOX_INVENTORY_CAPACITY, {fits: function () { return true; }});
         this.bind("InventoryChanged", function (changed) {
@@ -37,6 +46,39 @@ Crafty.c("Fox", {
                 this.unflip("X");
             }
         });
+    },
+
+    // True if the fox's feet, with the sprite box at (x, y), are on out-of-bounds ground.
+    feetBlocked: function(x, y) {
+        return collisionMap.isBoxBlocked(x + FOX_FEET_BOX.x, y + FOX_FEET_BOX.y, FOX_FEET_BOX.w, FOX_FEET_BOX.h);
+    },
+
+    // Runs after every position change (Crafty's "Move", with the old box). A step that would put the feet
+    // out of bounds keeps whichever axis is still clear, so walking diagonally into a wall slides along it.
+    // A fox already out of bounds (e.g. a bad spawn) may move freely, and teleportTo skips the check.
+    keepInBounds: function(old) {
+        if (this.teleporting || this.inBoundsFix || !this.feetBlocked(this.x, this.y) || this.feetBlocked(old._x, old._y)) {
+            return;
+        }
+        var newX = this.x;
+        var newY = this.y;
+        this.inBoundsFix = true;
+        if (!this.feetBlocked(newX, old._y)) {
+            this.y = old._y;
+        } else if (!this.feetBlocked(old._x, newY)) {
+            this.x = old._x;
+        } else {
+            this.x = old._x;
+            this.y = old._y;
+        }
+        this.inBoundsFix = false;
+    },
+
+    // Puts the fox at (x, y) whatever the masks say (doors; DOOR_DESTINATIONS should be clear anyway).
+    teleportTo: function(x, y) {
+        this.teleporting = true;
+        this.attr({x: x, y: y});
+        this.teleporting = false;
     },
 
     // True if the fox's touch area overlaps the entity's box.
