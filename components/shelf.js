@@ -4,7 +4,7 @@
 //   transferItem(fox.inventory, shelf.inventory);
 Crafty.c("Shelf", {
     init: function() {
-        this.requires("2D, DOM, Color, Mouse");
+        this.requires("2D, DOM, Color, Mouse, DebugHitbox");
         this.color(SHELF_COLOR);
         this.slotBoxes = [];
         this.bind("InventoryChanged", function (changed) {

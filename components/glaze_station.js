@@ -8,12 +8,12 @@ Crafty.c("GlazeStation", {
     station: function(positions, fox) {
         var names = Object.keys(GLAZE_BUCKET_COLORS);
         for (var i = 0; i < names.length; i++) {
-            var bucket = Crafty.e("2D, DOM, Color, Mouse")
+            var bucket = Crafty.e("2D, DOM, Color, Mouse, DebugHitbox")
                 .attr({x: positions[i].x, y: positions[i].y, w: 70, h: 70})
                 .color(GLAZE_BUCKET_COLORS[names[i]]);
             bucket.glazeName = names[i];
             bucket.bind("MouseDown", function () {
-                if (this.intersect(fox.x, fox.y, fox.w, fox.h)) {
+                if (fox.touches(this)) {
                     dipPot(fox, this.glazeName);
                 } else {
                     showStatus("Walk up to the glaze bucket first");

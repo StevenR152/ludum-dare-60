@@ -1,0 +1,21 @@
+// Debug outline: a red border on a separate overlay that tracks the entity's box, drawn above the art.
+// Does nothing unless DEBUG_HITBOXES (constants.js) is true, so components can always require it.
+//   this.requires("DebugHitbox");
+Crafty.c("DebugHitbox", {
+    init: function() {
+        this.requires("2D");
+        if (!DEBUG_HITBOXES) {
+            return;
+        }
+        var outline = Crafty.e("2D, DOM")
+            .css({border: "2px solid red", boxSizing: "border-box", pointerEvents: "none"})
+            .attr({z: 1000});
+        var sync = function () {
+            outline.attr({x: this.x, y: this.y, w: this.w, h: this.h});
+        };
+        this.bind("Move", sync);
+        this.bind("Resize", sync);
+        this.bind("Remove", function () { outline.destroy(); });
+        sync.call(this);
+    }
+});

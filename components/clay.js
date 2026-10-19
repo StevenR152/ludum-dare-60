@@ -1,9 +1,9 @@
-// Hold for CLAY_DIG_MS to dig; the pile greys out and triggers "ClayDug" with its
-// type, then respawns (own colour, diggable again) after CLAY_RESPAWN_MS.
-//   Crafty.e("Clay").attr({x: 195, y: 775, w: 80, h: 80}).clay(CLAY_TYPES.black);
+// Hold for CLAY_DIG_MS to dig; the patch fades to CLAY_DUG_ALPHA and triggers "ClayDug" with its
+// type, then respawns (fully opaque, diggable again) after CLAY_RESPAWN_MS.
+//   Crafty.e("Clay").clay(CLAY_TYPES.black);
 Crafty.c("Clay", {
     init: function() {
-        this.requires("2D, DOM, Color, Mouse, Delay, Collision");
+        this.requires("2D, DOM, Mouse, Delay, Collision, DebugHitbox");
         this.clayType = null;
         this.dug = false;
         this.bind("MouseDown", this.startDig);
@@ -12,10 +12,24 @@ Crafty.c("Clay", {
 
     },
 
-//clay should have colour, change colour square when dug
-    clay: function(type) {
+    // The patch picture covers the whole map (moved by `shift`, world px) and shows while the clay can be
+    // dug. The dig zone is the lower, central part of the patch's drawing, where the fox stands.
+    clay: function(type, shift) {
+        shift = shift || {x: 0, y: 0};
         this.clayType = type;
-        return this.color(type.color); },
+        var patch = Crafty.e("2D, DOM, " + type.patch)
+            .attr({x: OUTSIDE_MAP_BOX.x + shift.x, y: OUTSIDE_MAP_BOX.y + shift.y,
+                   w: OUTSIDE_MAP_BOX.w, h: OUTSIDE_MAP_BOX.h, z: OUTSIDE_ART_Z})
+            .css({transition: "opacity 1s"});
+        this.patch = patch;
+        var sx = OUTSIDE_MAP_BOX.w / OUTSIDE_MAP_PX.w;
+        var sy = OUTSIDE_MAP_BOX.h / OUTSIDE_MAP_PX.h;
+        var c = type.patchContent;
+        var art = {x: patch.x + c[0] * sx, y: patch.y + c[1] * sy, w: c[2] * sx, h: c[3] * sy};
+        this.attr({x: art.x + art.w * 0.1, y: art.y + art.h * 0.35, w: art.w * 0.8, h: art.h * 0.65});
+        this.bind("Remove", function () { patch.destroy(); });
+        return this;
+    },
 
         //can only dig if pile not dug - ?could we run out of clay in future
     // Only the fox standing on the pile can dig it.
@@ -49,7 +63,7 @@ Crafty.c("Clay", {
             return;
         }
         this.dug = true;
-        this.color(CLAY_DUG_COLOR);
+        this.patch.alpha = CLAY_DUG_ALPHA;
         this.trigger("ClayDug", this.clayType);
         this.respawnDue = Date.now() + CLAY_RESPAWN_MS;
         this.delay(this.respawn, CLAY_RESPAWN_MS);
@@ -79,6 +93,6 @@ Crafty.c("Clay", {
     // Pile reappears so the same spot can be re-harvested.
     respawn: function() {
         this.dug = false;
-        this.color(this.clayType.color);
+        this.patch.alpha = 1;
     }
 });
