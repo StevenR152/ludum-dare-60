@@ -10,7 +10,7 @@
 Crafty.c("Fox", {
     init: function() {
         this.requires("2D, DOM, fox, Fourway, Collision, Keyboard");
-        this.attr({w: 160, h: 102});
+        this.attr({w: 208, h: 133});
         // Touching uses the sprite box shrunk by FOX_HITBOX_INSET, not the transparent margins of the art.
         var inset = FOX_HITBOX_INSET;
         this.collision([inset, inset, this.w - inset, inset, this.w - inset, this.h - inset, inset, this.h - inset]);

@@ -79,7 +79,8 @@ var gameAssets = {
         "levelComplete": ["assets/sounds/Sounds/order succes 2.wav"]
     },
     // The collision masks are preloaded here and read by collisionMap.load() (components/collision_map.js).
-    "images": potImagePaths().concat(LOG_IMAGE.url, Object.keys(CLAY_IMAGES).map(function (letter) { return CLAY_IMAGES[letter].url; }), COLLISION_AREAS.map(function (area) { return area.mask; }),
+    "images": potImagePaths().concat(LOG_IMAGE.url, Object.keys(CLAY_IMAGES).map(function (letter) { return CLAY_IMAGES[letter].url; }),
+        Object.keys(WEDGED_CLAY_IMAGES).map(function (letter) { return WEDGED_CLAY_IMAGES[letter].url; }), COLLISION_AREAS.map(function (area) { return area.mask; }),
         Object.keys(FIRE_BADGES).map(function (n) { return FIRE_BADGES[n].url; })),
     "sprites": {
         "assets/images/background_outside_map.png": {
