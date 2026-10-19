@@ -41,6 +41,8 @@ var FIRE_LEVELS = ["low", "mid", "high"];
 // exactly DEBUG_MASK_ALPHA, whatever opacity the mask PNGs were painted at.
 var DEBUG_HITBOXES = true;
 var DEBUG_MASK_ALPHA = 0.5;
+// Debug: the door arrival spots (DOOR_DESTINATIONS) are outlined and labelled in this colour instead of red.
+var DEBUG_DESTINATION_COLOR = "lime";
 
 // Fox movement and inventory; each 1000 g of clay carried takes 20% off the base speed.
 var FOX_SPEED = 250;
@@ -99,9 +101,10 @@ var COLLISION_SNAP_STEP = 4;
 var COLLISION_SNAP_RADIUS = 400;
 // Where the fox appears (its x, y, top-left of the 160x102 sprite box) after using the door into that area.
 // Pick spots clear of the masks and of both door zones, or the fox walks straight back through.
+// Optional facing: "right" or "left" forces which way the fox looks on arrival; leave it out to keep its facing.
 var DOOR_DESTINATIONS = {
-    outside: {x: 937.5, y: 545},
-    inside: {x: -2679, y: 400}
+    outside: {x: 957.5, y: 545},
+    inside: {x: -2500, y: 350, facing: "right"}
 };
 // How opaque a clay patch's picture stays while it is dug and replenishing.
 var CLAY_DUG_ALPHA = 0.8;

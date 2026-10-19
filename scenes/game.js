@@ -198,12 +198,31 @@ Crafty.defineScene("Game", function() {
         });
     });
 
+    // Debug (DEBUG_HITBOXES): show where the fox lands, as a box the size of its sprite, labelled by area.
+    if (DEBUG_HITBOXES) {
+        [{name: "outside", spot: DOOR_DESTINATIONS.outside}, {name: "inside", spot: DOOR_DESTINATIONS.inside}].forEach(function (d) {
+            Crafty.e("2D, DebugHitbox").attr({x: d.spot.x, y: d.spot.y, w: player.w, h: player.h}).debugBorder(DEBUG_DESTINATION_COLOR);
+            Crafty.e("2D, DOM, Text, DebugOutlineLayer")
+                .attr({x: d.spot.x + 4, y: d.spot.y + 4, w: player.w - 8, h: 20, z: 1001})
+                .text("to " + d.name)
+                .textColor(DEBUG_DESTINATION_COLOR)
+                .textFont({size: "14px", weight: "bold"})
+                .css({pointerEvents: "none"});
+        });
+    }
+
     // Walking into a door puts the fox at its configured destination (so no ping-pong).
     function useDoor() {
         if (!player.touches(this)) {
             return;
         }
         player.teleportTo(this.arrival.x, this.arrival.y);
+        // The sprite faces right unflipped, left when flipped on X.
+        if (this.arrival.facing === "right") {
+            player.unflip("X");
+        } else if (this.arrival.facing === "left") {
+            player.flip("X");
+        }
     }
     outsideDoor.bind("EnterFrame", useDoor);
     insideDoor.bind("EnterFrame", useDoor);

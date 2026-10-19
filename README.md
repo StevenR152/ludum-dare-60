@@ -31,7 +31,7 @@ Built with [CraftyJS](http://craftyjs.com/api/) 0.9.0 (loaded from cdnjs).
 Each area has a mask picture, `assets/images/mask_outside.png` and `mask_inside.png`, the same shape as its background. Opaque pixels (alpha 128 or more) are blocked, transparent ones walkable, and anything outside both areas is blocked. Paint them in any image editor (any resolution with the same aspect ratio), save over the PNG and reload. Set `DEBUG_HITBOXES = true` in `constants.js` to see everything the game treats as blocked in red at a fixed 50% opacity (`DEBUG_MASK_ALPHA`, whatever opacity the PNGs are painted at) over the game, with the red outlines on top.
 - The shipped masks are placeholders: a 12 px opaque border around each area.
 - Only the fox's feet (`FOX_FEET_BOX`) are checked, so its head can overlap a wall.
-- Where the fox appears after each door is `DOOR_DESTINATIONS` in `constants.js`. Pick spots on clear ground, away from both doors; the console warns if one is blocked or touches a door.
+- Where the fox appears after each door is `DOOR_DESTINATIONS` in `constants.js`. Pick spots on clear ground, away from both doors; the console warns if one is blocked or touches a door. An optional `facing: "right"` or `"left"` on a spot forces which way the fox looks on arrival (the one into Inside faces right). With `DEBUG_HITBOXES` on, each spot is drawn as a lime green box (`DEBUG_DESTINATION_COLOR`) the size of the fox, labelled "to inside" / "to outside".
 - In code: `COLLISION_AREAS` and the other `COLLISION_*` constants in `constants.js`, `collisionMap` in `components/collision_map.js`, `Fox.keepInBounds`, `DroppedItem.dropFrom`.
 
 ## Clay and wood
