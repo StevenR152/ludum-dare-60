@@ -22,9 +22,18 @@ Crafty.defineScene("Start", function() {
         .css({fontFamily: MENU_FONT, letterSpacing: "1px",
               textShadow: "0 3px 18px rgba(0, 0, 0, 0.65), 0 0 46px rgba(242, 140, 40, 0.16)"});
 
+    Crafty.e("2D, DOM, Text")
+        .attr({x: 0, y: 200, w: GAME_SCREEN_WIDTH, h: 30, z: 2})
+        .text("By hand, by fire")
+        .textAlign("center")
+        .textFont({ size: '22px', type: 'italic' })
+        .textColor(MENU_TEXT_COLOR)
+        .unselectable()
+        .css({fontFamily: MENU_FONT, letterSpacing: "2px"});
+
     // The jam still gets its credit, just not as the game's name.
     Crafty.e("2D, DOM, Text")
-        .attr({x: 0, y: 206, w: GAME_SCREEN_WIDTH, h: 26, z: 2})
+        .attr({x: 0, y: 238, w: GAME_SCREEN_WIDTH, h: 26, z: 2})
         .text("A LUDUM DARE 60 GAME · THEME: OLD TECH")
         .textAlign("center")
         .textFont({ size: '13px', weight: '600' })
@@ -32,7 +41,7 @@ Crafty.defineScene("Start", function() {
         .unselectable()
         .css({fontFamily: MENU_FONT, letterSpacing: "3px"});
 
-    menuRule(252, 220);
+    menuRule(272, 220);
 
     Crafty.e("2D, DOM, Text")
         .attr({x: GAME_SCREEN_WIDTH / 2 - 430, y: 292, w: 860, h: 220, z: 2})
