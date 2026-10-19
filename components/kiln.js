@@ -188,7 +188,6 @@ Crafty.c("Kiln", {
             });
             var pot = this.inventory.items[i];
             paintItem(box, pot);
-            markBorder(box, pot);
         }, this);
     }
 });

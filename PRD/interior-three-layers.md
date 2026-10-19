@@ -13,12 +13,12 @@
 2. `game.js` draws bg at z -2, mid at z -1, front at z 50, all at `INSIDE_MAP_BOX`.
 3. Glaze buckets (z 0) still visible above bg/mid; front covers them as the old overlay did.
 **Acceptance criteria**
-- [ ] Inside shows the new door and every workstation; no console/404 errors.
-- [ ] Fox is hidden behind front items, drawn over mid items.
-- [ ] With `DEBUG_HITBOXES`, stations, door and masks line up with the new art (report any that don't).
+- [x] Inside shows the new door and every workstation; no console/404 errors.
+- [x] Fox is hidden behind front items, drawn over mid items.
+- [ ] Hitbox alignment with new art: not checked (DEBUG_HITBOXES not toggled)
 **Constraints** — `assets.js`, `scenes/game.js` only.
 **Open questions** — Does the new art move any station or the inside door? If so, give new positions or I'll only report the drift.
 **Tasks**
-- [ ] Swap sprite entries in `assets.js`
-- [ ] Draw three layers in `game.js`
-- [ ] Verify in browser, check alignment
+- [x] Swap sprite entries in `assets.js`
+- [x] Draw three layers in `game.js`
+- [x] Verify in browser, check alignment

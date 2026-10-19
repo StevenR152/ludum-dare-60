@@ -166,7 +166,7 @@ var LEVELS = [
             {color: CLAY_TYPES.white.color, text: "White clay: a roaring fire, 3 logs"}
         ],
         orders: [["Bowl", "black", []], ["Bowl", "black", []], ["Cup", "black", []], ["Cup", "black", []]],
-        world: levelWorld({glaze: false, clays: ["black"], models: ["Bowl", "Cup"]})
+        world: levelWorld({glaze: false, clays: ["black"], models: ["Bowl", "Cup"], kilnTrees: true})
     },
     {
         name: "Glazing",
@@ -187,7 +187,7 @@ var LEVELS = [
             {color: CLAY_TYPES.white.color, text: "White clay: a roaring fire, 3 logs"}
         ],
         orders: [["Vase", "red", ["Glaze A"]], ["Vase", "black", ["Glaze B"]], ["Cup", "white", ["Glaze A"]]],
-        world: levelWorld({glaze: true, clays: ["black", "red", "white"], models: ["Cup", "Vase"], maxGlazeDips: 1})
+        world: levelWorld({glaze: true, clays: ["black", "red", "white"], models: ["Cup", "Vase"], maxGlazeDips: 1, kilnTrees: true})
     },
     {
         name: "Mixed Orders",
@@ -209,7 +209,7 @@ var LEVELS = [
         ],
         orders: [["Bowl", "white", ["Glaze A"]], ["Vase", "red", ["Glaze B"]], ["Cup", "black", ["Glaze A"]],
             ["Cup", "red", ["Glaze B"]]],
-        world: levelWorld({glaze: true, clays: ["black", "red", "white"], models: ORDER_SHAPES, maxGlazeDips: 1})
+        world: levelWorld({glaze: true, clays: ["black", "red", "white"], models: ORDER_SHAPES, maxGlazeDips: 1, kilnTrees: true})
     },
     {
         name: "Double Dips",
@@ -232,7 +232,7 @@ var LEVELS = [
         orders: [["Bowl", "white", ["Glaze A", "Glaze B"]], ["Vase", "red", ["Glaze B", "Glaze A"]],
             ["Cup", "black", ["Glaze A", "Glaze B"]], ["Bowl", "red", ["Glaze B", "Glaze A"]],
             ["Vase", "white", ["Glaze A", "Glaze B"]]],
-        world: levelWorld({glaze: true, clays: ["black", "red", "white"], models: ORDER_SHAPES, maxGlazeDips: 2})
+        world: levelWorld({glaze: true, clays: ["black", "red", "white"], models: ORDER_SHAPES, maxGlazeDips: 2, kilnTrees: true})
     }
 ];
 

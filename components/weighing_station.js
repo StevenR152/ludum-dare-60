@@ -44,9 +44,7 @@ function weighPanelCss() {
 Crafty.c("WeighingStation", {
     init: function() {
         this.requires("2D, DOM, Color, Mouse, Delay, Collision, DebugHitbox");
-        this.color(WEIGHING_STATION_COLOR);
-        this.css({borderRadius: "8px", border: "2px solid rgba(40, 26, 16, 0.55)", boxSizing: "border-box",
-            boxShadow: "0 4px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12)"});
+        this.color("#FFF", 0);   // the zone is clickable but not drawn: the art shows the table
         this.pile = new Inventory(Object.keys(CLAY_TYPES).length, {fits: function () { return true; }});
         this.parts = [];
         this.panel = null;
@@ -69,13 +67,17 @@ Crafty.c("WeighingStation", {
     place: function(x, y, w, h) {
         this.attr({x: x, y: y, w: w, h: h});
         var gap = 4;
-        var boxW = (w - gap * (Object.keys(CLAY_TYPES).length + 1)) / Object.keys(CLAY_TYPES).length;
+        // The piles sit side by side at the left end of the table, WEIGHING_PILE_SCALE of the size they would be if
+        // they filled it, WEIGHING_PILE_LIFT above the table's front edge.
+        var boxW = (w - gap * (Object.keys(CLAY_TYPES).length + 1)) / Object.keys(CLAY_TYPES).length * WEIGHING_PILE_SCALE;
+        var boxH = (h - gap * 2) * WEIGHING_PILE_SCALE;
         this.pileBoxes = {};
         Object.keys(CLAY_TYPES).forEach(function (name, col) {
             var box = Crafty.e("2D, DOM, Color, Text")
-                .attr({x: x + gap + col * (boxW + gap), y: y + gap, w: boxW, h: h - gap * 2, z: this.z + 1})
-                .textFont({size: "13px", weight: "700"}).textColor(MENU_TEXT_COLOR).unselectable()
-                .css({fontFamily: MENU_FONT, lineHeight: (h - gap * 2) + "px", textAlign: "center",
+                .attr({x: x + gap + col * (boxW + gap), y: y + h - gap - boxH - WEIGHING_PILE_LIFT, w: boxW, h: boxH, z: INTERIOR_FRONT_Z + 1})   // over the interior's front layer
+                .textFont({size: "10px", weight: "700"}).textColor(MENU_TEXT_COLOR).unselectable()
+                // Two short lines (name, weight) centred in the smaller box.
+                .css({fontFamily: MENU_FONT, lineHeight: "12px", paddingTop: (boxH - 24) / 2 + "px", textAlign: "center",
                     textShadow: "0 1px 3px rgba(0, 0, 0, 0.85)", textTransform: "capitalize", borderRadius: "6px",
                     boxSizing: "border-box"});
             this.pileBoxes[name] = box;
@@ -89,11 +91,10 @@ Crafty.c("WeighingStation", {
         Object.keys(this.pileBoxes).forEach(function (name) {
             var clay = this.pileClay(name);
             paintItem(this.pileBoxes[name], clay);
-            this.pileBoxes[name].css({border: clay ? "none" : "1px dashed rgba(250, 242, 226, 0.35)"});
             if (!clay) {
-                this.pileBoxes[name].color(WEIGHING_EMPTY_PILE_COLOR);
+                this.pileBoxes[name].color("#FFF", 0);   // an empty pile is not drawn
             }
-            this.pileBoxes[name].text(clay ? name + " " + clay.clay.weight + " g" : "");
+            this.pileBoxes[name].text(clay ? name + "<br>" + clay.clay.weight + " g" : "");
         }, this);
     },
 

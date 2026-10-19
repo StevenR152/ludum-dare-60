@@ -6,20 +6,22 @@
 //   model goes back to the bench ("ModelReturned").
 // - trim: an untrimmed pot (receiveFrom). He judges it as he starts: leather hard comes out trimmed
 //   after POT_TRIM_MS; wet collapses and bone dry cracks (pot.cracked). Either way it waits for the fox.
-// The clay or pot he is working on shows on his wheel (POTTER_WHEEL), and so does a finished pot he holds alone.
-// Other finished pots show as a box on him until the fox takes them (takePot).
+// The clay or pot he is working on shows on his wheel (POTTER_WHEEL). The oldest finished pot shows on his table
+// (POTTER_TABLE) until the fox takes it (takePot).
 Crafty.c("Potter", {
     init: function() {
         this.requires("2D, Delay, DebugHitbox");
         this.jobs = [];
         this.working = null;
+        this.formedPot = null;   // while a throw is nearly done: the pot the clay has become, shown on the wheel
         this.inventory = new Inventory(OWL_CAPACITY, {
             fits: function () { return true; },
             releases: function (item) { return this.isFinished(item); }.bind(this)
         });
+        // The oldest finished pot, on the table (POTTER_TABLE).
         this.potBox = Crafty.e("2D, DOM, Color")
-            .attr({w: 40, h: 40, visible: false});
-        // The clay or pot he is working on, or a finished pot he holds alone, sits on his wheel (POTTER_WHEEL).
+            .attr({w: POTTER_TABLE.w, h: POTTER_TABLE.h, visible: false});
+        // The clay or pot he is working on sits on his wheel (POTTER_WHEEL).
         this.wheel = Crafty.e("2D, DOM, Color")
             .attr({visible: false});
         this.bind("InventoryChanged", function (changed) {
@@ -129,12 +131,24 @@ Crafty.c("Potter", {
         var job = this.working = this.jobs[0];
         Crafty.trigger("PotterWorking", job.items[0]);
         if (job.kind === "throw") {
+            // The clay is a lump on the wheel for most of the job, then shows as the pot it has become.
+            this.delay(function () { this.formPot(job); }, POT_MAKE_MS * (1 - POT_REVEAL_SHARE), 0);
             this.delay(function () { this.finishThrow(job); }, POT_MAKE_MS, 0);
         } else {
             // He feels the pot as he starts; the result shows when he's done.
             var stage = job.items[0].dryStage();
             this.delay(function () { this.finishTrim(job, stage); }, POT_TRIM_MS, 0);
         }
+    },
+
+    // The last stretch of a throw: the wheel shows the pot of the model's shape, drawn as the unfired pot it will be.
+    formPot: function(job) {
+        var clay = job.items[0];
+        this.formedPot = Object.create(clay, {
+            type: {value: "pot"},
+            pot: {value: {shape: job.items[1].shape, glaze: [], cracked: false}}
+        });
+        this.showPot();
     },
 
     finishThrow: function(job) {
@@ -167,41 +181,35 @@ Crafty.c("Potter", {
     endJob: function(pot) {
         this.jobs.shift();
         this.working = null;
+        this.formedPot = null;
         Crafty.trigger("PotterDone", pot);
         this.inventory.changed();
     },
 
-    // What is on the wheel: the clay or pot of the job under way (never a model), else a finished pot when it is
-    // the only thing he holds. Otherwise null.
+    // What is on the wheel: the clay or pot of the job under way (never a model), else null.
     wheelItem: function() {
-        if (this.working) {
-            return this.working.items[0];
-        }
-        var items = this.inventory.items;
-        return items.length === 1 && this.isFinished(items[0]) ? items[0] : null;
+        return this.working ? this.working.items[0] : null;
     },
 
-    // The wheel shows wheelItem(); a finished pot not on the wheel shows in the box low on the owl, centred.
-    // Placed now because the owl's position is set after init.
+    // The wheel shows wheelItem(); the oldest finished pot shows on the table. Both are drawn over the interior's
+    // front layer.
     showPot: function() {
-        var onWheel = this.wheelItem();
-        this.wheel.attr({x: POTTER_WHEEL.x, y: POTTER_WHEEL.y, w: POTTER_WHEEL.w, h: POTTER_WHEEL.h, z: this.z + 1,
-            visible: !!onWheel});
+        var onWheel = this.formedPot || this.wheelItem();
+        this.wheel.attr({x: POTTER_WHEEL.cx - POTTER_WHEEL.w / 2, y: POTTER_WHEEL.cy - POTTER_WHEEL.h / 2,
+            w: POTTER_WHEEL.w, h: POTTER_WHEEL.h, z: INTERIOR_FRONT_Z + 1, visible: !!onWheel});
         if (onWheel) {
             paintItem(this.wheel, onWheel);
-            markBorder(this.wheel, onWheel);
         }
         var index = this.inventory.find(this.isFinished.bind(this));
         var pot = index >= 0 ? this.inventory.items[index] : null;
-        if (pot && pot !== onWheel) {
+        if (pot) {
             this.potBox.attr({
-                x: this.x + (this.w - this.potBox.w) / 2,
-                y: this.y + this.h - this.potBox.h - 10,
-                z: this.z + 1
+                x: POTTER_TABLE.cx - POTTER_TABLE.w / 2,
+                y: POTTER_TABLE.cy - POTTER_TABLE.h / 2,
+                z: INTERIOR_FRONT_Z + 1
             });
             paintItem(this.potBox, pot);
-            markBorder(this.potBox, pot);
         }
-        this.potBox.visible = !!pot && pot !== onWheel;
+        this.potBox.visible = !!pot;
     }
 });

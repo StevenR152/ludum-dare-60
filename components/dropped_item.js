@@ -87,7 +87,6 @@ Crafty.c("DroppedItem", {
             return;
         }
         paintItem(this, this.item);
-        markBorder(this, this.item);
     },
 
     onHitOn: function() {

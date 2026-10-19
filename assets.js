@@ -15,11 +15,17 @@ function potImage(file, letter, kind, glaze) {
     return "assets/images/pots/" + name + ".png";
 }
 
+// Path of the grey model picture of a pot shape (same size and crop as the pot pictures).
+function modelImage(shape) {
+    return "assets/images/grey_" + POT_SPRITES[shape].file + ".png";
+}
+
 // Every pot picture, for preloading.
 function potImagePaths() {
     var paths = [];
     Object.keys(POT_SPRITES).forEach(function (shape) {
         var file = POT_SPRITES[shape].file;
+        paths.push(modelImage(shape));
         ["A", "B", "C"].forEach(function (letter) {
             paths.push(potImage(file, letter, "unfired"), potImage(file, letter, "fired"));
             [1, 2].forEach(function (glaze) { paths.push(potImage(file, letter, "half", glaze)); });
@@ -88,17 +94,10 @@ var gameAssets = {
             "tileh": 2458,
             "map": {"backgroundOutside": [0, 0]}
         },
-        "assets/images/background_inside.png": {
-            "tile": 8364,
-            "tileh": 2246,
-            "map": {"backgroundInside": [0, 0]}
-        },
-        "assets/images/interior-overlay-glazing.png": {
-            "tile": 8364,
-            "tileh": 2246,
-            "map": {"overlayInside": [0, 0]}
-        },
-        // Glaze buckets: each drawn in place on a canvas the size of the inside map (see INSIDE_MAP_BOX).
+        // Interior layers, back to front, all on the inside map's canvas (see INSIDE_MAP_BOX).
+        "assets/images/background_interior-bg.png": {"tile": 8364, "tileh": 2246, "map": {"backgroundInterior": [0, 0]}},
+        "assets/images/background_interior-mid.png": {"tile": 8364, "tileh": 2246, "map": {"midInterior": [0, 0]}},
+        "assets/images/background_interior-front.png": {"tile": 8364, "tileh": 2246, "map": {"frontInterior": [0, 0]}},        // Glaze buckets: each drawn in place on a canvas the size of the inside map (see INSIDE_MAP_BOX).
         "assets/images/glazeA_bucket.png": {"tile": 8364, "tileh": 2246, "map": {"glazeABucket": [0, 0]}},
         "assets/images/glazeB_bucket.png": {"tile": 8364, "tileh": 2246, "map": {"glazeBBucket": [0, 0]}},
         "assets/images/fox.png": {
