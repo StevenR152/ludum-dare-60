@@ -297,19 +297,24 @@ function showMasterTip(text) {
 }
 
 // Restart and Menu in the top-right corner, spanning the order panel below them (Restart on its left edge, Menu on its
-// right edge). Restart rebuilds this level; Menu leaves for the level select (the
+// right edge, a gap apart that matches the gap down to the orders). Restart rebuilds this level; Menu leaves for the level select (the
 // sandbox, which isn't on it, goes to Start). A cracked pot makes the player start over, so Restart pulses.
 function showLevelButtons(index, mode) {
     var ORDER_PANEL_X = GAME_SCREEN_WIDTH - 300; // the order panel's left edge (see buildWorld)
+    var BUTTON_Y = 10;
+    var BUTTON_H = 36;
+    // The gap below the buttons down to the order panel (y=60) is also the gap between the two buttons.
+    var BUTTON_GAP = 60 - (BUTTON_Y + BUTTON_H);
+    var BUTTON_W = (ORDER_CARD_W - BUTTON_GAP) / 2; // the two buttons fill the order panel's width
     var restart = Crafty.e("HudButton, Delay")
         .label("Restart")
-        .attr({x: ORDER_PANEL_X, y: 10, w: 100, h: 36})
-        .css({lineHeight: "36px"})
+        .attr({x: ORDER_PANEL_X, y: BUTTON_Y, w: BUTTON_W, h: BUTTON_H})
+        .textAlign("center").css({lineHeight: BUTTON_H + "px"})
         .onClick(function () { Crafty.scene("Game", {stage: index, mode: mode}); });
     Crafty.e("HudButton")
         .label("Menu")
-        .attr({x: ORDER_PANEL_X + ORDER_CARD_W - 100, y: 10, w: 100, h: 36})
-        .css({lineHeight: "36px"})
+        .attr({x: ORDER_PANEL_X + BUTTON_W + BUTTON_GAP, y: BUTTON_Y, w: BUTTON_W, h: BUTTON_H})
+        .textAlign("center").css({lineHeight: BUTTON_H + "px"})
         .onClick(function () { Crafty.scene(mode === "sandbox" ? "Start" : "LevelSelect"); });
     restart.bind("PotCracked", function () {
         showStatus("Cracked: restart the level");

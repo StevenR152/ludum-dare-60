@@ -35,10 +35,10 @@
 **Open questions** — None.
 
 **Tasks**
-- [ ] Reposition the two buttons in `showLevelButtons` from the order panel's x/width
-- [ ] Fix the function's comment
-- [ ] Check no overlap with the order panel (full card list, fixed-order level, `?touch=1`)
-- [ ] Verify each acceptance item in the browser
+- [x] Reposition the two buttons in `showLevelButtons` from the order panel's x/width
+- [x] Fix the function's comment
+- [ ] Check no overlap with the order panel (full card list, fixed-order level, `?touch=1`) — not run: no preview server
+- [ ] Verify each acceptance item in the browser — not run: no preview server could be started from here
 
 ## Decisions
 - Right edge → aligned with the order cards (x=1580); Restart's left edge aligns with the cards' left (x=1300).
