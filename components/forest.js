@@ -63,8 +63,10 @@ Crafty.c("Forest", {
         showStatus("Chopped a log");
         Crafty.trigger("LogChopped");
         if (!fox.inventory.canAdd({type: "log"})) {
+            // packFull() says its own line and flashes the pack, so the chop stops quietly; the return
+            // matters, or the bar below would start filling again for a log there is no room for.
             this.stopChop(false);
-            showStatus("Backpack full, you can't put more in");
+            fox.packFull();
             return;
         }
         // Still holding and still room: the bar starts again for the next log.

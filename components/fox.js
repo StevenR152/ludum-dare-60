@@ -251,11 +251,19 @@ Crafty.c("Fox", {
         var onMove = function (e) { fox.handleDrag(e); };
         var onRelease = function () { fox.handleRelease(); };
         mouse.bind("MouseDown", onPress);
+        // The release has to come from the same place as the press. Crafty's mouse system stops the events
+        // it handles from bubbling (its processEvent calls preventBubbling), so a mouseup over the stage
+        // never reaches window and handleRelease never ran: pressHeld latched true on the first click and
+        // the fox then arrived at every station as though the button were still down.
+        mouse.bind("MouseUp", onRelease);
+        // Still worth keeping: these catch a release that lands outside the stage, or the window losing focus
+        // mid-press. handleRelease does nothing the second time, so a doubled release is harmless.
         window.addEventListener("mousemove", onMove);
         window.addEventListener("mouseup", onRelease);
         window.addEventListener("blur", onRelease);
         this.bind("Remove", function () {
             mouse.unbind("MouseDown", onPress);
+            mouse.unbind("MouseUp", onRelease);
             window.removeEventListener("mousemove", onMove);
             window.removeEventListener("mouseup", onRelease);
             window.removeEventListener("blur", onRelease);
@@ -430,7 +438,18 @@ Crafty.c("Fox", {
         if (this.inventory.add(item)) {
             return true;
         }
-        showStatus("Backpack full, you can't put more in");
+        this.packFull();
         return false;
+    },
+
+    // The pack-full message. The first one of a run suggests dropping something and flashes the selected
+    // slot (see PlayerNotification and InventoryHud.flashSelected); later ones are the plain line.
+    packFull: function() {
+        if (gameState.packHintShown) {
+            showStatus("Backpack full, you can't put more in");
+            return;
+        }
+        gameState.packHintShown = true;
+        showStatus({text: "My backpack is full, I could drop something that I'm holding (interact in the top left)", packHint: true});
     }
 });
