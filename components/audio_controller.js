@@ -1,10 +1,12 @@
 // One instance (audioController, created in main.js) persists across scenes.
-// Owns which music track should be playing and the single mute state.
+// Owns which looping tracks should be playing and the single mute state.
+// "music" and "ambient" are independent channels so the background theme (Start/Game/End)
+// and the location loop (Workshop/Forest, see GameSounds.updateAmbient) can play together
+// in the Game scene without one cutting the other off.
 Crafty.c("AudioController", {
     init: function() {
         this.requires("Persist");
-        this.music = null;
-        this.musicVolume = MUSIC_VOLUME;
+        this.channels = {}; // channel name -> {track, volume}
         if (START_MUTED) {
             Crafty.audio.mute();
         }
@@ -13,7 +15,9 @@ Crafty.c("AudioController", {
         this.unlocked = false;
         var unlock = function () {
             this.unlocked = true;
-            this.startMusic();
+            Object.keys(this.channels).forEach(function (channel) {
+                this.startChannel(channel);
+            }.bind(this));
             document.removeEventListener("pointerdown", unlock);
             document.removeEventListener("keydown", unlock);
         }.bind(this);
@@ -21,30 +25,63 @@ Crafty.c("AudioController", {
         document.addEventListener("keydown", unlock);
     },
 
-    // Safe to call from every scene: keeps playing if it's already this track.
+    // Safe to call from every scene: keeps playing if it's already this track on this channel.
     playMusic: function(trackName, volume) {
-        if (this.music && this.music !== trackName) {
-            Crafty.audio.stop(this.music);
-        }
-        this.music = trackName;
-        this.musicVolume = volume === undefined ? MUSIC_VOLUME : volume;
-        this.startMusic();
-        return this;
+        return this.playChannel("music", trackName, volume);
     },
 
     stopMusic: function() {
-        if (this.music) {
-            Crafty.audio.stop(this.music);
+        return this.stopChannel("music");
+    },
+
+    // The Workshop/Forest location loop (see GameSounds.updateAmbient), independent of playMusic.
+    playAmbient: function(trackName, volume) {
+        return this.playChannel("ambient", trackName, volume);
+    },
+
+    stopAmbient: function() {
+        return this.stopChannel("ambient");
+    },
+
+    playChannel: function(channel, trackName, volume) {
+        var current = this.channels[channel];
+        if (current && current.track !== trackName) {
+            Crafty.audio.stop(current.track);
         }
-        this.music = null;
+        this.channels[channel] = {track: trackName, volume: volume === undefined ? MUSIC_VOLUME : volume};
+        this.startChannel(channel);
         return this;
     },
 
-    startMusic: function() {
-        if (!this.unlocked || !this.isLoaded(this.music) || Crafty.audio.isPlaying(this.music)) {
+    stopChannel: function(channel) {
+        var current = this.channels[channel];
+        if (current) {
+            Crafty.audio.stop(current.track);
+        }
+        delete this.channels[channel];
+        return this;
+    },
+
+    startChannel: function(channel) {
+        var current = this.channels[channel];
+        if (!current || !this.unlocked || !this.isLoaded(current.track)) {
             return;
         }
-        Crafty.audio.play(this.music, -1, this.musicVolume);
+        if (Crafty.audio.isPlaying(current.track)) {
+            this.setPlayingVolume(current.track, current.volume);
+            return;
+        }
+        Crafty.audio.play(current.track, -1, current.volume);
+    },
+
+    // A track that kept playing across scenes (the Start music into the Game) still takes the new scene's volume.
+    setPlayingVolume: function(trackName, volume) {
+        Crafty.audio.channels.forEach(function (channel) {
+            if (channel.active && channel.id === trackName) {
+                channel.volume = volume;
+                channel.obj.volume = Crafty.audio.muted ? 0 : volume;
+            }
+        });
     },
 
     playSfx: function(trackName, volume) {

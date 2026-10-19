@@ -57,7 +57,7 @@ Crafty.c("GameSounds", {
         var area = this.fox.x < 0 ? "workshopLoop" : "forestLoop";
         if (area !== this.area) {
             this.area = area;
-            audioController.playMusic(area, AMBIENT_VOLUME);
+            audioController.playAmbient(area, AMBIENT_VOLUME);
         }
     },
 

@@ -4,7 +4,9 @@ var GAME_SCREEN_HEIGHT = 768;
 
 // gameAssets audio key played on the Start, Game and End scenes.
 var MUSIC_TRACK = "bgMusic";
-var MUSIC_VOLUME = 0.25;
+var MUSIC_VOLUME = 0.2;
+// Quieter in the Game scene, where it layers under the ambient loop (AMBIENT_VOLUME) instead of playing alone.
+var GAME_MUSIC_VOLUME = 0.05;
 // Sound starts muted while we develop. TODO: set to false (music on by default) when we launch.
 var START_MUTED = true;
 
@@ -249,6 +251,6 @@ var SHELF_SLOT_TOP = 2;
 var SHELF_COLOR = "rgba(90, 120, 160, 0.35)";
 
 // Sound names (see gameAssets.audio). GameSounds picks pot sounds by stage and, for wet pots, by clay.
-var AMBIENT_VOLUME = MUSIC_VOLUME;
+var AMBIENT_VOLUME = 0.1; // its own level, apart from the music
 var WEDGE_SOUNDS = {white: "wedgeBlue", red: "wedgeRed", black: "wedgeBrown"};
 var WET_POT_SOUND_SUFFIX = {white: "Blue", red: "Red", black: "Brown"};
