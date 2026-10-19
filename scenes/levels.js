@@ -248,9 +248,13 @@ function levelUnlocked(index) {
 // and the remaining step checkboxes, which tick as the player does each step. The text entity listens for the steps' events, so
 // its bindings go with the scene.
 function showGoalPanel(level, top) {
-    // A level with a story shows it (and the Master's tip) in place of the one-line description; the long lines wrap.
-    var head = level.story ? ["<b>" + level.name + "</b>", level.story, "<i>" + level.tip + "</i>"] :
+    // A level with a story shows it in place of the one-line description, followed by the Master's tip when it has
+    // one (it is optional, so a level with a story but no tip simply leaves that line out); the long lines wrap.
+    var head = level.story ? ["<b>" + level.name + "</b>", level.story] :
         ["<b>Goal</b>", level.description];
+    if (level.story && level.tip) {
+        head.push("<i>" + level.tip + "</i>");
+    }
     var wrapLines = function (line) { return Math.ceil(line.length / 43); };
     var wrapped = head.concat(level.steps.map(function (s) { return "☐ " + s.text; })).concat(level.card.map(function (row) { return row.text; }))
         .reduce(function (n, line) { return n + wrapLines(line); }, 0);
