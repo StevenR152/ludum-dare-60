@@ -1,37 +1,52 @@
-// The Loading scene: the first thing anyone sees, and it is up for a while, since every sprite and sound
-// is fetched before the Start menu. None of that art exists yet while this is on screen, so everything here
-// is drawn from the game's own palette (constants.js) rather than from an asset.
+// The Loading scene: the first thing anyone sees, and it is up for a while, since every sprite and sound is
+// fetched before the Start menu.
 //
-// The pot in the middle dries as the assets arrive, wet -> leather hard -> bone dry (DRY_STAGE_COLORS), the
-// same three stages a real pot goes through on the drying shelf, and the bar under it is Crafty's actual
-// load progress rather than a decoration.
+// The pot in the middle is the game's own vase art, not a drawing of one: it is fetched directly by the
+// browser rather than through Crafty.load, so it does not have to wait for the manifest it is standing in
+// front of. It goes through the three stages a pot really goes through, raw clay to bisque to glaze-fired,
+// as the assets arrive, and the bar under it is Crafty's actual load progress.
 var LOADING_BACKGROUND = "radial-gradient(ellipse at 50% 64%, #5A3A1E 0%, #2B2522 52%, #17130F 100%)";
 var LOADING_TEXT_COLOR = "#E3CDA8";
 var LOADING_BAR_W = 420;
 var LOADING_BAR_H = 10;
+// The pot on show: shape (POT_SPRITES), clay letter for its raw and bisque pictures, and which glaze it
+// comes out of the second firing wearing.
+var LOADING_POT_SHAPE = "Vase";
+var LOADING_POT_CLAY = "A";
+var LOADING_POT_GLAZE = 1;
+var LOADING_POT_H = 260;
 
-// A pot, drawn by hand: a narrow neck flaring into a round belly, with a darker ellipse for the opening.
-// `color` fills the body, so the whole pot can change as it dries.
-function loadingPotImage(color) {
-    var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140">' +
-        '<path d="M46,28 C46,34 44,37 42,41 C28,53 22,70 22,88 C22,113 39,129 60,129' +
-        ' C81,129 98,113 98,88 C98,70 92,53 78,41 C76,37 74,34 74,28 Z" fill="' + color + '"/>' +
-        '<ellipse cx="60" cy="28" rx="14" ry="5" fill="rgba(0,0,0,0.33)"/>' +
-        '</svg>';
-    return 'url("data:image/svg+xml;utf8,' + encodeURIComponent(svg) + '")';
+// The pot pictures are a small pot on a big transparent canvas, so show only the part POT_SPRITES crops to,
+// scaled to `height`. Returns the css to put that crop in a box of the returned width.
+function loadingPotCss(url, height, filter) {
+    var crop = POT_SPRITES[LOADING_POT_SHAPE].crop;
+    var scale = height / crop[3];
+    return {
+        backgroundImage: 'url("' + url + '")',
+        backgroundSize: (POT_IMAGE_W * scale) + "px " + (POT_IMAGE_H * scale) + "px",
+        backgroundPosition: (-crop[0] * scale) + "px " + (-crop[1] * scale) + "px",
+        backgroundRepeat: "no-repeat",
+        filter: filter || "none"
+    };
 }
 
-// Which drying stage a fraction of the load corresponds to, so the pot pales as the bar fills.
-function loadingPotColor(fraction) {
-    if (fraction < 0.34) {
-        return DRY_STAGE_COLORS.wet;
-    }
-    return fraction < 0.7 ? DRY_STAGE_COLORS.leatherHard : DRY_STAGE_COLORS.boneDry;
+// The three stages, in the order the pot earns them. potImage (assets.js) owns the file names.
+function loadingPotStages() {
+    var file = POT_SPRITES[LOADING_POT_SHAPE].file;
+    return [
+        {url: potImage(file, LOADING_POT_CLAY, "unfired"), filter: UNFIRED_POT_FILTER[LOADING_POT_CLAY]},
+        {url: potImage(file, LOADING_POT_CLAY, "fired"), filter: "none"},
+        {url: potImage(file, "A", "glazeFired", LOADING_POT_GLAZE), filter: "none"}
+    ];
 }
 
 Crafty.defineScene("Loading", function() {
     Crafty.background(LOADING_BACKGROUND);
     var middle = GAME_SCREEN_WIDTH / 2;
+    var stages = loadingPotStages();
+    // Fetch all three up front (about 35 kB between them) so the pot changes the instant it should,
+    // instead of blinking out while the next picture arrives.
+    stages.forEach(function (stage) { new Image().src = stage.url; });
 
     // The wheel the pot stands on: a squashed disc, lit from the kiln side.
     Crafty.e("2D, DOM, Color")
@@ -39,10 +54,11 @@ Crafty.defineScene("Loading", function() {
         .color("#3D2E22")
         .css({borderRadius: "50%", boxShadow: "0 10px 26px rgba(0,0,0,0.45)"});
 
+    var crop = POT_SPRITES[LOADING_POT_SHAPE].crop;
+    var potW = LOADING_POT_H * crop[2] / crop[3];
     var pot = Crafty.e("2D, DOM")
-        .attr({x: middle - 90, y: 214, w: 180, h: 210, z: 2})
-        .css({backgroundImage: loadingPotImage(DRY_STAGE_COLORS.wet),
-              backgroundSize: "contain", backgroundRepeat: "no-repeat", backgroundPosition: "center"});
+        .attr({x: middle - potW / 2, y: 412 - LOADING_POT_H, w: potW, h: LOADING_POT_H, z: 2})
+        .css(loadingPotCss(stages[0].url, LOADING_POT_H, stages[0].filter));
 
     Crafty.e("2D, DOM, Text")
         .attr({x: 0, y: 478, w: GAME_SCREEN_WIDTH, h: 40, z: 2})
@@ -73,7 +89,7 @@ Crafty.defineScene("Loading", function() {
         .unselectable()
         .css({fontFamily: "Georgia, 'Times New Roman', serif", letterSpacing: "1px"});
 
-    var stage = null;
+    var shown = 0;
     // gameAssets is defined in assets.js. The callbacks are, in order: done, each asset, each failure.
     Crafty.load(gameAssets, function () {
         fill.attr({w: LOADING_BAR_W});
@@ -85,10 +101,10 @@ Crafty.defineScene("Loading", function() {
         var fraction = Math.min(1, progress.loaded / progress.total);
         fill.attr({w: Math.max(2, LOADING_BAR_W * fraction)});
         counter.text(Math.round(fraction * 100) + "%");
-        var next = loadingPotColor(fraction);
-        if (next !== stage) {
-            stage = next;
-            pot.css({backgroundImage: loadingPotImage(next)});
+        var stage = fraction < 0.34 ? 0 : fraction < 0.7 ? 1 : 2;
+        if (stage !== shown) {
+            shown = stage;
+            pot.css(loadingPotCss(stages[stage].url, LOADING_POT_H, stages[stage].filter));
         }
     }, function (e) {
         console.warn("An asset failed to load", e && e.src);
