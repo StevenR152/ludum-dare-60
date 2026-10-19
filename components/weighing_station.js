@@ -50,8 +50,11 @@ Crafty.c("WeighingStation", {
     drawPile: function() {
         Object.keys(this.pileBoxes).forEach(function (name) {
             var clay = this.pileClay(name);
-            this.pileBoxes[name].color(clay ? clay.clay.color : "rgba(255, 255, 255, 0.25)")
-                .text(clay ? name + " " + clay.clay.weight + " g" : "");
+            paintItem(this.pileBoxes[name], clay);
+            if (!clay) {
+                this.pileBoxes[name].color("rgba(255, 255, 255, 0.25)");
+            }
+            this.pileBoxes[name].text(clay ? name + " " + clay.clay.weight + " g" : "");
         }, this);
     },
 
