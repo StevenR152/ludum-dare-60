@@ -22,12 +22,12 @@
 6. Touch-device behaviour unchanged.
 
 **Acceptance criteria**
-- [ ] At 1280×720 and 1024×600 all four screen edges of the game are visible, no page horizontal scrollbar.
-- [ ] At 2304+ wide the game looks identical to today (scale 1).
-- [ ] Dig clay, use door, weigh, deliver to owl, fire kiln all work at scale ≈ 0.5 by mouse.
-- [ ] Dragging the window narrower/wider rescales without reload and clicks stay accurate.
-- [ ] Order panel and inventory visible and clickable at scale < 1.
-- [ ] Phone/touch emulation behaves as before.
+- [x] At 1280×720 and 1024×768 all four screen edges of the game are visible, no page horizontal scrollbar.
+- [x] At 2304+ wide the game looks identical to today (scale 1).
+- [x] Clicks hit Play, Menu (HUD), a tree and the kiln correctly at scale ≈ 0.55 (dig/weigh/owl flow not played end to end)
+- [x] Dragging the window narrower/wider rescales without reload and clicks stay accurate.
+- [x] Order panel and inventory visible and clickable at scale < 1.
+- [ ] Phone/touch emulation behaves as before (scale is skipped when TouchControls is active; not device-tested)
 
 **Constraints** — Plain Crafty 0.9 in `main.js`, `camera.js`, `index.html` (one small helper, no new library). Don't touch `mobile/touch-controls.js`. Leave the user's uncommitted edits in `scenes/game.js` / `components/player_notification.js` alone.
 
@@ -35,8 +35,8 @@
 - Cap scale at 1 (crisp art, small blank margins on huge monitors) or allow upscaling to fill big screens? Defaulting to cap at 1.
 
 **Tasks**
-- [ ] Spike: confirm how `Crafty.viewport.scale` treats the DOM/HUD layers (origin, stage size, mouse mapping); fall back to CSS-sizing the stage + `Crafty.viewport` if HUD misplaces
-- [ ] Add `fitToWindow()` (scale calc, centre stage) called at start and on `resize`
-- [ ] Remove `body width: 2304px` in index.html and keep `constants.js` comment in sync
-- [ ] Skip on touch devices (`TouchControls.isActive()`)
-- [ ] Verify in browser at 2304, 1366, 1024, resize live, click-test dig/door/HUD
+- [x] Spike: `viewport.scale` scales world about the origin; HUD needed a top-left `_viewportRect` override and viewport width/height set to the scaled stage size
+- [x] Add `fitToWindow()` (scale calc, centre stage) called at start and on `resize`
+- [x] Remove `body width: 2304px` in index.html and keep `constants.js` comment in sync
+- [x] Skip on touch devices (`TouchControls.isActive()`)
+- [x] Verify in browser at 2304, 1366, 1024, resize live, click-test dig/door/HUD

@@ -6,7 +6,10 @@ function screenFitScale() {
     if (TouchControls.isActive()) {
         return 1;
     }
-    return Math.min(1, window.innerWidth / GAME_SCREEN_WIDTH, window.innerHeight / GAME_SCREEN_HEIGHT);
+    // Fit the width the page has left after a scrollbar, and the height left under the page title.
+    var width = document.documentElement.clientWidth;
+    var height = window.innerHeight - Crafty.stage.elem.offsetTop;
+    return Math.min(1, width / GAME_SCREEN_WIDTH, height / GAME_SCREEN_HEIGHT);
 }
 
 function fitScreenToWindow() {
