@@ -1,5 +1,7 @@
 // A tree: an invisible zone Outside (the forest zone is cut into one per tree). Hold the mouse on it for
-// LOG_CHOP_MS while the fox touches it to chop one log into the fox's pack. Trees never run out.
+// LOG_CHOP_MS while the fox touches it to chop a log into the fox's pack, then keeps chopping another log every
+// LOG_CHOP_MS for as long as the press is held. Chopping stops on release, when the fox walks off, or when the
+// pack is full. Trees never run out.
 // `plant` draws its picture standing at the bottom middle of the zone.
 //   Crafty.e("Forest").attr({x: 5, y: 350, w: 105, h: 307}).plant(FOREST_TREES[0]);
 Crafty.c("Forest", {
@@ -30,17 +32,23 @@ Crafty.c("Forest", {
             return;
         }
         showStatus("Chopping, keep holding");
-        this.delay(this.finishChop, LOG_CHOP_MS);
+        this.delay(this.finishChop, LOG_CHOP_MS, -1);   // -1 repeats until cancelChop
     },
 
     cancelChop: function() { this.cancelDelay(this.finishChop); },
 
-    // The fox may have walked off mid-hold; pickUp explains a full or mixed pack.
+    // Runs every LOG_CHOP_MS while held. The fox may have walked off mid-hold; pickUp explains a full or mixed pack.
     finishChop: function() {
         var fox = this.touchingFox();
-        if (fox && fox.pickUp({type: "log"})) {
-            showStatus("Chopped a log");
-            Crafty.trigger("LogChopped");
+        if (!fox || !fox.pickUp({type: "log"})) {
+            this.cancelChop();
+            return;
+        }
+        showStatus("Chopped a log");
+        Crafty.trigger("LogChopped");
+        if (!fox.inventory.canAdd({type: "log"})) {
+            this.cancelChop();
+            showStatus("Backpack full, you can't put more in");
         }
     }
 });

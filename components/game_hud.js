@@ -18,7 +18,8 @@ Crafty.c("GameHud", {
             .css({borderRadius: "8px"}));
         this.parts.push(Crafty.e("MuteButton").attr({x: 20, y: 20}));
         this.parts.push(Crafty.e("GameTimer").attr({x: 125, y: 20}));
-        this.addRow("Fox", [fox.inventory], 60).onSlotPress(function (inventory, index) {
+        // The fox's selected slot is always outlined; the kiln's only where a click would take an item out.
+        this.addRow("Fox", [fox.inventory], 60, {outlined: function (inventory, index) { return index === inventory.selected; }}).onSlotPress(function (inventory, index) {
             fox.pressSlot(index);
         });
         var y = 110;
@@ -26,15 +27,21 @@ Crafty.c("GameHud", {
             this.addRow("Master", [owl.inventory], y);
             y += 50;
         }
-        this.addRow("Kiln", [kiln.inventory, kiln.woodInventory], y);
+        this.addRow("Kiln", [kiln.inventory, kiln.woodInventory], y, {
+            watch: [fox.inventory],
+            outlined: function (inventory, index) {
+                var target = kiln.takeTarget(fox);
+                return !!target && target.inventory === inventory && target.index === index;
+            }
+        });
         this.bind("Remove", function () {
             this.parts.concat(this.rows).forEach(function (part) { part.destroy(); });
         });
         return this;
     },
 
-    addRow: function(label, inventories, y) {
-        var row = Crafty.e("InventoryHud").attr({x: 20, y: y}).show(label, inventories);
+    addRow: function(label, inventories, y, options) {
+        var row = Crafty.e("InventoryHud").attr({x: 20, y: y}).show(label, inventories, options);
         this.rows.push(row);
         return row;
     },
