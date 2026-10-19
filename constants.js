@@ -136,6 +136,12 @@ var DOOR_DESTINATIONS = {
     outside: {x: 950, y: 575},
     inside: {x: -2500, y: 350, facing: "right"}
 };
+// How far each clay patch is moved from where it is drawn on the map (world px; none for red). The white patch is
+// moved from the forest to the bottom right, past the kiln (its middle ends up around 1679, 722).
+var CLAY_PATCH_SHIFTS = {
+    white: {x: 1210, y: 164},
+    black: {x: 0, y: 50}
+};
 // How opaque a clay patch's picture stays while it is dug and replenishing.
 var CLAY_DUG_ALPHA = 0.8;
 var OUTSIDE_MAP_PX = {w: 5763, h: 2458};
@@ -165,7 +171,7 @@ var KILN_TREES = [
 var KILN_ART_CONTENT = [376, 358, 782, 546];
 // Fired pots appear this far from the middle of the kiln zone (left and down, clear of the torch).
 var KILN_OUTPUT_OFFSET = {x: -20, y: 20};
-var KILN_ART_BOX = {x: 1370, y: 478, w: 260, h: 181};
+var KILN_ART_BOX = {x: 1340, y: 478, w: 260, h: 181};
 var DOOR_ART_CONTENT = [630, 634, 856, 1102];
 // Each house door's trigger zone (top-left x, y and size). The outside one is exactly the door picture.
 var DOOR_BOXES = {

@@ -106,9 +106,9 @@ function buildWorld(config) {
     // Background theme, layered under the ambient loop at a lower volume than on the menu scenes.
     audioController.playMusic(MUSIC_TRACK, GAME_MUSIC_VOLUME);
 
-    // The torch lights the kiln. The fox stands on it, e.g. at (1501, 555), and clicks.
+    // The torch lights the kiln. The fox stands on it, e.g. at (1471, 555), and clicks.
     var torch = Crafty.e("2D, DOM, Color, Mouse, DebugHitbox")
-        .attr({x: 1495, y: 549, w: 52, h: 72}) // the 40x60 torch grown 6 px each side to be easier to reach
+        .attr({x: 1465, y: 549, w: 52, h: 72}) // the 40x60 torch grown 6 px each side to be easier to reach
         .color(TORCH_COLOR, 0); // invisible: the kiln picture shows the fire, the torch only takes the click
     torch.bind("MouseDown", function () {
         if (player.touches(this)) {
@@ -264,10 +264,9 @@ function buildWorld(config) {
         }
     }
 
-    // Each clay node's dig zone is cut from its patch's art (see Clay.clay). The white patch is moved from
-    // the forest to the bottom right, past the kiln (its middle ends up around 1729, 697).
+    // Each clay node's dig zone is cut from its patch's art (see Clay.clay), moved by CLAY_PATCH_SHIFTS.
     config.clays.forEach(function (key) {
-        Crafty.e("Clay").clay(CLAY_TYPES[key], key === "white" ? {x: 1260, y: 139} : undefined);
+        Crafty.e("Clay").clay(CLAY_TYPES[key], CLAY_PATCH_SHIFTS[key]);
     });
 
     TouchControls.follow(player);
