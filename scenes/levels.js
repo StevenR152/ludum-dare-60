@@ -119,6 +119,15 @@ var SANDBOX_LEVEL = {
         maxGlazeDips: MAX_GLAZE_DIPS,
         potsBreakOnGround: true,
         prePlaced: [],
+        // One pot per stage on a table under the kiln, for testing.
+        testTable: [
+            {clay: "black", shape: "Bowl", stage: "wet"},
+            {clay: "red", shape: "Cup", stage: "boneDry"},
+            {clay: "white", shape: "Vase", stage: "cooled"},
+            {clay: "black", shape: "Cup", stage: "glazed"},
+            {clay: "red", shape: "Bowl", stage: "glazeCooled"}
+        ],
+        testLogs: 5,
         kilnDelivers: false,
         kilnHint: true
     }

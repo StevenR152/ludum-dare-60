@@ -17,7 +17,8 @@ Crafty.c("Kiln", {
         this.inventory = new Inventory(KILN_CAPACITY, {
             // Pots only go in while the kiln waits to be lit, never while it fires or while fired pots wait to be taken.
             accepts: function (item) { return (kiln.state === "empty" || kiln.state === "loaded") && !!kiln.passFor(item); },
-            releases: function () { return kiln.state === "ready"; }
+            // Pots come out once fired, or before the kiln is lit (e.g. the wrong one went in).
+            releases: function () { return kiln.state === "ready" || kiln.state === "loaded"; }
         });
         this.woodInventory = new Inventory(KILN_WOOD_CAPACITY, {
             accepts: function (item) { return item.type === "log"; }
@@ -35,8 +36,10 @@ Crafty.c("Kiln", {
             }
             if (this.state === "empty" && this.inventory.items.length > 0) {
                 this.setState("loaded");
-            } else if (this.state === "ready") {
-                this.showPots();
+            } else if (this.state === "ready" || this.state === "loaded") {
+                if (this.state === "ready") {
+                    this.showPots();
+                }
                 if (this.inventory.items.length === 0) {
                     this.setState("empty");
                 }
@@ -80,8 +83,6 @@ Crafty.c("Kiln", {
     light: function() {
         if (this.state !== "loaded" && this.state !== "empty") {
             showStatus("The kiln is already lit");
-        } else if (this.state === "empty") {
-            showStatus("Put a pot in the kiln first");
         } else if (this.woodInventory.items.length === 0) {
             showStatus("Put wood in the kiln first");
         } else {
@@ -117,7 +118,7 @@ Crafty.c("Kiln", {
 
     finishPot: function() {
         this.inventory.items.forEach(function (pot, i) { pot.advance(this.passes[i].done); }, this);
-        this.setState("ready");
+        this.setState(this.inventory.items.length > 0 ? "ready" : "empty"); // fired empty: nothing to collect
         this.showPots();
     },
 

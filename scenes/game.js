@@ -126,11 +126,7 @@ function buildWorld(config) {
         }
         var carried = player.inventory.selectedItem();
         if (carried && carried.type === "log") {
-            var moved = false;
-            while (transferItem(player.inventory, this.woodInventory)) {
-                moved = true;
-            }
-            showStatus(moved ? "Wood loaded into the kiln" : "The kiln is full of wood");
+            showStatus(transferItem(player.inventory, this.woodInventory) ? "Wood loaded into the kiln" : "The kiln is full of wood");
             return;
         }
         if (transferItem(player.inventory, this.inventory)) {
@@ -138,6 +134,17 @@ function buildWorld(config) {
             return;
         }
         var held = player.inventory.selectedItem();
+        if (!held && (this.state === "empty" || this.state === "loaded")) {
+            // Not lit yet: empty hands take back the pot, else a log, one per click.
+            var pot = this.inventory.items.length > 0;
+            var back = pot ? this.inventory : this.woodInventory;
+            if (back.items.length > 0) {
+                showStatus(transferItem(back, player.inventory, 0)
+                    ? "Took the " + (pot ? "pot" : "log") + " out of the kiln"
+                    : "You can't carry that");
+                return;
+            }
+        }
         if ((this.state === "empty" || this.state === "loaded") && held && held.type === "pot" && held.pot.cracked) {
             showStatus("This pot is cracked, it can't be fired");
         } else if (this.state === "empty" && held && held.state === "glazeCooled") {
@@ -185,6 +192,38 @@ function buildWorld(config) {
     config.prePlaced.forEach(function (spec) {
         Crafty.e("DroppedItem").lieAt(player, makePot(spec.clay, spec.shape), spec.x, spec.y);
     });
+
+    // Sandbox test pots: a grey box faking a table, 100 px under the kiln and 50 px right of it, with one pot per stage in a grid.
+    if (config.testTable) {
+        var cell = {w: ITEM_SHAPES.pot.w * DROPPED_ITEM_SCALE, h: ITEM_SHAPES.pot.h * DROPPED_ITEM_SCALE};
+        var gap = 10;
+        var cols = 3;
+        var rows = Math.ceil(config.testTable.length / cols);
+        var table = Crafty.e("2D, DOM, Color")
+            .attr({x: KILN_ART_BOX.x + 50, y: KILN_ART_BOX.y + KILN_ART_BOX.h + 100,
+                w: cols * (cell.w + gap) + gap, h: rows * (cell.h + gap) + gap, z: DROPPED_ITEM_Z - 1})
+            .color("#8C8C8C");
+        config.testTable.forEach(function (spec, i) {
+            var onTable = Crafty.e("DroppedItem").lieAt(player, makePotAtStage(spec.clay, spec.shape, spec.stage),
+                table.x + gap + (i % cols) * (cell.w + gap) + cell.w / 2,
+                table.y + gap + Math.floor(i / cols) * (cell.h + gap) + cell.h / 2);
+            onTable.immune = true;
+        });
+    }
+
+    // Sandbox test logs: a few lying 100 px left of the kiln, in a grid whose right edge and bottom line up with it.
+    if (config.testLogs) {
+        var logW = ITEM_SHAPES.log.w * DROPPED_ITEM_SCALE;
+        var logH = ITEM_SHAPES.log.h * DROPPED_ITEM_SCALE;
+        var logCols = 3;
+        for (var l = 0; l < config.testLogs; l++) {
+            var logRow = Math.floor(l / logCols);
+            var logRows = Math.ceil(config.testLogs / logCols);
+            Crafty.e("DroppedItem").lieAt(player, {type: "log"},
+                KILN_ART_BOX.x - 100 - logW / 2 - (logCols - 1 - l % logCols) * (logW + 10),
+                KILN_ART_BOX.y + KILN_ART_BOX.h - logH / 2 - (logRows - 1 - logRow) * (logH + 10));
+        }
+    }
 
     // Each clay node's dig zone is cut from its patch's art (see Clay.clay). The white patch is moved from
     // the forest to the bottom right, near the kiln (its middle ends up around 1329, 817).
