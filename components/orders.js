@@ -150,11 +150,11 @@ Crafty.c("OrderPanel", {
         paintItem(card.swatch, orderPot(order), true);
         card.label = Crafty.e("2D, HUD, Text")
             .attr({x: x + 48, y: y + 6, w: ORDER_CARD_W - 56, h: 36, z: 1001})
-            .text(order.clay.name.charAt(0).toUpperCase() + order.clay.name.slice(1) + " " + order.shape + " (" + order.grams + "g)")
+            .text(order.clay.name.charAt(0).toUpperCase() + order.clay.name.slice(1) + " clay " + order.shape.toLowerCase() + " (" + order.grams + "g)")
             .textFont({size: "13px", weight: "bold"}).textColor(HUD_TEXT_COLOR).css({fontFamily: MENU_FONT}).unselectable();
         // Second row: the glaze colours in words, then one square per bucket, in dipping order (or "Unglazed"), then the speed.
         var unglazed = order.glaze.length === 0;
-        var glazeWords = unglazed ? "Unglazed" : order.glaze.map(function (name) { return GLAZE_BUCKET_NAMES[name]; }).join(", ");
+        var glazeWords = unglazed ? "Unglazed" : order.glaze.map(function (name) { return GLAZE_BUCKET_NAMES[name]; }).join(", ") + " glaze";
         var squaresX = x + 48 + glazeWords.length * 7.5 + 6;
         card.glazeWord = Crafty.e("2D, HUD, Text")
             .attr({x: x + 48, y: y + 24, w: glazeWords.length * 7.5 + 6, h: 16, z: 1001})
