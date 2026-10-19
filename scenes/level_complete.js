@@ -35,7 +35,20 @@ Crafty.defineScene("LevelComplete", function(index) {
         .unselectable()
         .css({fontFamily: MENU_FONT, letterSpacing: "1px"});
 
-    var y = GAME_SCREEN_HEIGHT / 2 + 60;
+    // The Master's closing line for the level, if it has one.
+    if (written(level.finish)) {
+        Crafty.e("2D, DOM, Text")
+            .attr({x: GAME_SCREEN_WIDTH / 2 - 450, y: top + 205, w: 900, h: 90, z: 2})
+            .text(level.finish)
+            .textAlign("center")
+            .textFont({ size: '22px', style: 'italic' })
+            .textColor(MENU_TEXT_COLOR)
+            .unselectable()
+            .css({fontFamily: MENU_FONT, lineHeight: "1.5"});
+    }
+
+    // A closing line long enough to wrap onto a second line pushes the buttons down.
+    var y = GAME_SCREEN_HEIGHT / 2 + 60 + (written(level.finish) && level.finish.length > 110 ? 30 : 0);
     if (index < LEVELS.length - 1) {
         Crafty.e("UIButton")
             .label("Next mission")
