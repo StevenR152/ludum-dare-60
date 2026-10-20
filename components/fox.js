@@ -283,14 +283,16 @@ Crafty.c("Fox", {
         // It also covers a release out in the letterbox; blur covers the window losing focus mid-press.
         // handleRelease does nothing the second time, so being called by more than one of these is harmless.
         window.addEventListener("mouseup", onCaptureRelease, true);
-        window.addEventListener("mousemove", onMove);
+        // The cursor too, for steering: Crafty swallows mousemove over the stage the same way, so in the bubble
+        // phase this only ever heard the letterbox, and holding to steer never worked.
+        window.addEventListener("mousemove", onMove, true);
         window.addEventListener("blur", onRelease);
         this.bind("Remove", function () {
             mouse.unbind("MouseDown", onPress);
             mouse.unbind("MouseUp", onRelease);
             // The capture flag has to match, or this does not remove the listener.
             window.removeEventListener("mouseup", onCaptureRelease, true);
-            window.removeEventListener("mousemove", onMove);
+            window.removeEventListener("mousemove", onMove, true);
             window.removeEventListener("blur", onRelease);
         });
         return this;
@@ -348,12 +350,9 @@ Crafty.c("Fox", {
     },
 
     // While the button is down on open ground the destination follows the cursor.
+    // Remembers where the cursor is on the page; walkStep turns it into a world point each frame while steering.
     handleDrag: function(e) {
-        if (!this.dragging || (this.walk && this.walk.entity)) {
-            return;
-        }
-        var spot = Crafty.domHelper.translate(e.clientX, e.clientY);
-        this.walk = {x: spot.x, y: spot.y};
+        this.cursorClient = {x: e.clientX, y: e.clientY};
     },
 
     handleRelease: function() {
@@ -386,6 +385,16 @@ Crafty.c("Fox", {
         var feet = {x: this.x + FOX_FEET_BOX.x, y: this.y + FOX_FEET_BOX.y};
         var aimX;
         var aimY;
+        // Steering: a press begun on open ground and still held walks toward wherever the cursor is now. The
+        // camera follows the fox, so the same spot on screen is a new spot in the world every frame; turning the
+        // cursor back into a world point each frame keeps the fox walking that way for as long as the button is
+        // down, and it only stops when let go (handleRelease) or under the cursor.
+        var steering = !walk.entity && this.dragging && this.pressHeld && !!this.cursorClient;
+        if (steering) {
+            var spot = Crafty.domHelper.translate(this.cursorClient.x, this.cursorClient.y);
+            walk.x = spot.x;
+            walk.y = spot.y;
+        }
         if (walk.entity) {
             var station = walk.entity;
             if (!station.has("2D")) { // destroyed on the way (a dropped item picked up...)
@@ -400,8 +409,10 @@ Crafty.c("Fox", {
             aimY = walk.y;
         } else {
             if (walk.x >= feet.x && walk.x < feet.x + FOX_FEET_BOX.w && walk.y >= feet.y && walk.y < feet.y + FOX_FEET_BOX.h) {
-                this.cancelWalk();
-                return;
+                if (!steering) {
+                    this.cancelWalk();
+                }
+                return; // a steering fox waits under the cursor until it moves again
             }
             aimX = walk.x;
             aimY = walk.y;
@@ -426,13 +437,18 @@ Crafty.c("Fox", {
             } else if (!this.feetBlocked(this.x, newY)) {
                 newX = this.x;
             } else {
-                this.cancelWalk(); // boxed in on both axes: nothing to slide along
-                return;
+                if (!steering) {
+                    this.cancelWalk(); // boxed in on both axes: nothing to slide along
+                }
+                return; // a steering fox stands against it until the cursor points somewhere clear
             }
         }
         // Sliding can run the fox along something it will never get round, so give up once it has not got
-        // meaningfully closer for WALK_STUCK_FRAMES frames in a row, rather than scrape along for ever.
-        if (distance < this.lastWalkDistance - WALK_PROGRESS_EPSILON) {
+        // meaningfully closer for WALK_STUCK_FRAMES frames in a row, rather than scrape along for ever. Not while
+        // steering: the cursor moves with the camera, so the fox never closes the gap, and that is the point.
+        if (steering) {
+            this.walkStalled = 0;
+        } else if (distance < this.lastWalkDistance - WALK_PROGRESS_EPSILON) {
             this.lastWalkDistance = distance;
             this.walkStalled = 0;
         } else if (++this.walkStalled >= WALK_STUCK_FRAMES) {
