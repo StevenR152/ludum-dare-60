@@ -11,7 +11,7 @@ var MUSIC_VOLUME = 0.2;
 // Quieter in the Game scene, where it layers under the ambient loop (AMBIENT_VOLUME) instead of playing alone.
 var GAME_MUSIC_VOLUME = 0.05;
 // Sound starts on. Set true to start muted (handy while developing); players can still toggle it either way.
-var START_MUTED = true;
+var START_MUTED = false;
 
 // The menu screens (Loading, Start, Missions, Level complete) share one look: firelight in a dark
 // workshop, so the warm art and the clay colours sit on something other than flat grey. MENU_FONT is
