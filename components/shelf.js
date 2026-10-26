@@ -25,9 +25,10 @@ Crafty.c("Shelf", {
         return this;
     },
 
-    // Slots sit SHELF_SLOT_TOP below the top of the shelf box, whatever its height.
+    // Slots sit SHELF_SLOT_TOP below the top of the shelf box, whatever its height, lifted SHELF_SLOT_LIFT so the pots
+    // show on the table top (the drying shelf's bars and labels hang from the slots, so they rise too).
     slotTop: function() {
-        return this.y + SHELF_SLOT_TOP;
+        return this.y + SHELF_SLOT_TOP - SHELF_SLOT_LIFT;
     },
 
     // Positioned now, not in init, because the shelf's position is set after init.

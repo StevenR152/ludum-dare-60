@@ -354,6 +354,8 @@ var WORKBENCH_REACH = 50;
 var WORKBENCH_MODEL_LIFT = 5;
 // Shelf slot boxes: how far below the shelf box's top they sit.
 var SHELF_SLOT_TOP = 2;
+// The pots on the drying and finished shelves sit this much higher than SHELF_SLOT_TOP puts them.
+var SHELF_SLOT_LIFT = 20;
 // Station captions ("Drying Table", "Wedging"...): their colour, how far below a shelf's top and how far below the
 // workbench's drawn bottom they sit (negative: over the bottom edge of the table).
 var CAPTION_COLOR = "#3B2314";
