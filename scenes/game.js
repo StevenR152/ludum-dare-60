@@ -77,8 +77,10 @@ function buildWorld(config) {
     // The master potter, inside the house. He keeps throwing pots while his hands are free.
     var owl = null;
     if (config.inside) {
-        owl = Crafty.e("2D, DOM, owl, Mouse, Potter")
-            .attr({x: -1616, y: 232, w: 312, h: 297});
+        // The art has big transparent margins, so the sprite is its own entity and the potter's touch box (the
+        // one he is clicked and touched by) is just the owl himself.
+        Crafty.e("2D, DOM, owl").attr(OWL_ART_BOX);
+        owl = Crafty.e("2D, DOM, Mouse, Potter").attr(OWL_TOUCH_BOX);
 
         // Clicking the owl the fox is touching takes his oldest finished pot while the fox has a free slot; with a full
         // pack it gives him what he can work on instead (a pot to trim, or wedged clay and a model, see
@@ -277,7 +279,7 @@ function buildWorld(config) {
     Crafty.e("TimerBar").follow(player, TIMER_BAR_OFFSET_Y).onHold();
     Crafty.e("TimerBar").follow(kiln, TIMER_BAR_OFFSET_Y).onKiln();
     if (owl) {
-        Crafty.e("TimerBar").follow(owl, TIMER_BAR_OFFSET_Y).onPotter(owl);
+        Crafty.e("TimerBar").follow(owl, TIMER_BAR_OFFSET_Y + OWL_ART_BOX.y - OWL_TOUCH_BOX.y).onPotter(owl);
     }
 
     if (!config.inside) {
@@ -295,8 +297,8 @@ function buildWorld(config) {
 
     // Weighing station (the wooden tray): dug clay goes on its piles and is weighed off (see WeighingStation).
     Crafty.e("WeighingStation").place(-2695 - 70 / 2 - 30, 432 + 70 / 4 + 70 / 2, 280, 70);
-    var dryingShelf = Crafty.e("DryingShelf").place(-2401, 483, 182, 43);
-    var completedShelf = Crafty.e("CompletedShelf").place(-2180, 483, 183, 43);
+    var dryingShelf = Crafty.e("DryingShelf").place(-2401, 483, 182, 43).captionBelow("Drying Table");
+    var completedShelf = Crafty.e("CompletedShelf").place(-2180, 483, 183, 43).captionBelow("Finished Pottery");
     // Unfired pots dry fastest on the drying shelf, slower in the fox's pack and the owl's hands, not in the kiln.
     Crafty.e("PotDrier").dry(dryingShelf.inventory, [player.inventory, owl.inventory]);
     // Clicking any slot square puts the fox's drying pot on (if there is room); otherwise a filled slot gives its

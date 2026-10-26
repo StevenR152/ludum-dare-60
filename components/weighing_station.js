@@ -66,6 +66,7 @@ Crafty.c("WeighingStation", {
     // The pile boxes are laid out from the station's position, so they are made here rather than in init.
     place: function(x, y, w, h) {
         this.attr({x: x, y: y, w: w, h: h});
+        Crafty.e("Caption").caption("Weighing Table", x + WEIGHING_CAPTION_SHIFT_X, y + WEIGHING_CAPTION_TOP, w, INTERIOR_FRONT_Z + 1, this);
         var gap = 4;
         // The piles sit side by side at the left end of the table, WEIGHING_PILE_SCALE of the size they would be if
         // they filled it, WEIGHING_PILE_LIFT above the table's front edge.

@@ -1,8 +1,7 @@
 // The completed shelf, where finished pots (glazed or not, through their glaze firing: "glazeCooled") wait
 // for a customer: COMPLETED_CAPACITY places. A cracked pot is refused. A pot that fills an open order (see
-// findOpenOrder) is delivered at once and leaves the shelf; one that fills none waits, and the fox can take it
-// back. A waiting pot is delivered the moment a matching order arrives. The ORDERS_TO_WIN-th delivered order
-// triggers "OrdersComplete" once, which the Game scene turns into the end of the game.
+// findOpenOrder) is delivered at once and leaves the shelf (except the one that fills the last order); one that fills
+// none waits, and the fox can take it back. A waiting pot is delivered the moment a matching order arrives.
 //   var shelf = Crafty.e("CompletedShelf").place(INSIDE_X + 1500, 700, 300, 160);
 //   shelf.useWith(fox);   // puts the fox's selected glaze-fired pot on, or takes a waiting pot off
 Crafty.c("CompletedShelf", {
@@ -11,7 +10,6 @@ Crafty.c("CompletedShelf", {
         this.holdItems(COMPLETED_CAPACITY, {
             accepts: function (item) { return item.state === "glazeCooled" && !item.pot.cracked; }
         });
-        this.over = false;
         this.bind("InventoryChanged", function (changed) {
             if (changed === this.inventory) {
                 this.deliverWaiting();
@@ -20,26 +18,24 @@ Crafty.c("CompletedShelf", {
         this.bind("OrderAdded", this.deliverWaiting);
     },
 
-    // Every waiting pot that fills an open order goes to it, oldest pot and oldest order first.
+    // Every waiting pot that fills an open order goes to it, oldest pot and oldest order first. The pot that fills the
+    // last order stays on the shelf, so it shows during the pause before the level ends.
     deliverWaiting: function() {
         var pots = this.inventory.items.slice();
         var delivered = false;
         pots.forEach(function (pot) {
             var order = findOpenOrder(pot);
             if (order) {
-                this.inventory.pull(this.inventory.items.indexOf(pot));
                 pot.advance("shelved");
                 deliverOrder(order);
                 delivered = true;
+                if (!gameState.orders.every(function (o) { return o.delivered; })) {
+                    this.inventory.pull(this.inventory.items.indexOf(pot));
+                }
             }
         }, this);
-        if (!delivered) {
-            return;
-        }
-        this.inventory.changed();
-        if (!this.over && gameState.orders.filter(function (order) { return order.delivered; }).length >= ORDERS_TO_WIN) {
-            this.over = true;
-            this.trigger("OrdersComplete");
+        if (delivered) {
+            this.inventory.changed();
         }
     },
 

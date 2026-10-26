@@ -31,7 +31,11 @@ Crafty.c("Clay", {
         var sy = OUTSIDE_MAP_BOX.h / OUTSIDE_MAP_PX.h;
         var c = type.patchContent;
         var art = {x: patch.x + c[0] * sx, y: patch.y + c[1] * sy, w: c[2] * sx, h: c[3] * sy};
-        this.attr({x: art.x, y: art.y, w: art.w, h: art.h});
+        // The mask follows the whole picture (art); the box that is pressed and touched may be smaller.
+        this.art = art;
+        var scale = type.digZoneScale || 1;
+        this.attr({x: art.x + art.w * (1 - scale) / 2, y: art.y + art.h * (1 - scale) / 2,
+                   w: art.w * scale, h: art.h * scale});
         this.loadMask(type.patchUrl, c, art);
         this.bind("Remove", function () { patch.destroy(); });
         return this;
@@ -65,8 +69,8 @@ Crafty.c("Clay", {
         if (!this.mask || wx === undefined || wy === undefined) {
             return true;
         }
-        var col = Math.floor((wx - this.x) * this.mask.cols / this.w);
-        var row = Math.floor((wy - this.y) * this.mask.rows / this.h);
+        var col = Math.floor((wx - this.art.x) * this.mask.cols / this.art.w);
+        var row = Math.floor((wy - this.art.y) * this.mask.rows / this.art.h);
         if (col < 0 || row < 0 || col >= this.mask.cols || row >= this.mask.rows) {
             return false;
         }

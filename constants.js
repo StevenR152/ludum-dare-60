@@ -45,10 +45,13 @@ var CLAY_TYPES = {
     // letter picks the pot pictures (clayA, clayB, clayC in assets/images/pots).
     // patch is the sprite of the clay patch drawn on the outside map while the clay can be dug, and
     // patchContent its opaque part (x, y, w, h in the 5763x2458 image pixels): the dig zone is cut from it.
+    // digZoneScale (optional, default 1) shrinks the zone's width and height about its centre.
     red:   { type: "clay", name: "red",   letter: "A", color: '#E06450', fireLevel: "mid",
-             patch: "patchRed", patchUrl: "assets/images/patch_ClayA_red.png", patchContent: [452, 1634, 1684, 668] },
+             patch: "patchRed", patchUrl: "assets/images/patch_ClayA_red.png", patchContent: [452, 1634, 1684, 668],
+             digZoneScale: 0.75 },
     black: { type: "clay", name: "black", letter: "B", color: '#2B2522', fireLevel: "low",
-             patch: "patchBlack", patchUrl: "assets/images/patch_ClayB_black.png", patchContent: [2260, 1644, 1036, 402] },
+             patch: "patchBlack", patchUrl: "assets/images/patch_ClayB_black.png", patchContent: [2260, 1644, 1036, 402],
+             digZoneScale: 0.75 },
     white: { type: "clay", name: "white", letter: "C", color: '#F5F0DC', fireLevel: "high",
              patch: "patchWhite", patchUrl: "assets/images/patch_ClayC_white.png", patchContent: [1558, 1354, 658, 286] },
 };
@@ -176,7 +179,7 @@ var DOOR_ART_CONTENT = [630, 634, 856, 1102];
 // Each house door's trigger zone (top-left x, y and size). The outside one is exactly the door picture.
 var DOOR_BOXES = {
     outside: {x: 975, y: 415, w: 85, h: 110},
-    inside: {x: -2626, y: 265, w: 85, h: 110}
+    inside: {x: -2626, y: 265, w: 64, h: 110}
 };
 var DOOR_ART_BOX = DOOR_BOXES.outside;
 // Level 2 only: how long the fox can stay outside before the outside door glows to say "go in".
@@ -237,7 +240,10 @@ var INTERIOR_FRONT_Z = 50;
 // Where the master's items show inside, drawn fitted and centred on a point (world px, cx, cy the middle). Move and
 // resize them to line up with the inside art. The wheel (kick wheel) holds the clay or pot he is working on; the
 // table in front of him holds the oldest finished pot waiting for the fox.
-var POTTER_WHEEL = {cx: -1743, cy: 421, w: 80, h: 60};
+// The owl's sprite box, and the smaller box around the bird himself that the fox touches and clicks.
+var OWL_ART_BOX = {x: -1616, y: 232, w: 312, h: 297};
+var OWL_TOUCH_BOX = {x: -1536, y: 292, w: 143, h: 190};
+var POTTER_WHEEL ={cx: -1743, cy: 421, w: 80, h: 60};
 var POTTER_TABLE = {cx: -1591, cy: 437, w: 52, h: 52};
 var KILN_CAPACITY = 4;
 
@@ -337,9 +343,8 @@ var LEATHER_HARD_AT = 0.1;
 var DRY_STAGE_COLORS = { wet: "#8C6440", leatherHard: "#B9946A", boneDry: "#E3CDA8" };
 var DRY_STAGE_LABELS = { wet: "wet", leatherHard: "LH", boneDry: "dry" };
 var DRY_BAR_COLOR = "#555";
-// Completed shelf: places for pots waiting for an order, and how many delivered orders end the game (until levels).
+// Completed shelf: places for pots waiting for an order.
 var COMPLETED_CAPACITY = 3;
-var ORDERS_TO_WIN = 3;
 // Where the weighing panel opens, in screen px: right of the HUD's inventory panel, below Restart and Menu.
 var WEIGH_PANEL_X = HUD_PANEL_X + HUD_PANEL_W + 10;
 var WEIGH_PANEL_Y = 58;
@@ -349,6 +354,16 @@ var WORKBENCH_REACH = 50;
 var WORKBENCH_MODEL_LIFT = 5;
 // Shelf slot boxes: how far below the shelf box's top they sit.
 var SHELF_SLOT_TOP = 2;
+// Station captions ("Drying Table", "Wedging"...): their colour, how far below a shelf's top and how far below the
+// workbench's drawn bottom they sit (negative: over the bottom edge of the table).
+var CAPTION_COLOR = "#3B2314";
+var WEIGHING_CAPTION_TOP = 52;
+var SHELF_CAPTION_TOP = 54;
+var WORKBENCH_CAPTION_GAP = -16;
+// The workbench's caption is also moved right, to sit under the bench top rather than its models.
+var WORKBENCH_CAPTION_SHIFT_X = 49;
+// The weighing table's caption is moved left.
+var WEIGHING_CAPTION_SHIFT_X = -25;
 
 // Timer bars (components/timer_bar.js): the bar that fills above whoever is doing a timed action, the fox
 // while it digs, chops or wedges, the owl while he throws or trims, and the kiln while it fires and cools.

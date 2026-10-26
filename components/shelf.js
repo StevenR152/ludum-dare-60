@@ -6,6 +6,9 @@ Crafty.c("Shelf", {
     init: function() {
         this.requires("2D, DOM, Color, Mouse, DebugHitbox");
         this.color("#FFF", 0);   // the zone is clickable but not drawn: the art shows the shelf
+        // The slots, pots and bars are drawn at this.z + 1, so the shelf sits at the interior's front layer: they
+        // show in front of the table in the art.
+        this.attr({z: INTERIOR_FRONT_Z});
         this.slotBoxes = [];
         this.bind("InventoryChanged", function (changed) {
             if (changed === this.inventory) {
@@ -41,6 +44,12 @@ Crafty.c("Shelf", {
         }
         // For shelves that decorate the slots (the drying shelf's bars and click handlers).
         this.trigger("SlotsDrawn");
+    },
+
+    // A caption centred under the shelf's slots and their bars; call after place().
+    captionBelow: function(text) {
+        Crafty.e("Caption").caption(text, this.x, this.y + SHELF_CAPTION_TOP, this.w, this.z + 1, this);
+        return this;
     },
 
     // Slot boxes appear once the shelf has been placed; call after attr().

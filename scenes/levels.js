@@ -16,7 +16,7 @@
 // top of the Goal panel, `tip` adds the Master's italic line under it, `finish` is what he says once the last order
 // is delivered (shown on the LevelComplete screen), and each `masterTips` entry is a line he speaks aloud, once, the first time its event happens.
 // An empty or missing field is left out as if it were not there, so the slots can be filled in one at a time.
-var STAGE_PAUSE_MS = 1500;
+var STAGE_PAUSE_MS = 2500;
 
 // Prose that is written later: the text when there is any, else null when the field is missing, empty or only
 // spaces, so an unwritten slot behaves exactly like one that was never added.
@@ -66,7 +66,8 @@ var LEVELS = [
         card: [
             {color: CLAY_TYPES.black.color, text: "Black clay: a gentle fire, 1 log"},
             {color: CLAY_TYPES.red.color, text: "Red clay: a steady fire, 2 logs"},
-            {color: CLAY_TYPES.white.color, text: "White clay: a roaring fire, 3 logs"}
+            {color: CLAY_TYPES.white.color, text: "White clay: a roaring fire, 3 logs"},
+            {color: '#f8e9aa', text: "Final Firing, 1 log"}
         ],
         orders: [["Cup", "white", []], ["Bowl", "red", []], ["Vase", "black", []]],
         world: {
@@ -111,7 +112,8 @@ var LEVELS = [
             potFired("Second firing: make it strong", "glazeCooled"),
             step("Put the cup on the completed shelf for Barnaby", "OrderDelivered")],
         card: [
-            {color: CLAY_TYPES.black.color, text: "Black clay: a gentle fire, 1 log"}
+            {color: CLAY_TYPES.black.color, text: "Black clay: a gentle fire, 1 log"},
+            {color: '#f8e9aa', text: "Final Firing, 1 log"}
         ],
         orders: [["Cup", "black", []]],
         world: {
@@ -142,7 +144,8 @@ var LEVELS = [
             potFired("Fire it again", "glazeCooled"), step("Put it on the completed shelf", "OrderDelivered")],
         card: [
             {color: CLAY_TYPES.red.color, text: "Red clay: a steady fire, 2 logs"},
-            {color: CLAY_TYPES.white.color, text: "White clay: a roaring fire, 3 logs"}
+            {color: CLAY_TYPES.white.color, text: "White clay: a roaring fire, 3 logs"},
+            {color: '#f8e9aa', text: "Final Firing, 1 log"}
         ],
         orders: [["Cup", "white", []], ["Cup", "red", []]],
         world: levelWorld({glaze: false, clays: ["red", "white"], models: ["Cup"]})
@@ -160,7 +163,8 @@ var LEVELS = [
         card: [
             {color: CLAY_TYPES.black.color, text: "Black clay: a gentle fire, 1 log"},
             {color: CLAY_TYPES.red.color, text: "Red clay: a steady fire, 2 logs"},
-            {color: CLAY_TYPES.white.color, text: "White clay: a roaring fire, 3 logs"}
+            {color: CLAY_TYPES.white.color, text: "White clay: a roaring fire, 3 logs"},
+            {color: '#f8e9aa', text: "Final Firing, 1 log"}
         ],
         orders: [["Bowl", "black", []], ["Bowl", "black", []], ["Cup", "black", []], ["Cup", "black", []]],
         world: levelWorld({glaze: false, clays: ["black"], models: ["Bowl", "Cup"], kilnTrees: true})
@@ -183,7 +187,8 @@ var LEVELS = [
         card: [
             {color: CLAY_TYPES.black.color, text: "Black clay: a gentle fire, 1 log"},
             {color: CLAY_TYPES.red.color, text: "Red clay: a steady fire, 2 logs"},
-            {color: CLAY_TYPES.white.color, text: "White clay: a roaring fire, 3 logs"}
+            {color: CLAY_TYPES.white.color, text: "White clay: a roaring fire, 3 logs"},
+            {color: '#f8e9aa', text: "Final Firing, 1 log"}
         ],
         orders: [["Vase", "red", ["Glaze A"]], ["Vase", "black", ["Glaze B"]], ["Cup", "white", ["Glaze A"]]],
         world: levelWorld({glaze: true, clays: ["black", "red", "white"], models: ["Cup", "Vase"], maxGlazeDips: 1, kilnTrees: true})
@@ -203,7 +208,8 @@ var LEVELS = [
         card: [
             {color: CLAY_TYPES.black.color, text: "Black clay: a gentle fire, 1 log"},
             {color: CLAY_TYPES.red.color, text: "Red clay: a steady fire, 2 logs"},
-            {color: CLAY_TYPES.white.color, text: "White clay: a roaring fire, 3 logs"}
+            {color: CLAY_TYPES.white.color, text: "White clay: a roaring fire, 3 logs"},
+            {color: '#f8e9aa', text: "Final Firing, 1 log"}
         ],
         orders: [["Bowl", "white", ["Glaze A"]], ["Vase", "red", ["Glaze B"]], ["Cup", "black", ["Glaze A"]],
             ["Cup", "red", ["Glaze B"]]],
@@ -225,7 +231,8 @@ var LEVELS = [
         card: [
             {color: CLAY_TYPES.black.color, text: "Black clay: a gentle fire, 1 log"},
             {color: CLAY_TYPES.red.color, text: "Red clay: a steady fire, 2 logs"},
-            {color: CLAY_TYPES.white.color, text: "White clay: a roaring fire, 3 logs"}
+            {color: CLAY_TYPES.white.color, text: "White clay: a roaring fire, 3 logs"},
+            {color: '#f8e9aa', text: "Final Firing, 1 log"}
         ],
         orders: [["Bowl", "white", ["Glaze A", "Glaze B"]], ["Vase", "red", ["Glaze B", "Glaze A"]],
             ["Cup", "black", ["Glaze A", "Glaze B"]], ["Bowl", "red", ["Glaze B", "Glaze A"]],

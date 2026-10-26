@@ -35,6 +35,7 @@ Crafty.c("Workbench", {
         shapes.forEach(function (shape, col) {
             this.addModelSpot({type: "model", shape: shape}, x + gap + col * (spotW + gap), y + gap - WORKBENCH_MODEL_LIFT, spotW, h - gap * 2);
         }, this);
+        Crafty.e("Caption").caption("Wedging", x + WORKBENCH_CAPTION_SHIFT_X, y + h + WORKBENCH_CAPTION_GAP, w, INTERIOR_FRONT_Z + 1, this);
         // The zone reaches WORKBENCH_REACH further down than the bench is drawn, so the fox counts as at the bench sooner.
         this.h = h + WORKBENCH_REACH;
         return this;
