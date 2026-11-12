@@ -20,6 +20,7 @@
   <body>
     <div id="game"></div>
     <div id="rotate-hint">Please turn your phone sideways to play</div>
+    <div id="live-date"></div>
     <style>
       /* The page is only the game: it fills the window (or itch.io iframe) and camera.js fits and
          scales the stage into it, so the dark page colour letterboxes the leftover space. */
@@ -41,6 +42,18 @@
           font: italic 600 22px/1.4 Alegreya, Georgia, serif;
           color: #E3CDA8;
         }
+      }
+      /* Today's date in the bottom-right corner, over the letterbox or game; it never takes input,
+         and still shows in the portrait rotate-hint state. */
+      #live-date {
+        position: fixed;
+        right: 8px;
+        bottom: 8px;
+        z-index: 1;
+        pointer-events: none;
+        font: 600 14px/1 Alegreya, Georgia, serif;
+        color: #E3CDA8;
+        opacity: 0.7;
       }
       body {
         display: flex;
@@ -108,6 +121,14 @@
       // Keyboard input stops after the page (or an itch.io iframe) loses focus.
       window.onload = function () { window.focus(); };
       document.getElementById('game').addEventListener('click', function () { window.focus(); });
+
+      // Today's date in the viewer's locale; re-checked every minute so it rolls over at midnight without a reload.
+      function updateLiveDate() {
+        document.getElementById('live-date').textContent = new Date().toLocaleDateString(undefined,
+          { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      }
+      updateLiveDate();
+      setInterval(updateLiveDate, 60 * 1000);
     </script>
   </body>
 </html>

@@ -24,19 +24,19 @@
 5. Visible in both landscape and the portrait rotate-hint state.
 
 **Acceptance criteria**
-- [ ] Inspect the page: `#live-date` holds today's date in the browser's locale.
-- [ ] Date sits bottom-right, readable, in Alegreya cream text.
-- [ ] Click/hold on the game under the date: the fox walks/acts as normal.
-- [ ] Fake the clock past midnight (devtools override or temporarily shorter interval): text changes to the next day without reload.
-- [ ] Phone portrait: rotate hint and date both show.
+- [x] Inspect the page: `#live-date` holds today's date in the browser's locale. (verified headless Chrome, en-US: "Friday, November 13, 2026")
+- [x] Date sits bottom-right, readable, in Alegreya cream text. (computed: fixed, right/bottom 8px, Alegreya 14px, rgb(227,205,168), opacity 0.7; screenshot checked)
+- [x] Click/hold on the game under the date: the fox walks/acts as normal. (game-shaped window: element under the date and a real mouse click there both hit `#game`; fox movement itself not driven, touch not device-tested)
+- [x] Fake the clock past midnight (devtools override or temporarily shorter interval): text changes to the next day without reload. (Date shifted to 00:00:30 next day; real 60 s interval flipped text to the next day, no reload)
+- [x] Phone portrait: rotate hint and date both show. (emulated 390x844 touch portrait; not tested on a real phone)
 
 **Constraints** — `index.html` only (inline style + script); no new files or dependencies.
 
 **Open questions**
-- Corner: bottom-right overlaps the game's bottom edge when the window is exactly game-shaped. OK, or prefer another corner / only in the letterbox?
+- Corner: bottom-right overlaps the game's bottom edge when the window is exactly game-shaped. OK, or prefer another corner / only in the letterbox? **Resolved: bottom-right, as written.**
 
 **Tasks**
-- [ ] Add `<div id="live-date">` next to `#rotate-hint`.
-- [ ] Add `#live-date` styles to the inline `<style>`.
-- [ ] Extend the inline `<script>`: set the text on load, refresh every 60 s.
-- [ ] Verify the acceptance criteria in the browser.
+- [x] Add `<div id="live-date">` next to `#rotate-hint`.
+- [x] Add `#live-date` styles to the inline `<style>`.
+- [x] Extend the inline `<script>`: set the text on load, refresh every 60 s.
+- [x] Verify the acceptance criteria in the browser.
