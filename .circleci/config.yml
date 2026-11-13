@@ -1,5 +1,13 @@
 version: 2.1
 jobs:
+  lint-html:
+    docker:
+      - image: cimg/node:20.18
+    steps:
+      - checkout
+      - run:
+          name: Lint index.html
+          command: npx --yes htmlhint@1.1.4 index.html
   deploy:
     docker:
       - image: cimg/python:3.12
@@ -18,4 +26,7 @@ jobs:
 workflows:
   build-deploy:
     jobs:
-      - deploy
+      - lint-html
+      - deploy:
+          requires:
+            - lint-html
